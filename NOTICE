@@ -1,0 +1,20 @@
+The primary souce code in wavestate packages is licensed as Apache-2.0 and this
+license should be assumed for files lacking a SPDX-License-Identifier or other
+license statement. 
+
+Along with typical uses of the NOTICE file, this file is intended to concisely
+document the contributions, attributions, and citations related to this
+scientific software and the effort and research required of the authors to
+construct it. Such information will also be included in source files in more
+detail.
+
+Additionally, authors should readily comment and document their contributions
+inline with their work in the source files, tagging their name and contact
+information appropriately. The list of copyright holders in each source file
+should be used to indicate authorship.
+
+Timeline of contributions:
+
+2021-: Lee McCuller is a principle contributor and maintainer of wavestate.
+Wavestate is originally constructed from a set of software projects related to
+the LIGO graviational-wave observatories and optical squeezing research at MIT.
