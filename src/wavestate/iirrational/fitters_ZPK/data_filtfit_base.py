@@ -67,7 +67,7 @@ class DataFiltFitBase(declarative.DepBunch):
         if self.data is None:
             raise RuntimeError("Can't generate residuals as data was not Specified")
         debias_reweight = 1/(.001 + self.W**2)
-        retB = declarative.Bunch()
+        retB = wavestate.bunch.Bunch()
         retB.resP = self.W * (self.xfer_fit/self.data - 1)
         retB.resZ = self.W * (self.data/self.xfer_fit - 1)
         retB.total = np.sum(

@@ -89,7 +89,7 @@ def nearest_unique_idx(l1, l2):
     l2_copy = [None] * len(l2)
     for idx_2 in idx_p_used:
         l2_copy[idx_2] = l2[idx_2]
-    return declarative.Bunch(
+    return wavestate.bunch.Bunch(
         idx_list = idx_list,
         l1       = l1,
         l2       = l2_copy,
@@ -139,7 +139,7 @@ def nearest_unique_pairs(
             l2_nearest[idx_2] = None
     assert(len(r12_list) + len(l1_remain) == len(l1))
     assert(len(r12_list) + len(l2_remain) == len(l2))
-    return declarative.Bunch(
+    return wavestate.bunch.Bunch(
         r12_list   = r12_list,
         l1_remain  = l1_remain,
         l2_remain  = l2_remain,

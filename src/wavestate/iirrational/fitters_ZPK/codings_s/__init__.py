@@ -40,8 +40,8 @@ _common = dict(
     is_unstable = is_unstable_S,
 )
 
-coding_maps = declarative.Bunch(
-    RI = declarative.Bunch(
+coding_maps = wavestate.bunch.Bunch(
+    RI = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingRealBW,
@@ -58,7 +58,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    FBW = declarative.Bunch(
+    FBW = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingRealBW,
@@ -75,7 +75,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFBW = declarative.Bunch(
+    nlFBW = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelayNL,
         num_r         = CodingRealnlBW,
@@ -92,7 +92,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFBW_safe = declarative.Bunch(
+    nlFBW_safe = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelayNL,
         num_r         = CodingRealnlBW,
@@ -110,7 +110,7 @@ coding_maps = declarative.Bunch(
         **_common
     ),
     #TODO, not ready, gotta be able to deal with roots at 0
-    SOS = declarative.Bunch(
+    SOS = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelayNL,
         num_r         = CodingSOS,
@@ -127,7 +127,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    SOSnl = declarative.Bunch(
+    SOSnl = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelayNL,
         num_r         = CodingSOSnl,
@@ -144,7 +144,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    SOSsafe = declarative.Bunch(
+    SOSsafe = wavestate.bunch.Bunch(
         gain          = CodingGain,
         delay         = CodingDelayNL,
         num_r         = CodingSOSnl,

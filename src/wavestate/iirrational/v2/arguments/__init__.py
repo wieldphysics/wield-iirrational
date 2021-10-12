@@ -17,7 +17,7 @@ from . import standardargs
 from . import adjustments
 from . import ranges
 
-kw_hints = declarative.Bunch()
+kw_hints = wavestate.bunch.Bunch()
 kw_hints.update(logging.kw_hints)
 kw_hints.update(standardargs.kw_hints)
 kw_hints.update(adjustments.kw_hints)

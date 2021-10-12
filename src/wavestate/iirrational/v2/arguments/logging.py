@@ -27,7 +27,7 @@ def hint_log_level(**kwargs):
     return kw
 
 
-kw_hints = declarative.Bunch(
+kw_hints = wavestate.bunch.Bunch(
     logging_module_use = dict(
         APignore = True,
         mapcheck = mapcheck_bool,

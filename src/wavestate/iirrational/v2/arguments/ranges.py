@@ -80,7 +80,7 @@ def mapcheck_total_degree_min(aid, aname, val):
     return val
 
 
-kw_hints = declarative.Bunch(
+kw_hints = wavestate.bunch.Bunch(
     relative_degree = dict(
         APgroup = 'order',
         APpriority = 10,

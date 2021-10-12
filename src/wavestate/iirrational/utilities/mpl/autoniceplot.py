@@ -361,7 +361,7 @@ def mplfigB(
     if height_in is None:
         height_in = size_in_base_H + Nrows * size_in_dW_dH[1]
 
-    axB = declarative.Bunch()
+    axB = wavestate.bunch.Bunch()
     axB.fig = plt.figure()
     axB.fig.set_size_inches(width_in, height_in)
     attach_finalizer(axB)

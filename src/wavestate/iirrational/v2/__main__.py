@@ -160,7 +160,7 @@ def config_load(aid, args, kwfull, mode):
         kwfull.update(conf_dict)
 
     kwfull.update(args)
-    return declarative.Bunch(
+    return wavestate.bunch.Bunch(
         cfiles = cfiles,
         fdicts = fdicts_conf,
         cgroup = cgroup,
@@ -291,7 +291,7 @@ def data_load(aid, args, kwfull, mode, confB):
         #args always takes precedent
         kwfull.update(args)
 
-    return declarative.Bunch(
+    return wavestate.bunch.Bunch(
         fdict     = fdict_data,
         data_dict = data_dict,
     )

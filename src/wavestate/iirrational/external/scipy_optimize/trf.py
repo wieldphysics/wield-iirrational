@@ -154,7 +154,7 @@ from .common import (
 try:
     from scipy.optimize import OptimizeResult
 except ImportError:
-    OptimizeResult = declarative.Bunch
+    OptimizeResult = wavestate.bunch.Bunch
 
 
 def trf(

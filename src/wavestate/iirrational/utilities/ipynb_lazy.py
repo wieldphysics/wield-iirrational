@@ -9,8 +9,8 @@ import scipy.linalg
 import scipy.signal
 
 import declarative
-from declarative.bunch import DeepBunch
-from declarative.bunch.hdf_deep_bunch import HDFDeepBunch
+from wavestate.bunch import DeepBunch
+from wavestate.bunch.hdf_deep_bunch import HDFDeepBunch
 
 from ..plots import (
     plot_fit,

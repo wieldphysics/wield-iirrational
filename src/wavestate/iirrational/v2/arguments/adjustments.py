@@ -76,7 +76,7 @@ def mapcheck_boostlist(aid, aname, val):
     return (val,)
 
 
-kw_hints = declarative.Bunch(
+kw_hints = wavestate.bunch.Bunch(
     order_max = dict(
         APgroup = 'order',
         mapcheck = mapcheck_positive_int,

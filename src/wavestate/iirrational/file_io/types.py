@@ -137,7 +137,7 @@ def determine_type(fname):
     if ftype != 'special':
         fname = os.path.abspath(fname)
 
-    return declarative.Bunch(
+    return wavestate.bunch.Bunch(
         fname  = fname,
         subkey = subkey,
         ftype  = ftype,

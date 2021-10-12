@@ -29,7 +29,7 @@ class FitAid(object):
         active = True,
     ):
         self.fitter             = None
-        self.fitter_special     = declarative.Bunch()
+        self.fitter_special     = wavestate.bunch.Bunch()
         self._fitter_current    = None
         self._fitter_lowres_avg = None
         self._fitter_lowres_max = None
@@ -157,7 +157,7 @@ class FitAid(object):
             else:
                 total_z = 0
                 total_p = 0
-        return declarative.Bunch(
+        return wavestate.bunch.Bunch(
             z      = total_z,
             p      = total_p,
             maxzp  = max(total_z, total_p),
@@ -373,7 +373,7 @@ class FitAid(object):
 
         #print("ZPK", fitter_use.ZPKsf)
         if representative:
-            fitter_meta = declarative.Bunch()
+            fitter_meta = wavestate.bunch.Bunch()
             fitter_meta.fitter         = copy1()
             fitter_meta.log_idx        = self.log_number
             fitter_meta.checkpoint_idx = len(self._checkpoints) - 1
@@ -405,7 +405,7 @@ class FitAid(object):
                 self._fitter_lowres_max = copy1()
                 self._fitter_lowres_med = copy1()
 
-        self.fitter_special = declarative.Bunch()
+        self.fitter_special = wavestate.bunch.Bunch()
         return fitter_use
 
     def factorization_push(
@@ -460,7 +460,7 @@ class FitAid(object):
         self.factorization_pop()
 
     def checkpoint(self, checkpoint):
-        metadata = declarative.Bunch()
+        metadata = wavestate.bunch.Bunch()
         metadata.name = checkpoint
         metadata.log_idx           = self.log_number
         metadata.fitter_idx        = self(self._fitters) - 1
@@ -469,7 +469,7 @@ class FitAid(object):
         metadata.fitter_lowres_max = self._fitter_lowres_max
         metadata.fitter_lowres_med = self._fitter_lowres_med
         metadata.fitter            = self.fitter.copy()
-        metadata.fitter_special    = declarative.Bunch()
+        metadata.fitter_special    = wavestate.bunch.Bunch()
         for name, fitter in self.fitter_special.items():
             metadata.fitter_special[name] = fitter.copy()
         metadata.fitter_factors = list(self._fitter_factors)

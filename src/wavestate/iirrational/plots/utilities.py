@@ -3,7 +3,7 @@
 """
 from __future__ import division, print_function, unicode_literals
 import numpy as np
-from declarative import Bunch
+from wavestate.bunch import Bunch
 
 
 def BWz(r, F_nyquist_Hz):

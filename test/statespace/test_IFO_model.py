@@ -266,7 +266,7 @@ def build_model(theta = 0):
             ('sum_into', 'Metm+M-d', ['DARM.o0', 'FMetm+M-d']),
         ]
     )
-    return declarative.Bunch(locals())
+    return wavestate.bunch.Bunch(locals())
 
 def test_IFO_model(tpath_join):
     model = build_model(theta = .01)

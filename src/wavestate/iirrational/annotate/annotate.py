@@ -2,7 +2,7 @@
 """
 """
 from __future__ import division, print_function, unicode_literals
-from declarative.bunch import DeepBunch
+from wavestate.bunch import DeepBunch
 import os
 import re
 import errno

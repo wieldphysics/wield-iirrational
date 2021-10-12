@@ -52,7 +52,7 @@ def mapcheck_choose(aid, aname, val):
             ))
 
 
-kw_hints = declarative.Bunch(
+kw_hints = wavestate.bunch.Bunch(
     datafile = dict(
         APpositional = True,
         APpriority = -2,

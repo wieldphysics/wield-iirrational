@@ -53,5 +53,5 @@ def data2testcase(
 def testcase2data(fname):
     import scipy.io
     data = scipy.io.loadmat(fname, squeeze_me = True)
-    return declarative.Bunch(data)
+    return wavestate.bunch.Bunch(data)
 

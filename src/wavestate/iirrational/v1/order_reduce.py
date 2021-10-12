@@ -106,7 +106,7 @@ def match_pairs(
             Q_rank_BW = (TFmath.abs_sq(p-z) + (p.real)**2 + (p.imag)**2)**.5
             F_loc_Hz = (p.imag + z.imag) / 2
             if idx_z == p_nearest[idx_p]:
-                duals.append(declarative.Bunch(
+                duals.append(wavestate.bunch.Bunch(
                     idx_z        = idx_z,
                     idx_p        = idx_p,
                     Q_rank       = Q_rank,
@@ -126,7 +126,7 @@ def match_pairs(
             Q_rank = Q_rank_calc(z, p)
             Q_rank_BW = (TFmath.abs_sq(p-z) + (p.real)**2 + (p.imag)**2)**.5
             F_loc_Hz = (p.imag + z.imag) / 2
-            pairs.append(declarative.Bunch(
+            pairs.append(wavestate.bunch.Bunch(
                 idx_z        = idx_z,
                 idx_p        = idx_p,
                 Q_rank       = Q_rank,
@@ -257,7 +257,7 @@ def order_reduce(
         den_codings       = den_codings,
     )
 
-    return declarative.Bunch(locals())
+    return wavestate.bunch.Bunch(locals())
 
 
 def order_reduce_weakroots(
@@ -349,7 +349,7 @@ def order_reduce_weakroots(
                 else:
                     coding_den = None
                     idx_den = None
-            data = declarative.Bunch(
+            data = wavestate.bunch.Bunch(
                 idx_nearest = idx_nearest,
                 coding_num = coding_num,
                 coding_den = coding_den,

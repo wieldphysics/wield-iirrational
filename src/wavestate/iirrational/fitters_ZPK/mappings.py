@@ -9,44 +9,44 @@ from . import codings_z
 _common = dict(
 )
 
-coding_maps = declarative.Bunch(
-    RI = declarative.Bunch(
-        rep = declarative.Bunch(
+coding_maps = wavestate.bunch.Bunch(
+    RI = wavestate.bunch.Bunch(
+        rep = wavestate.bunch.Bunch(
             Sf = codings_s.coding_maps.RI,
             Z  = codings_z.coding_maps.RI,
         ),
         **_common
     ),
-    FBW = declarative.Bunch(
-        rep = declarative.Bunch(
+    FBW = wavestate.bunch.Bunch(
+        rep = wavestate.bunch.Bunch(
             Sf = codings_s.coding_maps.FBW,
             Z  = codings_z.coding_maps.FBW,
         ),
         **_common
     ),
-    nlFBW = declarative.Bunch(
-        rep = declarative.Bunch(
+    nlFBW = wavestate.bunch.Bunch(
+        rep = wavestate.bunch.Bunch(
             Sf = codings_s.coding_maps.nlFBW,
             Z  = codings_z.coding_maps.nlFBW,
         ),
         **_common
     ),
-    nlFBW_safe = declarative.Bunch(
-        rep = declarative.Bunch(
+    nlFBW_safe = wavestate.bunch.Bunch(
+        rep = wavestate.bunch.Bunch(
             Sf = codings_s.coding_maps.nlFBW_safe,
             Z  = codings_z.coding_maps.nlFBW_safe,
         ),
         **_common
     ),
-    SOS = declarative.Bunch(
-        rep = declarative.Bunch(
+    SOS = wavestate.bunch.Bunch(
+        rep = wavestate.bunch.Bunch(
             Sf = codings_s.coding_maps.SOS,
             Z  = codings_z.coding_maps.SOS,
         ),
         **_common
     ),
-    #SOS_safe = declarative.Bunch(
-    #    rep = declarative.Bunch(
+    #SOS_safe = wavestate.bunch.Bunch(
+    #    rep = wavestate.bunch.Bunch(
     #        Sf = codings_s.coding_maps.SOS_safe,
     #        Z  = codings_z.coding_maps.SOS_safe,
     #    ),

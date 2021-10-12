@@ -120,7 +120,7 @@ def phase_patch(aid):
             cW = np.cumsum(W**2 * f_d)
             cFd = np.cumsum(f_d)
 
-            shift_save = declarative.Bunch()
+            shift_save = wavestate.bunch.Bunch()
             #distance_10
             shift = (cR[sep:] - cR[0:-sep]) / (cW[sep:] - cW[0:-sep])
             shift_err = weight_scale * ((cFd[sep:] - cFd[0:-sep]) / (cW[sep:] - cW[0:-sep])  / (2*sep))**.5
@@ -180,7 +180,7 @@ def phase_patch(aid):
                         """)
                 check_second_pass = False
 
-            phase_fix_about = declarative.Bunch()
+            phase_fix_about = wavestate.bunch.Bunch()
             phase_fix_about.shift_saves = shift_saves
             phase_fix_about.fitter_X = fitter_X.copy()
             phase_fixes.append(phase_fix_about)
@@ -192,7 +192,7 @@ def phase_patch(aid):
             **kwargs
     ):
         """
-        Generates a plot of the mag normalized fit. Returns a declarative.Bunch object which
+        Generates a plot of the mag normalized fit. Returns a wavestate.bunch.Bunch object which
         stores the axes and figure of the plot.
         """
         from .. import plots

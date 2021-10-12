@@ -26,7 +26,7 @@ def nyquist_move(
     ZPKrep = fitter.ZPKrep
 
     F_nyquist_Hz = ZPKrep.F_nyquist_Hz
-    op = declarative.Bunch(
+    op = wavestate.bunch.Bunch(
         gain_flip = 1
     )
 
@@ -129,7 +129,7 @@ def nyquist_remove(
     aid = ensure_aid(aid)
 
     F_nyquist_Hz = fitter.F_nyquist_Hz
-    op = declarative.Bunch(
+    op = wavestate.bunch.Bunch(
         gain_flip = 1
     )
 

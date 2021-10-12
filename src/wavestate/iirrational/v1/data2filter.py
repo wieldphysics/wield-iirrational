@@ -120,7 +120,7 @@ def data2filter_setup(
             data        = data[nan_select]
             SNR         = SNR[nan_select]
             SNR_initial = SNR_initial[nan_select]
-    return declarative.Bunch(locals())
+    return wavestate.bunch.Bunch(locals())
 
 def data2filter(
         argB            = args.UNSPEC,

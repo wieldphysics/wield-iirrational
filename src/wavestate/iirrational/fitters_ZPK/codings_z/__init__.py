@@ -53,8 +53,8 @@ _common = dict(
 )
 
 
-coding_maps = declarative.Bunch(
-    nlFBW = declarative.Bunch(
+coding_maps = wavestate.bunch.Bunch(
+    nlFBW = wavestate.bunch.Bunch(
         gain    = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingRealnlBW,
@@ -71,7 +71,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFBW_safe = declarative.Bunch(
+    nlFBW_safe = wavestate.bunch.Bunch(
         #gain    = CodingGainNLDelay,
         gain    = CodingGain,
         delay         = CodingDelay,
@@ -89,7 +89,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFA = declarative.Bunch(
+    nlFA = wavestate.bunch.Bunch(
         #gain    = CodingGainNLDelay,
         gain    = CodingGain,
         delay         = CodingDelay,
@@ -107,7 +107,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFA_safe = declarative.Bunch(
+    nlFA_safe = wavestate.bunch.Bunch(
         #gain    = CodingGainNLDelay,
         gain    = CodingGain,
         delay         = CodingDelay,
@@ -125,7 +125,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    FA = declarative.Bunch(
+    FA = wavestate.bunch.Bunch(
         gain    = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingRealAmp,
@@ -142,7 +142,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    FBW = declarative.Bunch(
+    FBW = wavestate.bunch.Bunch(
         gain    = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingRealBW,
@@ -159,7 +159,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    RI = declarative.Bunch(
+    RI = wavestate.bunch.Bunch(
         gain    = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingRealAmp,
@@ -176,7 +176,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    SOS = declarative.Bunch(
+    SOS = wavestate.bunch.Bunch(
         gain    = CodingGain,
         delay         = CodingDelay,
         num_r         = CodingSOS,

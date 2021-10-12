@@ -290,7 +290,7 @@ class PolyFit(DataFilterBase):
     @depB_property
     def residuals(self):
         debias_reweight = 1/(.001 + self.W**2)
-        retB = declarative.Bunch()
+        retB = wavestate.bunch.Bunch()
         R = self.xfer_fit/self.data
         retB.resP = self.W * (R - 1)
         retB.resZ = self.W * (1/R - 1)

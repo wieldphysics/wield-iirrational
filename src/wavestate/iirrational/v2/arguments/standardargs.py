@@ -92,7 +92,7 @@ def mapcheck_mode(aid, hname, val):
     return val
 
 
-kw_hints_pre = declarative.Bunch(
+kw_hints_pre = wavestate.bunch.Bunch(
     pair_completion = dict(
         mapcheck = mapcheck_bool,
         default = True,
@@ -100,7 +100,7 @@ kw_hints_pre = declarative.Bunch(
 )
 
 
-kw_hints_data = declarative.Bunch(
+kw_hints_data = wavestate.bunch.Bunch(
     data = dict(
         APgroup = 'fitting',
         #TODO, mapcheck
@@ -179,7 +179,7 @@ kw_hints_data = declarative.Bunch(
     ),
 )
 
-kw_hints_fit = declarative.Bunch(
+kw_hints_fit = wavestate.bunch.Bunch(
     help = dict(
         APignore = True,
         aliases = ['h'],

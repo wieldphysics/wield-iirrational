@@ -40,8 +40,8 @@ _common = dict(
     is_unstable = is_unstable_S,
 )
 
-coding_maps = declarative.Bunch(
-    RI = declarative.Bunch(
+coding_maps = wavestate.bunch.Bunch(
+    RI = wavestate.bunch.Bunch(
         gain_delay    = CodingGainDelay,
         num_r         = CodingRealBW,
         num_c         = CodingRI,
@@ -57,7 +57,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    FBW = declarative.Bunch(
+    FBW = wavestate.bunch.Bunch(
         gain_delay    = CodingGainDelay,
         num_r         = CodingRealBW,
         num_c         = CodingFBW,
@@ -73,7 +73,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFBW = declarative.Bunch(
+    nlFBW = wavestate.bunch.Bunch(
         gain_delay    = CodingGainDelay,
         num_r         = CodingRealnlBW,
         num_c         = CodingnlFnlBW,
@@ -89,7 +89,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    nlFBW_safe = declarative.Bunch(
+    nlFBW_safe = wavestate.bunch.Bunch(
         gain_delay    = CodingGainDelay,
         num_r         = CodingRealnlBW,
         num_c         = CodingnlFnlBW,
@@ -106,7 +106,7 @@ coding_maps = declarative.Bunch(
         **_common
     ),
     #TODO, not ready, gotta be able to deal with roots at 0
-    SOS = declarative.Bunch(
+    SOS = wavestate.bunch.Bunch(
         gain_delay    = CodingGainDelay,
         num_r         = CodingSOS,
         num_c         = CodingSOS,
@@ -122,7 +122,7 @@ coding_maps = declarative.Bunch(
         den_collect_c = 1,
         **_common
     ),
-    #SOS_safe = declarative.Bunch(
+    #SOS_safe = wavestate.bunch.Bunch(
     #    gain_delay    = CodingGainDelay,
     #    num_r         = CodingSOSMirror,
     #    num_c         = CodingSOSMirror,

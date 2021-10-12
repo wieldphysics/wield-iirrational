@@ -228,7 +228,7 @@ class RationalDiscFilterMag(DataFiltFitBase):
         @self.deco_generator(clear = False)
         def residuals(self):
             debias_reweight = 1/(.001 + self.W**2)
-            retB = declarative.Bunch()
+            retB = wavestate.bunch.Bunch()
             R = self.xfer_fit_magsq / self.data_magsq
             retB.resP = self.W * (R - 1) / 2
             retB.resZ = self.W * (1/R - 1) / 2
@@ -477,7 +477,7 @@ class RationalDiscFilterMag(DataFiltFitBase):
                         continue
 
                 #print(rp, rz, rcov_n, min_dist**.5)
-                used_zs[min_idx_z] = declarative.Bunch(
+                used_zs[min_idx_z] = wavestate.bunch.Bunch(
                     idx_p  = idx_p,
                     reff   = (rp**-2 + rz**-2)**(-.5),
                     rp     = rp,

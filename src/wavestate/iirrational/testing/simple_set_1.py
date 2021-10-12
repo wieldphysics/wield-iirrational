@@ -54,7 +54,7 @@ def meta_generator(
     return dataset_gen
 
 
-datasets = declarative.Bunch()
+datasets = wavestate.bunch.Bunch()
 
 datasets.simple0 = utilities.make_description(
     generator = meta_generator(

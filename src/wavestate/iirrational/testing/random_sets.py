@@ -89,7 +89,7 @@ def meta_generator(
     return dataset_gen
 
 
-datasets = declarative.Bunch()
+datasets = wavestate.bunch.Bunch()
 
 datasets.rand10_log1k = utilities.make_description(
     generator = meta_generator(

@@ -34,7 +34,7 @@ class ResultsAidAdv(results_aid.ResultsAid):
             **kwargs
     ):
         """
-        Generates a plot of the fit. Returns a declarative.Bunch object which
+        Generates a plot of the fit. Returns a wavestate.bunch.Bunch object which
         stores the axes and figure of the plot.
         """
         axB = plots.plot_fitter_flag(
@@ -60,7 +60,7 @@ class ResultsAidAdv(results_aid.ResultsAid):
         for fit in fbo:
             rmaxbo.append(fit.residuals_max)
             rmedbo.append(fit.residuals_med)
-        return declarative.Bunch(
+        return wavestate.bunch.Bunch(
             order   = obo,
             res_avg = rbo,
             res_max = rmaxbo,

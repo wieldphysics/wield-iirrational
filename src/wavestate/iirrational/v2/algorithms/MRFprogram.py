@@ -72,7 +72,7 @@ def resrank_program(
         R.imag -= f * np.sum(f * R.imag * fitter.W**2) / np.sum(f**2  * fitter.W**2)/2
         rank_moddelay = np.sum(TFmath.abs_sq(fitter.residuals_NLmap(R, W = fitter.W)))
         rank = min(rank, rank_moddelay)
-    pbunch = declarative.Bunch(**kwargs)
+    pbunch = wavestate.bunch.Bunch(**kwargs)
     pbunch.rank = rank
     pbunch.name = name
     pbunch.variant = variant
@@ -141,7 +141,7 @@ def ranking_reduction_trials(
         Pr_new = []
         Zr_new = []
         #work backward on the command sequence removing the idxs
-        trial = declarative.Bunch()
+        trial = wavestate.bunch.Bunch()
         trial.prog_redux = []
         trial.ord_ch = 0
         trial.pbunch = pbunch

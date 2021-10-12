@@ -46,7 +46,7 @@ def analytic_translation(
     def stability_test(cplx_vect):
         return apply_translation(cplx_vect) / apply_continuation(cplx_vect)
 
-    return declarative.Bunch(locals())
+    return wavestate.bunch.Bunch(locals())
 
 
 def analytic_translation_dual(
@@ -87,4 +87,4 @@ def analytic_translation_dual(
     def apply_continuation(cplx_vect):
         return -1j * np.dot(trans_sc, cplx_vect)
 
-    return declarative.Bunch(locals())
+    return wavestate.bunch.Bunch(locals())

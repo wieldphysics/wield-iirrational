@@ -1,7 +1,7 @@
 """
 """
 from __future__ import division, print_function, unicode_literals
-from declarative import Bunch
+from wavestate.bunch import Bunch
 import numpy as np
 import copy
 import itertools

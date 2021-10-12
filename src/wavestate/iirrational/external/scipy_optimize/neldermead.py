@@ -49,7 +49,7 @@ except ImportError:
 try:
     from scipy.optimize import OptimizeResult
 except ImportError:
-    OptimizeResult = declarative.Bunch
+    OptimizeResult = wavestate.bunch.Bunch
 
 def neldermead(
     func,
