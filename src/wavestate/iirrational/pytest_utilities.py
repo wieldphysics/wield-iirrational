@@ -6,7 +6,7 @@ from __future__ import division, print_function, unicode_literals, absolute_impo
 import time
 from os import path
 import os
-from transient.utilities.mpl import mplfigB
+from wavestate.utilities.mpl import mplfigB
 
 try:
     import icecream
