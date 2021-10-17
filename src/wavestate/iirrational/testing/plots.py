@@ -1,7 +1,7 @@
 """
 Some utilities to help with dataset creation and annotation
 """
-from __future__ import division, print_function, unicode_literals
+
 import os
 import os.path as path
 import contextlib

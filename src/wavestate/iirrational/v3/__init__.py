@@ -1,6 +1,6 @@
 """
 """
-from __future__ import division, print_function, unicode_literals
+
 
 #from .data2filter import data2filter
 #from .disc_sequence import rational_disc_fit

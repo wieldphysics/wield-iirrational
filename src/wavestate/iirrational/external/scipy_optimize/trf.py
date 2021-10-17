@@ -127,7 +127,7 @@ References
 .. [JJMore] More, J. J., "The Levenberg-Marquardt Algorithm: Implementation
     and Theory," Numerical Analysis, ed. G. A. Watson, Lecture
 """
-from __future__ import division, print_function, unicode_literals, absolute_import
+
 import numpy as np
 import numpy as numpy
 import declarative

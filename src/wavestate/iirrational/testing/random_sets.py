@@ -1,7 +1,7 @@
 """
 Contains setup functions for test data, these are returned in a QuickBunch dictionary, with some annotation about the number of data sets
 """
-from __future__ import division, print_function, unicode_literals
+
 import numpy as np
 
 import declarative

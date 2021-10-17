@@ -4,7 +4,7 @@ This is done using an integral and residue calculus. The filter must have more
 poles than zeros, unless the ZPK is in the Z domain,
 where there is a natural cutoff frequency.
 """
-from __future__ import division, print_function, unicode_literals
+
 import numpy as np
 
 from scipy.special import factorial

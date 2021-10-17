@@ -11,7 +11,7 @@ Only dictionaries and arrays of numbers should be supported
    could/should be reversed on load, but currently requires code normalization
    to reverse
 """
-from __future__ import division, print_function, unicode_literals
+
 import collections
 import numpy as np
 import copy

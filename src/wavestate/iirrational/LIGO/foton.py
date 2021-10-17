@@ -3,7 +3,7 @@
 # from foton design strings, and parsing of foton filter files.
 # Author: Christopher Wipf, LIGO - Massachusetts Institute of Technology
 # May 6, 2014
-from __future__ import division, print_function
+
 
 import sys
 import os

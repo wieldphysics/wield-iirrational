@@ -2,7 +2,7 @@
 """
 Requires pytest to import
 """
-from __future__ import division, print_function, unicode_literals, absolute_import
+
 
 import time
 from os import path

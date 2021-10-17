@@ -11,7 +11,7 @@ such that all of the c_i coefficients are pure real, but the even polynomials pr
 
 To relate the coefficients to the original requires them to be rotated 90 degrees
 """
-from __future__ import division, print_function, unicode_literals
+
 
 import numpy as np
 from . import chebychev
