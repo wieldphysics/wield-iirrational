@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: © 2021 Massachusetts Institute of Technology.
+# SPDX-FileCopyrightText: © 2021 Lee McCuller <mcculler@mit.edu>
+# NOTICE: authors should document their contributions in concisely in NOTICE
+# with details inline in source files, comments, and docstrings.
 """
 Calculation of the RMS of a filter with unit white noise passing through a ZPK.
 This is done using an integral and residue calculus. The filter must have more
