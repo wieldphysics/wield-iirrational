@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import warnings
 import numpy as np
 import numpy as numpy
-import declarative
+from wavestate import declarative
 
 try:
     from scipy.optimize import OptimizeWarning

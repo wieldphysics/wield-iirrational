@@ -11,8 +11,8 @@
 import numpy as np
 import collections
 
-import declarative
-from declarative.utilities.future_from_2 import unicode
+from wavestate import declarative
+from wavestate.declarative.utilities.future_from_2 import unicode
 
 from .base import (
     ArgumentError,

@@ -9,7 +9,7 @@
 """
 
 
-import declarative
+from wavestate import declarative
 from . import codings_s
 from . import codings_z
 

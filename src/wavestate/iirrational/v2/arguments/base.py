@@ -9,9 +9,9 @@
 """
 
 import collections
-import declarative
+from wavestate import declarative
 import numpy as np
-from declarative.utilities.future_from_2 import unicode
+from wavestate.declarative.utilities.future_from_2 import unicode
 
 from ... import fitters_ZPK
 from ...utilities import args

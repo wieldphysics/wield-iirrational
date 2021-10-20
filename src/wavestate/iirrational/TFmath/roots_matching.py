@@ -9,7 +9,7 @@
 """
 
 import numpy as np
-import declarative
+from wavestate import declarative
 
 
 def nearest_idx(

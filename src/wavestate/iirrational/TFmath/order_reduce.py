@@ -9,7 +9,7 @@
 """
 
 import numpy as np
-import declarative
+from wavestate import declarative
 from .roots_matching import nearest_pairs
 from .. import representations
 

@@ -11,7 +11,7 @@
 
 import numpy as np
 import scipy
-import declarative
+from wavestate import declarative
 import scipy.linalg
 
 from .data_filtfit_base import DataFiltFitBase

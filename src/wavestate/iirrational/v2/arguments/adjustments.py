@@ -8,7 +8,7 @@
 """
 """
 
-import declarative
+from wavestate import declarative
 
 from ... import fitters_ZPK
 from .base import (

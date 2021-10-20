@@ -12,8 +12,8 @@
 import numpy as np
 import itertools
 import contextlib
-import declarative
-from declarative import (
+from wavestate import declarative
+from wavestate.declarative import (
     NOARG,
     depB_property,
 )

@@ -10,8 +10,8 @@
 
 
 import numpy as np
-import declarative
-from declarative import depB_property
+from wavestate import declarative
+from wavestate.declarative import depB_property
 
 from .. import representations
 

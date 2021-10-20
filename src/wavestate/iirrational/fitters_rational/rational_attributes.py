@@ -11,8 +11,8 @@
 
 import numpy as np
 import warnings
-import declarative
-from declarative import (
+from wavestate import declarative
+from wavestate.declarative import (
     depB_property,
     NOARG
 )

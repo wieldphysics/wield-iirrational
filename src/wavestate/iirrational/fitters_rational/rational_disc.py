@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from declarative import (
+from wavestate.declarative import (
     depB_property,
     NOARG
 )

@@ -10,7 +10,7 @@
 
 import sys
 
-from declarative import (
+from wavestate.declarative import (
     depB_property,
     DepBunch,
 )

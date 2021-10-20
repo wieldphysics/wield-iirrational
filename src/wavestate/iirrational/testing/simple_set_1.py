@@ -10,7 +10,7 @@ Contains setup functions for test data, these are returned in a QuickBunch dicti
 """
 
 import numpy as np
-import declarative
+from wavestate import declarative
 
 from ..utilities.np import logspaced
 from . import utilities

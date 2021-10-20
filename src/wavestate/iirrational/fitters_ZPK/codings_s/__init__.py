@@ -10,7 +10,7 @@
 
 import sys
 
-import declarative
+from wavestate import declarative
 #import numpy as np
 #import scipy.linalg
 

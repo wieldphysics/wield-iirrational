@@ -14,8 +14,8 @@ import logging
 import numpy as np
 
 import contextlib
-import declarative
-from declarative.utilities.future_from_2 import str, unicode
+from wavestate import declarative
+from wavestate.declarative.utilities.future_from_2 import str, unicode
 
 from .. import fitters_ZPK
 from .. import representations

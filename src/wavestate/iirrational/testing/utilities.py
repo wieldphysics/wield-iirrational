@@ -9,7 +9,7 @@
 Some utilities to help with dataset creation and annotation
 """
 
-import declarative
+from wavestate import declarative
 
 
 import numpy as np

@@ -9,7 +9,7 @@
 """
 
 import numpy as np
-import declarative
+from wavestate import declarative
 
 from ... import TFmath
 from ... import representations

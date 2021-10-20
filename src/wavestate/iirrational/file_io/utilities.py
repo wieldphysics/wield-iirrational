@@ -8,7 +8,7 @@
 """
 """
 
-import declarative
+from wavestate import declarative
 import collections
 
 NOARG = declarative.unique_generator

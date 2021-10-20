@@ -16,7 +16,7 @@ import numpy as np
 
 import numbers
 
-from declarative import (
+from wavestate.declarative import (
     DepBunch,
     depB_property,
     #NOARG,

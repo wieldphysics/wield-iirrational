@@ -10,7 +10,7 @@
 
 
 import matplotlib.pyplot as plt
-import declarative
+from wavestate import declarative
 
 from . import plot_fit
 from . import plot_residuals

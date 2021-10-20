@@ -11,7 +11,7 @@
 
 #import numpy as np
 #import scipy.linalg
-import declarative
+from wavestate import declarative
 
 from ..codings_cmn import (
     CodingTypeZ,

@@ -14,7 +14,7 @@ import scipy
 import scipy.linalg
 import scipy.signal
 
-import declarative
+from wavestate import declarative
 from wavestate.bunch import DeepBunch
 from wavestate.bunch.hdf_deep_bunch import HDFDeepBunch
 

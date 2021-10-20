@@ -8,7 +8,7 @@
 """
 """
 
-import declarative
+from wavestate import declarative
 import os
 import re
 
