@@ -17,11 +17,11 @@ RBalgo = representations.RBalgo
 
 def ZPKrep2MRF(
     ZPKrep,
-    coding_map          = coding_maps.nlFBW_safe,
-    delay_s             = None,
-    insert_poles        = None,
-    insert_zeros        = None,
-    distance_limit_auto = None,
+    coding_map=coding_maps.nlFBW_safe,
+    delay_s=None,
+    insert_poles=None,
+    insert_zeros=None,
+    distance_limit_auto=None,
     **kwargs
 ):
     try:
@@ -31,63 +31,61 @@ def ZPKrep2MRF(
     else:
         try:
             if ZPKrep.F_nyquist_Hz is None:
-                rep = 'Sf'
+                rep = "Sf"
             else:
-                rep = 'Z'
+                rep = "Z"
             coding_submap = repdict[rep]
         except KeyError:
-            raise RuntimeError((
-                "Conversion to representation \"{}\" not supported"
-                " in used coding_map."
-            ).format(ZPKrep.rep))
+            raise RuntimeError(
+                (
+                    'Conversion to representation "{}" not supported'
+                    " in used coding_map."
+                ).format(ZPKrep.rep)
+            )
 
     gain_coding = coding_submap.gain()
-    gain_coding.setup(gain = ZPKrep.gain)
+    gain_coding.setup(gain=ZPKrep.gain)
 
     if delay_s is None:
         delay_s = ZPKrep.delay_s
 
-    #pregenerate the fitter to use as the system source for the codings
+    # pregenerate the fitter to use as the system source for the codings
     fitterMRF = coding_submap.mrf_default(
-        data                = ZPKrep.data,
-        W                   = ZPKrep.W,
-        F_Hz                = ZPKrep.F_Hz,
-        zeros_overlay       = ZPKrep.zeros_overlay,
-        poles_overlay       = ZPKrep.poles_overlay,
-        F_nyquist_Hz        = ZPKrep.F_nyquist_Hz,
-        residuals_log_im_scale = ZPKrep.residuals_log_im_scale,
-        delay_s             = delay_s,
-        num_codings         = [],
-        den_codings         = [],
-        gain_coding         = gain_coding,
-        coding_map          = coding_submap,
-        distance_limit_auto = distance_limit_auto,
+        data=ZPKrep.data,
+        W=ZPKrep.W,
+        F_Hz=ZPKrep.F_Hz,
+        zeros_overlay=ZPKrep.zeros_overlay,
+        poles_overlay=ZPKrep.poles_overlay,
+        F_nyquist_Hz=ZPKrep.F_nyquist_Hz,
+        residuals_log_im_scale=ZPKrep.residuals_log_im_scale,
+        delay_s=delay_s,
+        num_codings=[],
+        den_codings=[],
+        gain_coding=gain_coding,
+        coding_map=coding_submap,
+        distance_limit_auto=distance_limit_auto,
         **kwargs
     )
     fitterMRF.delay_s = ZPKrep.delay_s
 
-    #TODO, reset the gain to use the gain_effect parameters
+    # TODO, reset the gain to use the gain_effect parameters
     num_codings = []
     den_codings = []
     Z = RBalgo.expect(
-        ZPKrep.zeros,
-        constraint = representations.root_constraints.mirror_real
+        ZPKrep.zeros, constraint=representations.root_constraints.mirror_real
     )
     P = RBalgo.expect(
-        ZPKrep.poles,
-        constraint = representations.root_constraints.mirror_real
+        ZPKrep.poles, constraint=representations.root_constraints.mirror_real
     )
     if insert_zeros is not None:
-        #TODO, add completion?
+        # TODO, add completion?
         Z = Z * RBalgo.expect(
-            insert_zeros,
-            constraint = representations.root_constraints.mirror_real
+            insert_zeros, constraint=representations.root_constraints.mirror_real
         )
     if insert_poles is not None:
-        #TODO, add completion?
+        # TODO, add completion?
         P = P * RBalgo.expect(
-            insert_poles,
-            constraint = representations.root_constraints.mirror_real
+            insert_poles, constraint=representations.root_constraints.mirror_real
         )
 
     num_codings = []
@@ -134,12 +132,12 @@ def ZPKrep2MRF(
         )
     )
 
-    #now set the codings
+    # now set the codings
     fitterMRF.num_codings = num_codings
     fitterMRF.den_codings = den_codings
-    #set the gain again to account for gain_effect
+    # set the gain again to account for gain_effect
     fitterMRF.gain = ZPKrep.gain
-    #TODO, HACK
+    # TODO, HACK
     return fitterMRF
 
 
@@ -180,16 +178,16 @@ def encode(fitter, r_list, st_t, us_t, collect, is_unstable):
 
 def MRF2MRF(
     fitter,
-    ZPKrep     = None,
-    zeros      = None,
-    poles      = None,
-    gain       = None,
-    p_c        = None,
-    z_c        = None,
-    p_r        = None,
-    z_r        = None,
-    delay_s    = None,
-    coding_map = None,
+    ZPKrep=None,
+    zeros=None,
+    poles=None,
+    gain=None,
+    p_c=None,
+    z_c=None,
+    p_r=None,
+    z_r=None,
+    delay_s=None,
+    coding_map=None,
     **kwargs
 ):
 
@@ -218,42 +216,37 @@ def MRF2MRF(
     if gain is None:
         gain = ZPKrep.gain
 
-    zeros = representations.asMRRB(r = z_r, c = z_c)
-    poles = representations.asMRRB(r = p_r, c = p_c)
+    zeros = representations.asMRRB(r=z_r, c=z_c)
+    poles = representations.asMRRB(r=p_r, c=p_c)
     coding_map, num_codings, den_codings = ZP2codings(
-        fitter, zeros, poles,
-        coding_map = coding_map
+        fitter, zeros, poles, coding_map=coding_map
     )
 
     gain_coding = coding_map.gain()
-    gain_coding.setup(gain = gain)
+    gain_coding.setup(gain=gain)
 
     if delay_s is None:
         delay_s = ZPKrep.delay_s
 
-    #pregenerate the fitter to use as the system source for the codings
+    # pregenerate the fitter to use as the system source for the codings
     fitterMRF = coding_map.mrf_default(
-        parent        = fitter,
-        data          = ZPKrep.data,
-        F_Hz          = ZPKrep.F_Hz,
-        W             = ZPKrep.W,
-        num_codings   = num_codings,
-        den_codings   = den_codings,
-        gain_coding   = gain_coding,
-        codings       = coding_map.module,
-        zeros_overlay = ZPKrep.zeros_overlay,
-        poles_overlay = ZPKrep.poles_overlay,
-        delay_s       = delay_s,
+        parent=fitter,
+        data=ZPKrep.data,
+        F_Hz=ZPKrep.F_Hz,
+        W=ZPKrep.W,
+        num_codings=num_codings,
+        den_codings=den_codings,
+        gain_coding=gain_coding,
+        codings=coding_map.module,
+        zeros_overlay=ZPKrep.zeros_overlay,
+        poles_overlay=ZPKrep.poles_overlay,
+        delay_s=delay_s,
         **kwargs
     )
     return fitterMRF
 
 
-def ZP2codings(
-    fitter, zeros, poles,
-    coding_map = None,
-    **kwargs
-):
+def ZP2codings(fitter, zeros, poles, coding_map=None, **kwargs):
     if coding_map is None:
         coding_map = fitter.coding_map
 
@@ -263,9 +256,9 @@ def ZP2codings(
         coding_map = coding_map
     else:
         if fitter.F_nyquist_Hz is None:
-            rep = 'Sf'
+            rep = "Sf"
         else:
-            rep = 'Z'
+            rep = "Z"
         coding_map = repdict[rep]
 
     zeros = fitter.RBalgo.expect(zeros, fitter.root_constraint)

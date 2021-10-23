@@ -10,10 +10,7 @@
 
 
 import numpy as np
-from wavestate.declarative import (
-    depB_property,
-    NOARG
-)
+from wavestate.declarative import depB_property, NOARG
 
 from .. import representations
 from ..representations.polynomials import standard
@@ -24,31 +21,28 @@ from .rational_bases import ZFilterBase
 
 
 class RootConstraints(representations.RootConstraints):
-    branch_separated = frozenset('branch_separated')
+    branch_separated = frozenset("branch_separated")
+
 
 root_constraints = RootConstraints()
 
 
-#must be in this order for the ZPKz to be set in the correct order
-class RationalDiscFilter(
-        ZFilterBase,
-        PolyFit,
-        PolyFilterAlgorithms
-):
+# must be in this order for the ZPKz to be set in the correct order
+class RationalDiscFilter(ZFilterBase, PolyFit, PolyFilterAlgorithms):
     phase_missing = False
     poly = standard
-    stablize_pos_method = 'ignore'
-    stablize_neg_method = 'ignore'
+    stablize_pos_method = "ignore"
+    stablize_neg_method = "ignore"
 
     @depB_property
-    def zeros_phase_adjust(self, val = NOARG):
+    def zeros_phase_adjust(self, val=NOARG):
         if val is NOARG:
             return None
         else:
             return val
 
     @depB_property
-    def poles_phase_adjust(self, val = NOARG):
+    def poles_phase_adjust(self, val=NOARG):
         if val is NOARG:
             return None
         else:
@@ -57,28 +51,28 @@ class RationalDiscFilter(
     @depB_property
     def zeros_phasing(self):
         if self.zeros_phase_adjust is None:
-            return self.Xn_grid**self.nzeros
+            return self.Xn_grid ** self.nzeros
         elif self.zeros_phase_adjust < 0:
-            return self.Xn_grid**(self.nzeros + self.zeros_phase_adjust)
+            return self.Xn_grid ** (self.nzeros + self.zeros_phase_adjust)
         else:
-            return self.Xn_grid**(self.zeros_phase_adjust)
+            return self.Xn_grid ** (self.zeros_phase_adjust)
         return
 
     @depB_property
     def poles_phasing(self):
         if self.poles_phase_adjust is None:
-            return self.Xn_grid**self.npoles
+            return self.Xn_grid ** self.npoles
         elif self.poles_phase_adjust < 0:
-            return self.Xn_grid**(self.npoles + self.poles_phase_adjust)
+            return self.Xn_grid ** (self.npoles + self.poles_phase_adjust)
         else:
-            return self.Xn_grid**(self.poles_phase_adjust)
+            return self.Xn_grid ** (self.poles_phase_adjust)
         return
 
     def _phasing_roots(self, roots):
-        return self.Xn_grid**len(roots)
+        return self.Xn_grid ** len(roots)
 
     def _phasing_vec(self, vec):
-        return self.Xn_grid**(len(vec) - 1)
+        return self.Xn_grid ** (len(vec) - 1)
 
     def _phasing_afit(self):
         return self.poles_phasing
@@ -89,9 +83,9 @@ class RationalDiscFilter(
     def root_stabilize(
         self,
         rB,
-        method   = None,
-        real_neg = None,
-        real_pos = None,
+        method=None,
+        real_neg=None,
+        real_pos=None,
     ):
         if method is None:
             return rB
@@ -104,34 +98,34 @@ class RationalDiscFilter(
         r_r = np.copy(rB.r)
         r_c = np.copy(rB.c)
 
-        if real_neg == 'use':
+        if real_neg == "use":
             select_r = r_r < -1
-        elif real_neg == 'ignore':
-            select_r = np.zeros(r_r.shape, dtype = bool)
+        elif real_neg == "ignore":
+            select_r = np.zeros(r_r.shape, dtype=bool)
         else:
             raise RuntimeError("Bad Argument")
 
-        if real_pos == 'use':
-            select_r = (r_r > 1 | select_r)
-        elif real_pos == 'ignore':
+        if real_pos == "use":
+            select_r = r_r > 1 | select_r
+        elif real_pos == "ignore":
             pass
         else:
             raise RuntimeError("Bad Argument")
 
         select_c = abs(r_c) > 1
-        if method == 'flip':
+        if method == "flip":
             r_r[select_r] = 1 / r_r[select_r]
             r_c[select_c] = 1 / r_c[select_c].conjugate()
-        elif method == 'remove':
+        elif method == "remove":
             r_r = r_r[~select_r]
             r_c = r_c[~select_c]
         else:
             raise RuntimeError("Bad Argument")
 
         rB = representations.RootBunch(
-            constraint = self.root_constraint,
-            r = r_r,
-            c = r_c,
+            constraint=self.root_constraint,
+            r=r_r,
+            c=r_c,
         )
         return rB
 
@@ -155,8 +149,8 @@ class RationalDiscFilter(
         have a specialty constraint added.
         """
         rB = self.RBalgo.expect(rB, self.RBalgo.root_constraints.mirror_real)
-        #TODO
-        #ok to modify?
+        # TODO
+        # ok to modify?
         rB.constraint = rB.constraint | root_constraints.branch_separated
         select_pos = rB.r > 0
         rB.nyquist_branch = (-rB.r[~select_pos] - 1) * self.F_nyquist_Hz
@@ -167,18 +161,23 @@ class RationalDiscFilter(
         return rB
 
     def phi_Snative_rep(self, rB):
-        """
-        """
-        assert(root_constraints.mirror_real == (rB.constraint - root_constraints.branch_separated))
-        rB.c = (1 + rB.c.real / self.F_nyquist_Hz) * np.exp(1j * rB.c.imag * np.pi / self.F_nyquist_Hz)
+        """ """
+        assert root_constraints.mirror_real == (
+            rB.constraint - root_constraints.branch_separated
+        )
+        rB.c = (1 + rB.c.real / self.F_nyquist_Hz) * np.exp(
+            1j * rB.c.imag * np.pi / self.F_nyquist_Hz
+        )
 
         if root_constraints.branch_separated <= rB.constraint:
-            rB.r = np.concatenate([
-                (rB.r / self.F_nyquist_Hz + 1),
-                -(rB.nyquist_branch / self.F_nyquist_Hz + 1),
-            ])
+            rB.r = np.concatenate(
+                [
+                    (rB.r / self.F_nyquist_Hz + 1),
+                    -(rB.nyquist_branch / self.F_nyquist_Hz + 1),
+                ]
+            )
         else:
-            rB.r = (rB.r / self.F_nyquist_Hz + 1)
+            rB.r = rB.r / self.F_nyquist_Hz + 1
 
         rB.constraint = rB.constraint - root_constraints.branch_separated
         rB = self.RBalgo.expect(rB, self.RBalgo.root_constraints.mirror_real)

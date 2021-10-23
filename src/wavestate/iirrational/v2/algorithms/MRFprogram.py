@@ -19,10 +19,12 @@ from ...fitters_ZPK.ZPKrep2MRF import ZP2codings
 
 
 def resrank_program(
-    fitter, rank_zp_idx_list,
-    name, program,
-    variant = None,
-    marginalize_delay = True,
+    fitter,
+    rank_zp_idx_list,
+    name,
+    program,
+    variant=None,
+    marginalize_delay=True,
     **kwargs
 ):
 
@@ -40,43 +42,48 @@ def resrank_program(
     while program_copy:
         arg = program_copy.pop()
         which = program_copy.pop()
-        if which == 'PcDelIdx':
+        if which == "PcDelIdx":
             Pc_mod.append(Pc[arg])
-        elif which == 'ZcDelIdx':
+        elif which == "ZcDelIdx":
             Zc_mod.append(Zc[arg])
-        elif which == 'PrDelIdx':
+        elif which == "PrDelIdx":
             Pr_mod.append(Pr[arg])
-        elif which == 'ZrDelIdx':
+        elif which == "ZrDelIdx":
             Zr_mod.append(Zr[arg])
-        #swap on these since they are added
-        elif which == 'PrAdd':
+        # swap on these since they are added
+        elif which == "PrAdd":
             Zr_mod.append(arg)
-        elif which == 'ZrAdd':
+        elif which == "ZrAdd":
             Pr_mod.append(arg)
-        elif which == 'PcAdd':
+        elif which == "PcAdd":
             Zc_mod.append(arg)
-        elif which == 'ZcAdd':
+        elif which == "ZcAdd":
             Pc_mod.append(arg)
 
-    PrB = representations.asMRRB(c = Pc_mod, r = Pr_mod)
-    ZrB = representations.asMRRB(c = Zc_mod, r = Zr_mod)
+    PrB = representations.asMRRB(c=Pc_mod, r=Pr_mod)
+    ZrB = representations.asMRRB(c=Zc_mod, r=Zr_mod)
     h, lnG = PrB.val_lnG(fitter.F_Hz)
-    h, lnG = ZrB.val_lnG(fitter.F_Hz, h = 1/h, lnG = -lnG)
+    h, lnG = ZrB.val_lnG(fitter.F_Hz, h=1 / h, lnG=-lnG)
 
     R = fitter.xfer_fit / (fitter.data * h)
 
-    #this is the exact solution for the gain adjustment required, using the DualB
-    #residuals
-    G = (np.sum(fitter.W**2 / TFmath.abs_sq(R)) / np.sum(fitter.W**2 * TFmath.abs_sq(R)))**0.25
+    # this is the exact solution for the gain adjustment required, using the DualB
+    # residuals
+    G = (
+        np.sum(fitter.W ** 2 / TFmath.abs_sq(R))
+        / np.sum(fitter.W ** 2 * TFmath.abs_sq(R))
+    ) ** 0.25
     R = G * R
 
-    rank = np.sum(TFmath.abs_sq(fitter.residuals_NLmap(R, W = fitter.W)))
+    rank = np.sum(TFmath.abs_sq(fitter.residuals_NLmap(R, W=fitter.W)))
     if marginalize_delay:
-        #linear detrends the phasing term to remove delay effects
+        # linear detrends the phasing term to remove delay effects
         f = fitter.F_Hz
-        #the factor of 2 is not with the exact solution, but seems to work better
-        R.imag -= f * np.sum(f * R.imag * fitter.W**2) / np.sum(f**2  * fitter.W**2)/2
-        rank_moddelay = np.sum(TFmath.abs_sq(fitter.residuals_NLmap(R, W = fitter.W)))
+        # the factor of 2 is not with the exact solution, but seems to work better
+        R.imag -= (
+            f * np.sum(f * R.imag * fitter.W ** 2) / np.sum(f ** 2 * fitter.W ** 2) / 2
+        )
+        rank_moddelay = np.sum(TFmath.abs_sq(fitter.residuals_NLmap(R, W=fitter.W)))
         rank = min(rank, rank_moddelay)
     pbunch = wavestate.bunch.Bunch(**kwargs)
     pbunch.rank = rank
@@ -87,17 +94,16 @@ def resrank_program(
     return pbunch
 
 
-
 def ranking_reduction_trials(
     aid,
     rank_zp_idx_list,
-    num_total_max      = 4,
-    num_type_max       = 2,
-    num_try2           = 2,
-    ranking_factor_max = None,
-    greedy             = False,
-    return_remaining   = False,
-    reset_delay        = True,
+    num_total_max=4,
+    num_type_max=2,
+    num_try2=2,
+    ranking_factor_max=None,
+    greedy=False,
+    return_remaining=False,
+    reset_delay=True,
 ):
     aid = ensure_aid(aid)
     if not rank_zp_idx_list:
@@ -114,13 +120,15 @@ def ranking_reduction_trials(
     trials_try1 = []
     trials_try2 = []
     ranks_original = []
-    minranking = float('inf')
+    minranking = float("inf")
 
-    aid.log_progress(6, 'trials started')
+    aid.log_progress(6, "trials started")
     for pbunch in rank_zp_idx_list:
         idx_total += 1
 
-        if ranking_factor_max is not None and (pbunch.rank > minranking * ranking_factor_max):
+        if ranking_factor_max is not None and (
+            pbunch.rank > minranking * ranking_factor_max
+        ):
             continue
         if pbunch.rank < minranking:
             minranking = pbunch.rank
@@ -146,7 +154,7 @@ def ranking_reduction_trials(
         Zc_new = []
         Pr_new = []
         Zr_new = []
-        #work backward on the command sequence removing the idxs
+        # work backward on the command sequence removing the idxs
         trial = wavestate.bunch.Bunch()
         trial.prog_redux = []
         trial.ord_ch = 0
@@ -156,35 +164,35 @@ def ranking_reduction_trials(
             arg = program.pop()
             which = program.pop()
             trial.prog_redux.append(which)
-            if which == 'PcDelIdx':
+            if which == "PcDelIdx":
                 trial.prog_redux.append(Pc_mod[arg])
                 trial.ord_ch -= 2
                 Pc_idx_remove.add(arg)
-            elif which == 'ZcDelIdx':
+            elif which == "ZcDelIdx":
                 trial.prog_redux.append(Zc_mod[arg])
                 trial.ord_ch -= 2
                 Zc_idx_remove.add(arg)
-            elif which == 'PrDelIdx':
+            elif which == "PrDelIdx":
                 trial.prog_redux.append(Pr_mod[arg])
                 trial.ord_ch -= 1
                 Pr_idx_remove.add(arg)
-            elif which == 'ZrDelIdx':
+            elif which == "ZrDelIdx":
                 trial.prog_redux.append(Zr_mod[arg])
                 trial.ord_ch -= 1
                 Zr_idx_remove.add(arg)
-            elif which == 'PrAdd':
+            elif which == "PrAdd":
                 trial.prog_redux.append(arg)
                 trial.ord_ch += 1
                 Pr_new.append(arg)
-            elif which == 'ZrAdd':
+            elif which == "ZrAdd":
                 trial.prog_redux.append(arg)
                 trial.ord_ch += 1
                 Zr_new.append(arg)
-            elif which == 'PcAdd':
+            elif which == "PcAdd":
                 trial.prog_redux.append(arg)
                 trial.ord_ch += 2
                 Pc_new.append(arg)
-            elif which == 'ZcAdd':
+            elif which == "ZcAdd":
                 trial.prog_redux.append(arg)
                 trial.ord_ch += 2
                 Zc_new.append(arg)
@@ -198,27 +206,27 @@ def ranking_reduction_trials(
             del Zr_mod[idx]
 
         if trial.ord_ch == 0:
-            trial.ord_str = 'OrdC'
+            trial.ord_str = "OrdC"
         elif trial.ord_ch < 0:
-            trial.ord_str = 'OrdDn'
+            trial.ord_str = "OrdDn"
         else:
-            trial.ord_str = 'OrdUp'
+            trial.ord_str = "OrdUp"
 
         coding_map, num_codings_mod, den_codings_mod = ZP2codings(
             aid.fitter,
-            zeros = representations.asMRRB(r = Zr_mod, c = Zc_mod),
-            poles = representations.asMRRB(r = Pr_mod, c = Pc_mod),
+            zeros=representations.asMRRB(r=Zr_mod, c=Zc_mod),
+            poles=representations.asMRRB(r=Pr_mod, c=Pc_mod),
         )
         coding_map, num_codings_new, den_codings_new = ZP2codings(
             aid.fitter,
-            zeros = representations.asMRRB(r = Zr_new, c = Zc_new),
-            poles = representations.asMRRB(r = Pr_new, c = Pc_new),
-            coding_map = coding_map,
+            zeros=representations.asMRRB(r=Zr_new, c=Zc_new),
+            poles=representations.asMRRB(r=Pr_new, c=Pc_new),
+            coding_map=coding_map,
         )
         fitter = coding_map.mrf_default(
-            parent      = aid.fitter,
-            num_codings = num_codings_mod + num_codings_new,
-            den_codings = den_codings_mod + den_codings_new,
+            parent=aid.fitter,
+            num_codings=num_codings_mod + num_codings_new,
+            den_codings=den_codings_mod + den_codings_new,
         )
 
         trial.fitter = fitter
@@ -237,12 +245,12 @@ def ranking_reduction_trials(
             aid.log_debug(9, "Optimize Exception", e)
 
         try:
-            #anneal by moving the original codings first
+            # anneal by moving the original codings first
             if trial.codings_new:
                 with fitter.with_codings_only(trial.codings_mod):
                     fitter.optimize()
             if reset_delay:
-                aid.fitter.delay_s = aid.hint('delay_s')
+                aid.fitter.delay_s = aid.hint("delay_s")
             fitter.optimize()
         except Exception as e:
             aid.log_debug(9, "Optimize Exception", e)
@@ -256,9 +264,9 @@ def ranking_reduction_trials(
 
         improved = aid.fitter_check(
             fitter,
-            variant  = ord_str,
-            update   = False,
-            validate = False,
+            variant=ord_str,
+            update=False,
+            validate=False,
         )
         trial.improved = improved
         return trial
@@ -266,8 +274,9 @@ def ranking_reduction_trials(
     mt = aid.hint("multithreading", None)
     if mt is not None and mt > 1:
         import multiprocessing.pool
+
         pool = multiprocessing.pool.ThreadPool(
-            processes = mt,
+            processes=mt,
         )
         trial_map = pool.imap_unordered
     else:
@@ -283,31 +292,33 @@ def ranking_reduction_trials(
             trials_try2.append(trial)
         trials.append(trial)
         if greedy and trial.improved:
-                break
+            break
 
-    aid.log_progress(7, 'trials annealing')
+    aid.log_progress(7, "trials annealing")
+
     def trial_optimize_anneal(trial):
         fitter = trial.fitter
-        #TODO fix
+        # TODO fix
         from . import algorithms
+
         if not algorithms.optimize_anneal(aid, fitter):
             return trial
         improved = aid.fitter_check(
             fitter,
-            variant = trial.ord_str,
-            update = False,
-            validate = False,
+            variant=trial.ord_str,
+            update=False,
+            validate=False,
         )
         trial.improved = improved
         return trial
 
     if not (greedy and improved):
-        trials_try2.sort(key = lambda trial: trial.fitter.residuals_average)
+        trials_try2.sort(key=lambda trial: trial.fitter.residuals_average)
         for trial in trial_map(trial_optimize_anneal, trials_try2[:num_try2]):
             if greedy and trial.improved:
-                    break
+                break
 
-    trials.sort(key = lambda trial: trial.fitter.residuals_average)
+    trials.sort(key=lambda trial: trial.fitter.residuals_average)
     if not return_remaining:
         return trials
     else:

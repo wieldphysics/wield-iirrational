@@ -16,9 +16,9 @@ from ..codings_cmn import (
 
 class CodingRealBW(CodingTypeZ):
     N_parameters = 1
-    unstable     = False
-    p_BW         = 0
-    restabilize  = False
+    unstable = False
+    p_BW = 0
+    restabilize = False
 
     def update(self, BW):
         self.p_BW = BW
@@ -27,10 +27,10 @@ class CodingRealBW(CodingTypeZ):
         return [self.p_BW]
 
     def update_roots(self, r1):
-        assert(r1.imag == 0)
+        assert r1.imag == 0
         if self.restabilize:
             if r1 > 1:
-                r1 = 1/r1
+                r1 = 1 / r1
         self.p_BW = (1 - r1) * self.sys.F_nyquist_Hz
         return
 
@@ -43,7 +43,7 @@ class CodingRealBW(CodingTypeZ):
         return self.p_BW
 
     def transfer(self):
-        #real, linear BW
+        # real, linear BW
         amp = 1 - self.p_BW / self.sys.F_nyquist_Hz
         return 1 - amp * self.sys.Xzn_grid
 
@@ -55,4 +55,3 @@ class CodingRealBW(CodingTypeZ):
     def roots_r(self):
         amp = 1 - self.p_BW / self.sys.F_nyquist_Hz
         return [amp]
-

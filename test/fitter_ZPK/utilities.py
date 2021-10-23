@@ -10,22 +10,22 @@ from IIRrational import testing
 
 
 def check_residuals(fitterMRF):
-    #axB = mplfigB()
+    # axB = mplfigB()
     for idx in reversed(range(len(fitterMRF.parameters))):
         coding = fitterMRF.coding_maps.p2c[idx]
-        #this indicates that the derivative is virtualized
+        # this indicates that the derivative is virtualized
         if coding.derivative_deadzoned:
             continue
-        #print(coding, idx)
+        # print(coding, idx)
         try:
-            val, select = check_jac(fitterMRF, idx, scaling = .01)
+            val, select = check_jac(fitterMRF, idx, scaling=0.01)
             if np.any(~np.isfinite(val[select])):
                 print(idx, fitterMRF.residuals_jacobian[idx])
                 print(idx, val)
             testing.assert_almost_equal(val[select], 1, 2)
         except AssertionError:
             try:
-                val, select = check_jac(fitterMRF, idx, scaling = .0001)
+                val, select = check_jac(fitterMRF, idx, scaling=0.0001)
                 testing.assert_almost_equal(val[select], 1, 2)
             except AssertionError:
                 coding = fitterMRF.coding_maps.p2c[idx]
@@ -36,7 +36,4 @@ def check_residuals(fitterMRF):
                     coding.reduce(),
                 )
                 raise
-        #axB.ax0.plot(fitterMRF.F_Hz, abs(val))
-
-
-
+        # axB.ax0.plot(fitterMRF.F_Hz, abs(val))

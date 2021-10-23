@@ -19,13 +19,13 @@ from .. import representations
 class DataFiltFitBase(declarative.DepBunch):
     def __build__(
         self,
-        _args        = None,
-        F_Hz         = None,
-        data         = None,
-        W            = None,
-        parent       = None,
-        codings      = None,
-        F_cutoff_Hz  = None,
+        _args=None,
+        F_Hz=None,
+        data=None,
+        W=None,
+        parent=None,
+        codings=None,
+        F_cutoff_Hz=None,
         **kwargs
     ):
         if _args is not None:
@@ -58,10 +58,10 @@ class DataFiltFitBase(declarative.DepBunch):
             if W is None:
                 W = 1
             F_Hz, data, W = np.broadcast_arrays(F_Hz, data, W)
-        self.F_Hz         = F_Hz
-        self.data         = data
-        self.W            = W
-        self.codings      = codings
+        self.F_Hz = F_Hz
+        self.data = data
+        self.W = W
+        self.codings = codings
 
         if F_cutoff_Hz is not None:
             self.F_cutoff_Hz = F_cutoff_Hz
@@ -72,12 +72,13 @@ class DataFiltFitBase(declarative.DepBunch):
     def residuals(self):
         if self.data is None:
             raise RuntimeError("Can't generate residuals as data was not Specified")
-        debias_reweight = 1/(.001 + self.W**2)
+        debias_reweight = 1 / (0.001 + self.W ** 2)
         retB = wavestate.bunch.Bunch()
-        retB.resP = self.W * (self.xfer_fit/self.data - 1)
-        retB.resZ = self.W * (self.data/self.xfer_fit - 1)
+        retB.resP = self.W * (self.xfer_fit / self.data - 1)
+        retB.resZ = self.W * (self.data / self.xfer_fit - 1)
         retB.total = np.sum(
-            (abs(retB.resP)**2 + abs(retB.resZ * debias_reweight)**2) / (1 + debias_reweight)
+            (abs(retB.resP) ** 2 + abs(retB.resZ * debias_reweight) ** 2)
+            / (1 + debias_reweight)
         ) / (2 * len(self.data))
         return retB
 
@@ -99,49 +100,49 @@ class DataFiltFitBase(declarative.DepBunch):
     @depB_property
     def order_total(self):
         return (
-            len(self.poles) + len(self.poles_overlay)
-            + len(self.zeros) + len(self.zeros_overlay)
+            len(self.poles)
+            + len(self.poles_overlay)
+            + len(self.zeros)
+            + len(self.zeros_overlay)
         )
 
     @depB_property
     def order_sos(self):
-        return (max(
-            len(self.poles) + len(self.poles_overlay),
-            len(self.zeros) + len(self.zeros_overlay),
-        ) + 1)//2
+        return (
+            max(
+                len(self.poles) + len(self.poles_overlay),
+                len(self.zeros) + len(self.zeros_overlay),
+            )
+            + 1
+        ) // 2
 
     @depB_property
     def order_relative(self):
-        return (
-            (len(self.zeros) + len(self.zeros_overlay))
-            - (len(self.poles) + len(self.poles_overlay))
+        return (len(self.zeros) + len(self.zeros_overlay)) - (
+            len(self.poles) + len(self.poles_overlay)
         )
 
     @depB_property
     def ZPKrep(self):
-        #cheap to compute, no need to autodelete
+        # cheap to compute, no need to autodelete
         self.codings_revision
         return representations.ZPKwData(
-            data          = self.data,
-            W             = self.W,
-            F_Hz          = self.F_Hz,
-            zeros         = self.zeros,
-            poles         = self.poles,
-            zeros_overlay = self.zeros_overlay,
-            poles_overlay = self.poles_overlay,
-            gain          = self.gain,
-            delay_s       = self.delay_s,
-            F_nyquist_Hz  = self.F_nyquist_Hz,
+            data=self.data,
+            W=self.W,
+            F_Hz=self.F_Hz,
+            zeros=self.zeros,
+            poles=self.poles,
+            zeros_overlay=self.zeros_overlay,
+            poles_overlay=self.poles_overlay,
+            gain=self.gain,
+            delay_s=self.delay_s,
+            F_nyquist_Hz=self.F_nyquist_Hz,
         )
 
 
 class DataFiltFitZ(DataFiltFitBase):
     def __build__(
-        self,
-        _args        = None,
-        F_nyquist_Hz = declarative.NOARG,
-        parent       = None,
-        **kwargs
+        self, _args=None, F_nyquist_Hz=declarative.NOARG, parent=None, **kwargs
     ):
         if _args is not None:
             raise RuntimeError("Only keyword arguments allowed")
@@ -157,10 +158,7 @@ class DataFiltFitZ(DataFiltFitBase):
 
         self.F_nyquist_Hz = F_nyquist_Hz
 
-        super(DataFiltFitZ, self).__build__(
-            parent = parent,
-            **kwargs
-        )
+        super(DataFiltFitZ, self).__build__(parent=parent, **kwargs)
 
     @depB_property
     def Xzp_grid(self):
@@ -185,11 +183,7 @@ class DataFiltFitZ(DataFiltFitBase):
 
 class DataFiltFitSf(DataFiltFitBase):
     def __build__(
-        self,
-        _args        = None,
-        F_nyquist_Hz = declarative.NOARG,
-        parent       = None,
-        **kwargs
+        self, _args=None, F_nyquist_Hz=declarative.NOARG, parent=None, **kwargs
     ):
         if _args is not None:
             raise RuntimeError("Only keyword arguments allowed")
@@ -205,10 +199,7 @@ class DataFiltFitSf(DataFiltFitBase):
 
         self.F_nyquist_Hz = F_nyquist_Hz
 
-        super(DataFiltFitSf, self).__build__(
-            parent = parent,
-            **kwargs
-        )
+        super(DataFiltFitSf, self).__build__(parent=parent, **kwargs)
 
     @depB_property
     def Xsf_grid(self):
@@ -221,4 +212,3 @@ class DataFiltFitSf(DataFiltFitBase):
     @depB_property
     def Xex_grid(self):
         return self.Xsf_grid
-

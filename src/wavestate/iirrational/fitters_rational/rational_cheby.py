@@ -11,23 +11,16 @@
 
 import numpy as np
 
-from ..representations.polynomials import (
-    chebychev,
-    poly_constraints
-)
+from ..representations.polynomials import chebychev, poly_constraints
 
-#from .. import TFmath
+# from .. import TFmath
 from .rational_attributes import PolyFit
 from .rational_bases import SFilterBase
 from .rational_algorithms import PolyFilterAlgorithmsIm
 
 
-#must be in this order for the ZPKsf to be set in the proper order
-class ChebychevFilter(
-    SFilterBase,
-    PolyFit,
-    PolyFilterAlgorithmsIm
-):
+# must be in this order for the ZPKsf to be set in the proper order
+class ChebychevFilter(SFilterBase, PolyFit, PolyFilterAlgorithmsIm):
     phase_missing = False
     root_constraint = SFilterBase.RBalgo.root_constraints.mirror_imag
     poly = chebychev
@@ -77,8 +70,6 @@ class ChebychevFilter(
         return rB * (1j * self.F_max_Hz)
 
     def phi_Snative_rep(self, rB):
-        """
-        """
+        """ """
         rB = self.RBalgo.expect(rB, self.RBalgo.root_constraints.mirror_real)
         return rB * (-1j / self.F_max_Hz)
-

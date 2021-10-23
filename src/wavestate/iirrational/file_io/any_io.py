@@ -26,30 +26,37 @@ from . import types
 
 
 def load_any(
-        fname,
-        ftype,
+    fname,
+    ftype,
 ):
-    if ftype == 'hdf5':
+    if ftype == "hdf5":
         from . import hdf5_io
+
         fdict = hdf5_io.load_hdf5(fname)
-    elif ftype == 'json':
+    elif ftype == "json":
         from . import json_io
+
         fdict = json_io.load_json(fname)
-    elif ftype == 'yaml':
+    elif ftype == "yaml":
         from . import yaml_io
+
         fdict = yaml_io.yaml_load(fname)
-    elif ftype == 'pickle':
+    elif ftype == "pickle":
         from . import pickle_io
+
         fdict = pickle_io.load_pickle(fname)
-    elif ftype == 'ini':
+    elif ftype == "ini":
         from . import ini_io
+
         fdict = ini_io.ini_load(fname)
-    elif ftype == 'mat':
+    elif ftype == "mat":
         from . import matlab_io
+
         fdict = matlab_io.load_matlab(fname)
-    elif ftype == 'special':
+    elif ftype == "special":
         try:
             import IIRrational_test_data
+
             IIRrational_data = IIRrational_test_data.IIRrational_data_dev
         except (ImportError, AttributeError):
             from ..testing import IIRrational_data
@@ -89,6 +96,7 @@ def cull_None(obj):
         return tuple(obj2)
     return obj
 
+
 def normalize_ndarray(obj):
     if isinstance(obj, collections.Mapping):
         for k, v in obj.items():
@@ -97,11 +105,12 @@ def normalize_ndarray(obj):
     elif isinstance(obj, np.ndarray):
         return obj
     elif isinstance(obj, np.generic):
-        #captures scalars given the previous if
+        # captures scalars given the previous if
         return np.asscalar(obj)
     elif isinstance(obj, (list, tuple)):
         return np.asarray(obj)
     return obj
+
 
 def fix_complex(obj):
     normalize_ndarray(obj)
@@ -112,9 +121,9 @@ def fix_complex(obj):
     elif isinstance(obj, np.ndarray):
         if np.iscomplexobj(obj):
             objD = collections.OrderedDict()
-            objD['real'] = obj.real
-            objD['imag'] = obj.imag
-            objD['__type__'] = '[complex]'
+            objD["real"] = obj.real
+            objD["imag"] = obj.imag
+            objD["__type__"] = "[complex]"
             obj = objD
             return obj
         elif obj.dtype == object:
@@ -134,11 +143,12 @@ def fix_complex(obj):
         return tuple(obj2)
     elif isinstance(obj, complex):
         objD = collections.OrderedDict()
-        objD['real'] = obj.real
-        objD['imag'] = obj.imag
-        objD['__type__'] = '[complex]'
+        objD["real"] = obj.real
+        objD["imag"] = obj.imag
+        objD["__type__"] = "[complex]"
         obj = objD
     return obj
+
 
 def fix_ndarray(obj):
     if isinstance(obj, collections.Mapping):
@@ -165,6 +175,7 @@ def fix_ndarray(obj):
         return tuple(obj2)
     return obj
 
+
 def write_any(
     fname,
     ftype,
@@ -177,40 +188,42 @@ def write_any(
         fdict_orig = fdict
         fdict = copy.deepcopy(fdict)
     cull_None(fdict)
-    if not features['complex']:
+    if not features["complex"]:
         if fdict_orig is None:
             fdict_orig = fdict
             fdict = copy.deepcopy(fdict)
         fix_complex(fdict)
 
-    if not features['ndarray']:
+    if not features["ndarray"]:
         if fdict_orig is None:
             fdict_orig = fdict
             fdict = copy.deepcopy(fdict)
         fix_ndarray(fdict)
 
-    if ftype == 'hdf5':
+    if ftype == "hdf5":
         from . import hdf5_io
+
         fdict = hdf5_io.write_hdf5(fname, fdict)
-    elif ftype == 'mat':
+    elif ftype == "mat":
         from . import matlab_io
+
         fdict = matlab_io.write_matlab(fname, fdict)
-    elif ftype == 'json':
+    elif ftype == "json":
         from . import json_io
+
         fdict = json_io.write_json(fname, fdict)
-    elif ftype == 'yaml':
+    elif ftype == "yaml":
         from . import yaml_io
+
         fdict = yaml_io.yaml_write(fname, fdict)
-    elif ftype == 'pickle':
+    elif ftype == "pickle":
         from . import pickle_io
+
         fdict = pickle_io.write_pickle(fname, fdict)
-    elif ftype == 'ini':
+    elif ftype == "ini":
         from . import ini_io
+
         fdict = ini_io.ini_write(fname, fdict)
-    elif ftype == 'csv':
+    elif ftype == "csv":
         raise RuntimeError("Unsupported Output Type")
     return fdict
-
-
-
-

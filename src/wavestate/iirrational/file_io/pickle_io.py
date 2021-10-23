@@ -16,10 +16,8 @@ def load_pickle(fname):
         fdict = pickle.load(F)
     return fdict
 
+
 def write_pickle(fname, fdict):
-    with open(fname, 'wb') as F:
+    with open(fname, "wb") as F:
         fdict = pickle.dump(fdict, F)
     return fdict
-
-
-

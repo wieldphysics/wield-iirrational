@@ -16,11 +16,11 @@ from IIRrational.v1 import (
 
 from IIRrational.testing import IIRrational_data
 
-#monkeypatch in the msurrogate annotations
-FitAid._msurrogate_MT             = False
-data2filter._msurrogate_MT        = True
+# monkeypatch in the msurrogate annotations
+FitAid._msurrogate_MT = False
+data2filter._msurrogate_MT = True
 
 __all__ = [
-    'data2filter',
-    'IIRrational_data',
+    "data2filter",
+    "IIRrational_data",
 ]

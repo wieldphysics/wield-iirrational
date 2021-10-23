@@ -9,18 +9,18 @@
 """
 
 
-
 def fitter_order(fitter):
     return max(len(fitter.zeros), len(fitter.poles))
 
 
 class FitAidFake(object):
-
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         return
 
     def hint(self, *args, **kwargs):
-        default = kwargs.get('default')
+        default = kwargs.get("default")
         return default
 
     def hint_arg(self, func_arg, *args, **kwargs):
@@ -48,7 +48,7 @@ class FitAidFake(object):
         print(*args)
 
 
-def ensure_aid(aid = None, **kwargs):
+def ensure_aid(aid=None, **kwargs):
     if aid is None:
         return FitAidFake()
     return aid

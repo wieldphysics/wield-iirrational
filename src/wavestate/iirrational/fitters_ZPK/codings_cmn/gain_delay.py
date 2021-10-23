@@ -12,14 +12,14 @@
 import numpy as np
 from .base import (
     CodingType,
-    #Ipi,
-    I2pi
+    # Ipi,
+    I2pi,
 )
 
 
 class CodingGain(CodingType):
     N_parameters = 1
-    p_gain       = 1
+    p_gain = 1
 
     def __init__(self):
         self.coding_id = 0
@@ -27,10 +27,10 @@ class CodingGain(CodingType):
 
     def clone(self, sys):
         new = self.__class__()
-        new.update(gain = self.p_gain)
+        new.update(gain=self.p_gain)
         return new
 
-    def setup(self, gain = None):
+    def setup(self, gain=None):
         if gain is not None:
             self.p_gain = gain
         return
@@ -50,7 +50,7 @@ class CodingGain(CodingType):
         return [self.p_gain]
 
     def transfer(self):
-        #gain term (can only be 1 and at the start)
+        # gain term (can only be 1 and at the start)
         return self.p_gain
 
     def derivative(self):
@@ -64,7 +64,7 @@ class CodingDelay(CodingType):
     N_parameters = 1
     p_delay_s = 0
 
-    def setup(self, delay_s = None):
+    def setup(self, delay_s=None):
         if delay_s is not None:
             self.p_delay_s = delay_s
         return
@@ -91,4 +91,3 @@ class CodingDelay(CodingType):
 
     def roots(self):
         return []
-

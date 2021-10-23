@@ -11,8 +11,8 @@
 
 from ..codings_cmn import (
     CodingType,
-    #Ipi,
-    #I2pi
+    # Ipi,
+    # I2pi
 )
 
 
@@ -22,22 +22,18 @@ class CodingSOSnl(CodingType):
     p_nl_c2 = 0
     deriv_deadzone = 1e-4
 
-    #should be a positive number
+    # should be a positive number
     min_BW_Hz = 0
 
-    #True false means mirror to respective side
+    # True false means mirror to respective side
     unstable = False
     single_root = False
 
-    def update(
-            self,
-            nl_c1,
-            nl_c2 = None
-    ):
+    def update(self, nl_c1, nl_c2=None):
         if self.single_root:
             self.p_nl_c1 = nl_c1
         else:
-            assert(nl_c2 is not None)
+            assert nl_c2 is not None
             self.p_nl_c1 = nl_c1
             self.p_nl_c2 = nl_c2
 
@@ -52,13 +48,13 @@ class CodingSOSnl(CodingType):
         if self.single_root:
             return 0
 
-        c1 = self.p_nl_c1**2
-        c2 = self.p_nl_c2**2
-        disc = c1*c1 - 4 * c2
+        c1 = self.p_nl_c1 ** 2
+        c2 = self.p_nl_c2 ** 2
+        disc = c1 * c1 - 4 * c2
         if disc > 0:
             return 0
         else:
-            return ((-disc)**.5)/2
+            return ((-disc) ** 0.5) / 2
 
     @property
     def gain_effect(self):
@@ -73,43 +69,45 @@ class CodingSOSnl(CodingType):
             else:
                 return 1 if rs[1] > 0 else -1
 
-    def check_dist_limit(self, F_Hz = None, thresh = 1):
+    def check_dist_limit(self, F_Hz=None, thresh=1):
         if self.sys.distance_limit_auto >= thresh:
             if F_Hz is None:
-                self.min_BW_Hz, D = self.sys.distance_limit(self.F_Hz, with_derivative = True)
+                self.min_BW_Hz, D = self.sys.distance_limit(
+                    self.F_Hz, with_derivative=True
+                )
             else:
-                self.min_BW_Hz, D = self.sys.distance_limit(F_Hz, with_derivative = True)
+                self.min_BW_Hz, D = self.sys.distance_limit(F_Hz, with_derivative=True)
             return D
         return 0
 
     def transfer(self):
         if self.single_root:
-            self.check_dist_limit(F_Hz = 0, thresh = 2)
-            #second order sections (2x roots either real or complex conj)
-            c1 = self.p_nl_c1**2
-            X  = self.sys.Xsf_grid
+            self.check_dist_limit(F_Hz=0, thresh=2)
+            # second order sections (2x roots either real or complex conj)
+            c1 = self.p_nl_c1 ** 2
+            X = self.sys.Xsf_grid
             if not self.unstable:
                 return (c1 + self.min_BW_Hz) + X
             else:
                 return -(c1 + self.min_BW_Hz) + X
         else:
-            #second order sections (2x roots either real or complex conj)
-            c1 = self.p_nl_c1**2
-            c2 = self.p_nl_c2**2
-            disc = c1*c1 - 4 * c2
+            # second order sections (2x roots either real or complex conj)
+            c1 = self.p_nl_c1 ** 2
+            c2 = self.p_nl_c2 ** 2
+            disc = c1 * c1 - 4 * c2
             if disc > 0:
-                self.check_dist_limit(F_Hz = 0, thresh = 2)
+                self.check_dist_limit(F_Hz=0, thresh=2)
             else:
-                F_Hz = ((-disc)**.5)/2
-                self.check_dist_limit(F_Hz = F_Hz, thresh = 2)
-            V  = self.min_BW_Hz
-            X   = self.sys.Xsf_grid
+                F_Hz = ((-disc) ** 0.5) / 2
+                self.check_dist_limit(F_Hz=F_Hz, thresh=2)
+            V = self.min_BW_Hz
+            X = self.sys.Xsf_grid
             Xsq = self.sys.Xsf_grid_sq
-            #V = 0
+            # V = 0
             if self.unstable:
-                xfer = (c2 + V*(V + c1)) - (X * (c1 + 2 * V) - Xsq)
+                xfer = (c2 + V * (V + c1)) - (X * (c1 + 2 * V) - Xsq)
             else:
-                xfer = (c2 + V*(V + c1)) + (X * (c1 + 2 * V) + Xsq)
+                xfer = (c2 + V * (V + c1)) + (X * (c1 + 2 * V) + Xsq)
             return xfer
 
     @property
@@ -131,15 +129,15 @@ class CodingSOSnl(CodingType):
                 pD_c1 = -self.deriv_deadzone
 
         if self.single_root:
-            self.check_dist_limit(F_Hz = 0, thresh = 2)
+            self.check_dist_limit(F_Hz=0, thresh=2)
 
             if not self.unstable:
                 return [2 * pD_c1]
             else:
                 return [-2 * pD_c1]
         else:
-            c1 = self.p_nl_c1**2
-            c2 = self.p_nl_c2**2
+            c1 = self.p_nl_c1 ** 2
+            c2 = self.p_nl_c2 ** 2
 
             pD_c2 = self.p_nl_c2
             if self.p_nl_c2 > 0:
@@ -149,45 +147,47 @@ class CodingSOSnl(CodingType):
                 if self.p_nl_c2 > -self.deriv_deadzone:
                     pD_c2 = -self.deriv_deadzone
 
-            disc = c1*c1 - 4 * c2
+            disc = c1 * c1 - 4 * c2
             if disc > 0:
-                V_D = self.check_dist_limit(F_Hz = 0, thresh = 2)
+                V_D = self.check_dist_limit(F_Hz=0, thresh=2)
                 V_D_c1 = 0
                 V_D_c2 = 0
             else:
-                F_Hz = ((-disc)**.5)/2
-                V_D = self.check_dist_limit(F_Hz = F_Hz, thresh = 2)
+                F_Hz = ((-disc) ** 0.5) / 2
+                V_D = self.check_dist_limit(F_Hz=F_Hz, thresh=2)
                 V_D_c1 = -2 * pD_c1 * c1 / disc * V_D
                 V_D_c2 = -pD_c2 / disc * V_D
 
-            #TODO, the derivative inclusion of V_D_c1,2 isn't tested well, but
-            #that is partially because it doesn't matter much
+            # TODO, the derivative inclusion of V_D_c1,2 isn't tested well, but
+            # that is partially because it doesn't matter much
             V_D_c1 = 0
             V_D_c2 = 0
 
-            V  = self.min_BW_Hz
+            V = self.min_BW_Hz
 
             X = self.sys.Xsf_grid
             if not self.unstable:
                 return [
-                    (2 * pD_c1 + 2 * V_D_c1) * X + 2*V*(pD_c1 + V_D_c1),
+                    (2 * pD_c1 + 2 * V_D_c1) * X + 2 * V * (pD_c1 + V_D_c1),
                     (2 * X * V_D_c2) + 2 * pD_c2 + V_D_c2 * (2 * V + c1),
                 ]
             else:
                 return [
-                    -(2 * pD_c1 + 2 * V_D_c1) * X + 2*V*(pD_c1 + V_D_c1) + 2 * pD_c1 * V,
+                    -(2 * pD_c1 + 2 * V_D_c1) * X
+                    + 2 * V * (pD_c1 + V_D_c1)
+                    + 2 * pD_c1 * V,
                     -(2 * X * V_D_c2) + 2 * pD_c2 + V_D_c2 * (2 * V + c1),
                 ]
 
-    def update_roots(self, r1, r2 = None):
+    def update_roots(self, r1, r2=None):
         """
         r2, may be unspecified, in which case it is assumed to be nothing, if r1 is real, or otherwise the conjugate of r1
         """
         if r2 is None and r1.imag == 0:
-            self.check_dist_limit(F_Hz = 0, thresh = 1)
+            self.check_dist_limit(F_Hz=0, thresh=1)
             self.single_root = True
             self.N_parameters = 1
-            #TODO, fix for S domain
+            # TODO, fix for S domain
             if self.unstable is not None:
                 if r1.real > 0:
                     self.unstable = True
@@ -196,7 +196,7 @@ class CodingSOSnl(CodingType):
                     self.unstable = False
                     r1p = -r1.real
                 if r1p > self.min_BW_Hz:
-                    self.p_nl_c1 = (r1p - self.min_BW_Hz)**.5
+                    self.p_nl_c1 = (r1p - self.min_BW_Hz) ** 0.5
                     return True
                 else:
                     self.p_nl_c1 = 0
@@ -213,18 +213,18 @@ class CodingSOSnl(CodingType):
 
             if r1.imag != 0:
                 F_Hz = abs(r1.imag)
-                self.check_dist_limit(F_Hz = F_Hz, thresh = 1)
+                self.check_dist_limit(F_Hz=F_Hz, thresh=1)
                 if r1p > self.min_BW_Hz:
                     ret = True
                     r1p = r1p - self.min_BW_Hz
                 else:
                     ret = False
                     r1p = 0
-                #TODO check conjugates
-                self.p_nl_c2 = (r1p**2 + r1.imag**2)**.5
-                self.p_nl_c1 = (2 * r1p)**.5
+                # TODO check conjugates
+                self.p_nl_c2 = (r1p ** 2 + r1.imag ** 2) ** 0.5
+                self.p_nl_c1 = (2 * r1p) ** 0.5
             else:
-                self.check_dist_limit(0, thresh = 1)
+                self.check_dist_limit(0, thresh=1)
                 if r1p > self.min_BW_Hz:
                     ret = True
                     r1p = r1p - self.min_BW_Hz
@@ -234,11 +234,15 @@ class CodingSOSnl(CodingType):
 
                 if self.unstable:
                     if r2 < 0:
-                        raise RuntimeError("Can't share stable/unstable roots in this coding")
+                        raise RuntimeError(
+                            "Can't share stable/unstable roots in this coding"
+                        )
                     r2p = r2
                 else:
                     if r2 > 0:
-                        raise RuntimeError("Can't share stable/unstable roots in this coding")
+                        raise RuntimeError(
+                            "Can't share stable/unstable roots in this coding"
+                        )
                     r2p = -r2
 
                 if r2p > self.min_BW_Hz:
@@ -246,61 +250,61 @@ class CodingSOSnl(CodingType):
                 else:
                     ret = False
                     r2 = 0
-                self.p_nl_c2 = (r1p * r2p)**.5
-                self.p_nl_c1 = (r1p + r2p)**.5
-            #print('ROOTS: ', self.roots())
+                self.p_nl_c2 = (r1p * r2p) ** 0.5
+                self.p_nl_c1 = (r1p + r2p) ** 0.5
+            # print('ROOTS: ', self.roots())
             return ret
         return
 
     def roots(self):
-        #second order sections (2x roots either real or complex conj)
-        c1 = self.p_nl_c1**2
+        # second order sections (2x roots either real or complex conj)
+        c1 = self.p_nl_c1 ** 2
         if self.single_root:
             if not self.unstable:
                 return [-c1 - self.min_BW_Hz]
             else:
                 return [c1 + self.min_BW_Hz]
         else:
-            c2 = self.p_nl_c2**2
-            #a = c2, b = c1, c = 1
-            disc = c1*c1 - 4 * c2
+            c2 = self.p_nl_c2 ** 2
+            # a = c2, b = c1, c = 1
+            disc = c1 * c1 - 4 * c2
             if disc >= 0:
-                sqrt_disc = disc**.5
+                sqrt_disc = disc ** 0.5
                 if c1 < 0:
-                    r1 = (-c1 + sqrt_disc)/2
+                    r1 = (-c1 + sqrt_disc) / 2
                 else:
-                    r1 = (-c1 - sqrt_disc)/2
+                    r1 = (-c1 - sqrt_disc) / 2
                 r2 = c2 / r1
                 if not self.unstable:
                     return [r1 - self.min_BW_Hz, r2 - self.min_BW_Hz]
                 else:
                     return [-r1 + self.min_BW_Hz, -r2 + self.min_BW_Hz]
             else:
-                sqrt_disc = (-disc)**.5
+                sqrt_disc = (-disc) ** 0.5
                 if not self.unstable:
-                    r1 = (-c1 + sqrt_disc * 1j)/2 - self.min_BW_Hz
+                    r1 = (-c1 + sqrt_disc * 1j) / 2 - self.min_BW_Hz
                 else:
-                    r1 = (+c1 + sqrt_disc * 1j)/2 + self.min_BW_Hz
+                    r1 = (+c1 + sqrt_disc * 1j) / 2 + self.min_BW_Hz
                 return [r1, r1.conjugate()]
 
     def roots_r(self):
-        #second order sections (2x roots either real or complex conj)
-        c1 = self.p_nl_c1**2
+        # second order sections (2x roots either real or complex conj)
+        c1 = self.p_nl_c1 ** 2
         if self.single_root:
             if not self.unstable:
                 return [-c1 - self.min_BW_Hz]
             else:
                 return [c1 + self.min_BW_Hz]
         else:
-            c2 = self.p_nl_c2**2
-            #a = c2, b = c1, c = 1
-            disc = c1*c1 - 4 * c2
+            c2 = self.p_nl_c2 ** 2
+            # a = c2, b = c1, c = 1
+            disc = c1 * c1 - 4 * c2
             if disc >= 0:
-                sqrt_disc = disc**.5
+                sqrt_disc = disc ** 0.5
                 if c1 < 0:
-                    r1 = (-c1 + sqrt_disc)/2
+                    r1 = (-c1 + sqrt_disc) / 2
                 else:
-                    r1 = (-c1 - sqrt_disc)/2
+                    r1 = (-c1 - sqrt_disc) / 2
                 r2 = c2 / r1
                 if not self.unstable:
                     return [r1 - self.min_BW_Hz, r2 - self.min_BW_Hz]
@@ -310,20 +314,20 @@ class CodingSOSnl(CodingType):
                 return []
 
     def roots_c(self):
-        #second order sections (2x roots either real or complex conj)
-        c1 = self.p_nl_c1**2
+        # second order sections (2x roots either real or complex conj)
+        c1 = self.p_nl_c1 ** 2
         if self.single_root:
             return []
         else:
-            c2 = self.p_nl_c2**2
-            #a = c2, b = c1, c = 1
-            disc = c1*c1 - 4 * c2
+            c2 = self.p_nl_c2 ** 2
+            # a = c2, b = c1, c = 1
+            disc = c1 * c1 - 4 * c2
             if disc >= 0:
                 return []
             else:
-                sqrt_disc = (-disc)**.5
+                sqrt_disc = (-disc) ** 0.5
                 if not self.unstable:
-                    r1 = (-c1 + sqrt_disc * 1j)/2 - self.min_BW_Hz
+                    r1 = (-c1 + sqrt_disc * 1j) / 2 - self.min_BW_Hz
                 else:
-                    r1 = (+c1 + sqrt_disc * 1j)/2 + self.min_BW_Hz
+                    r1 = (+c1 + sqrt_disc * 1j) / 2 + self.min_BW_Hz
                 return [r1]

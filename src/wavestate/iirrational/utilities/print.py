@@ -8,10 +8,10 @@
 """
 """
 
-#import numpy as np
+# import numpy as np
 
-#oldprint = print
-#def print(*args):
+# oldprint = print
+# def print(*args):
 #    pargs = []
 #    for a in args:
 #        try:

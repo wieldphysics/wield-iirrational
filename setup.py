@@ -15,6 +15,6 @@ from setuptools import setup
 setup(
     # this ensures setuptools is new enough to use setup.cfg
     setup_requires=[
-        'setuptools >= 45.0.0',
+        "setuptools >= 45.0.0",
     ],
 )

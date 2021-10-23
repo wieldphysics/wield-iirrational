@@ -14,17 +14,27 @@ from wavestate import declarative
 
 
 def analytic_translation(
-        F_Hz,
-        time_s = None,
-        F_displacement_Hz = 0,
+    F_Hz,
+    time_s=None,
+    F_displacement_Hz=0,
 ):
     """
     time_bins shou
     """
     if time_s is None:
-        time_s = np.linspace(0, (len(F_Hz) - 1)/np.max(F_Hz) / 2, 3 * (1 + 1 * len(F_Hz) / 2)) * 1.2
+        time_s = (
+            np.linspace(
+                0, (len(F_Hz) - 1) / np.max(F_Hz) / 2, 3 * (1 + 1 * len(F_Hz) / 2)
+            )
+            * 1.2
+        )
     if isinstance(time_s, (float, int)):
-        time_s = np.linspace(0, (len(F_Hz) - 1)/np.max(F_Hz) / 2, time_s * (1 + 1 * len(F_Hz) / 2)) * 1.2
+        time_s = (
+            np.linspace(
+                0, (len(F_Hz) - 1) / np.max(F_Hz) / 2, time_s * (1 + 1 * len(F_Hz) / 2)
+            )
+            * 1.2
+        )
 
     max_F_Hz = np.max(F_Hz)
 
@@ -33,8 +43,8 @@ def analytic_translation(
     fourier_s = np.sin(2 * np.pi * f * t)
 
     disp_factor = np.exp(-F_displacement_Hz * time_s).reshape(-1, 1)
-    #u_c, s_c, v_c = np.linalg.svd(fourier_c)
-    #u_s, s_s, v_s = np.linalg.svd(fourier_s)
+    # u_c, s_c, v_c = np.linalg.svd(fourier_c)
+    # u_s, s_s, v_s = np.linalg.svd(fourier_s)
     fourier_c_inv = disp_factor * np.linalg.pinv(fourier_c)
     fourier_s_inv = disp_factor * np.linalg.pinv(fourier_s)
 
@@ -45,10 +55,12 @@ def analytic_translation(
     trans_cs = np.dot(fourier_c, fourier_s_inv)
 
     def apply_translation(cplx_vect):
-        return (np.dot(trans_c, cplx_vect.real) + 1j * np.dot(trans_s, cplx_vect.imag))
+        return np.dot(trans_c, cplx_vect.real) + 1j * np.dot(trans_s, cplx_vect.imag)
 
     def apply_continuation(cplx_vect):
-        return -(1j * np.dot(trans_sc, cplx_vect.real) + np.dot(trans_cs, cplx_vect.imag))
+        return -(
+            1j * np.dot(trans_sc, cplx_vect.real) + np.dot(trans_cs, cplx_vect.imag)
+        )
 
     def stability_test(cplx_vect):
         return apply_translation(cplx_vect) / apply_continuation(cplx_vect)
@@ -57,17 +69,27 @@ def analytic_translation(
 
 
 def analytic_translation_dual(
-        F_Hz,
-        time_s = None,
-        F_displacement_Hz = 0,
+    F_Hz,
+    time_s=None,
+    F_displacement_Hz=0,
 ):
     """
     time_bins shou
     """
     if time_s is None:
-        time_s = np.linspace(0, (len(F_Hz) - 1)/np.max(F_Hz) / 2, 3 * (1 + 1 * len(F_Hz) / 2)) * 1.2
+        time_s = (
+            np.linspace(
+                0, (len(F_Hz) - 1) / np.max(F_Hz) / 2, 3 * (1 + 1 * len(F_Hz) / 2)
+            )
+            * 1.2
+        )
     if isinstance(time_s, (float, int)):
-        time_s = np.linspace(0, (len(F_Hz) - 1)/np.max(F_Hz) / 2, time_s * (1 + 1 * len(F_Hz) / 2)) * 1.2
+        time_s = (
+            np.linspace(
+                0, (len(F_Hz) - 1) / np.max(F_Hz) / 2, time_s * (1 + 1 * len(F_Hz) / 2)
+            )
+            * 1.2
+        )
 
     max_F_Hz = np.max(F_Hz)
 
@@ -85,7 +107,7 @@ def analytic_translation_dual(
 
     fourier_cs_inv = disp_factor * np.linalg.pinv(fourier_cs)
 
-    trans    = np.dot(fourier_cs, fourier_cs_inv)
+    trans = np.dot(fourier_cs, fourier_cs_inv)
     trans_sc = np.dot(fourier_sc, fourier_cs_inv)
 
     def apply_translation(cplx_vect):

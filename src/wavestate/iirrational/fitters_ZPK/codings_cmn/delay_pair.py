@@ -11,18 +11,19 @@
 
 from ..codings_cmn import (
     CodingType,
-    #Ipi,
-    #I2pi
+    # Ipi,
+    # I2pi
 )
-#import scipy.linalg
+
+# import scipy.linalg
 
 
 class CodingDelayPairNl(CodingType):
     N_parameters = 2
-    unstable     = False
-    p_nlF_Hz     = 0
-    p_nl_BW      = 0
-    min_BW_Hz    = 0
+    unstable = False
+    p_nlF_Hz = 0
+    p_nl_BW = 0
+    min_BW_Hz = 0
 
     def setup(self):
         self.N_parameters = 2
@@ -38,49 +39,51 @@ class CodingDelayPairNl(CodingType):
             self.p_nl_BW,
         ]
 
-    def check_dist_limit(self, F_Hz = None, thresh = 1):
+    def check_dist_limit(self, F_Hz=None, thresh=1):
         if self.sys.distance_limit_auto >= thresh:
             if F_Hz is None:
-                self.min_BW_Hz, D = self.sys.distance_limit(self.F_Hz, with_derivative = True)
+                self.min_BW_Hz, D = self.sys.distance_limit(
+                    self.F_Hz, with_derivative=True
+                )
             else:
-                self.min_BW_Hz, D = self.sys.distance_limit(F_Hz, with_derivative = True)
+                self.min_BW_Hz, D = self.sys.distance_limit(F_Hz, with_derivative=True)
             return D
         return 0
 
     @property
     def F_Hz(self):
-        return self.p_nlF_Hz**2
+        return self.p_nlF_Hz ** 2
 
     @F_Hz.setter
     def F_Hz(self, val):
-        self.p_nlF_Hz = val**.5
+        self.p_nlF_Hz = val ** 0.5
 
     @property
     def BW_Hz(self):
-        return self.min_BW_Hz + self.p_nl_BW**2
+        return self.min_BW_Hz + self.p_nl_BW ** 2
 
     @BW_Hz.setter
     def BW_Hz(self, val):
         if val > self.min_BW_Hz:
-            self.p_nl_BW = (val - self.min_BW_Hz)**.5
+            self.p_nl_BW = (val - self.min_BW_Hz) ** 0.5
         else:
-            self.p_nl_BW = self.min_BW_Hz**.5
+            self.p_nl_BW = self.min_BW_Hz ** 0.5
 
     def transfer(self):
-        self.check_dist_limit(thresh = 2)
-        #frequency, logarithmic amplitude
+        self.check_dist_limit(thresh=2)
+        # frequency, logarithmic amplitude
         if not self.unstable:
-            r   = -self.BW_Hz
+            r = -self.BW_Hz
         else:
-            r   = self.BW_Hz
-        i   = self.F_Hz
-        X   = self.sys.Xsf_grid
+            r = self.BW_Hz
+        i = self.F_Hz
+        X = self.sys.Xsf_grid
         Xsq = self.sys.Xsf_grid_sq
         xterm = (r * r + i * i) + Xsq
-        return ((xterm + 2 * r * X) / (xterm - 2 * r * X))
+        return (xterm + 2 * r * X) / (xterm - 2 * r * X)
 
     def derivative(self):
-        #real/imaginary part of root
+        # real/imaginary part of root
         if not self.unstable:
             r = -self.BW_Hz
             DrDp = -2 * self.p_nl_BW
@@ -95,18 +98,23 @@ class CodingDelayPairNl(CodingType):
 
         Xsq = self.sys.Xsf_grid_sq
         xterm = (r * r + i * i) + Xsq
-        xfer = ((xterm + 2 * r * X) / (xterm - 2 * r * X))
+        xfer = (xterm + 2 * r * X) / (xterm - 2 * r * X)
 
         return [
             DiDp * (2 * i) * xfer * (1 / (xterm + 2 * r * X) - 1 / (xterm - 2 * r * X)),
-            DrDp * xfer * ((2 * r + 2 * X) / (xterm + 2 * r * X) - (2 * r - 2 * X) / (xterm - 2 * r * X)),
+            DrDp
+            * xfer
+            * (
+                (2 * r + 2 * X) / (xterm + 2 * r * X)
+                - (2 * r - 2 * X) / (xterm - 2 * r * X)
+            ),
         ]
 
 
 class CodingDelayPair(CodingType):
     N_parameters = 2
-    p_nlF_Hz     = 0
-    p_BW      = 0
+    p_nlF_Hz = 0
+    p_BW = 0
 
     def setup(self):
         self.N_parameters = 2
@@ -124,11 +132,11 @@ class CodingDelayPair(CodingType):
 
     @property
     def F_Hz(self):
-        return self.p_nlF_Hz**2
+        return self.p_nlF_Hz ** 2
 
     @F_Hz.setter
     def F_Hz(self, val):
-        self.p_nlF_Hz = val**.5
+        self.p_nlF_Hz = val ** 0.5
 
     @property
     def BW_Hz(self):
@@ -139,16 +147,16 @@ class CodingDelayPair(CodingType):
         self.p_BW = val
 
     def transfer(self):
-        #frequency, logarithmic amplitude
-        r   = -self.BW_Hz
-        i   = self.F_Hz
-        X   = self.sys.Xsf_grid
+        # frequency, logarithmic amplitude
+        r = -self.BW_Hz
+        i = self.F_Hz
+        X = self.sys.Xsf_grid
         Xsq = self.sys.Xsf_grid_sq
         xterm = (r * r + i * i) + Xsq
-        return ((xterm + 2 * r * X) / (xterm - 2 * r * X))
+        return (xterm + 2 * r * X) / (xterm - 2 * r * X)
 
     def derivative(self):
-        #real/imaginary part of root
+        # real/imaginary part of root
         r = -self.BW_Hz
         DrDp = -1
 
@@ -159,9 +167,14 @@ class CodingDelayPair(CodingType):
 
         Xsq = self.sys.Xsf_grid_sq
         xterm = (r * r + i * i) + Xsq
-        xfer = ((xterm + 2 * r * X) / (xterm - 2 * r * X))
+        xfer = (xterm + 2 * r * X) / (xterm - 2 * r * X)
 
         return [
             DiDp * (2 * i) * xfer * (1 / (xterm + 2 * r * X) - 1 / (xterm - 2 * r * X)),
-            DrDp * xfer * ((2 * r + 2 * X) / (xterm + 2 * r * X) - (2 * r - 2 * X) / (xterm - 2 * r * X)),
+            DrDp
+            * xfer
+            * (
+                (2 * r + 2 * X) / (xterm + 2 * r * X)
+                - (2 * r - 2 * X) / (xterm - 2 * r * X)
+            ),
         ]

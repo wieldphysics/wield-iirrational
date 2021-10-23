@@ -15,10 +15,10 @@ from ..codings_cmn import (
 
 
 class CodingRealAmp(CodingTypeZ):
-    N_parameters   = 1
-    unstable       = False
-    p_amplitude    = 0
-    restabilize    = False
+    N_parameters = 1
+    unstable = False
+    p_amplitude = 0
+    restabilize = False
 
     def update(self, amplitude):
         self.p_amplitude = amplitude
@@ -27,10 +27,10 @@ class CodingRealAmp(CodingTypeZ):
         return [self.p_amplitude]
 
     def update_roots(self, r1):
-        assert(r1.imag == 0)
+        assert r1.imag == 0
         if self.restabilize:
             if r1 > 1:
-                r1 = 1/r1
+                r1 = 1 / r1
         self.p_amplitude = r1
         return
 
@@ -50,7 +50,7 @@ class CodingRealAmp(CodingTypeZ):
         return self.p_amplitude
 
     def transfer(self):
-        #real, linear amplitude
+        # real, linear amplitude
         return 1 - self.p_amplitude * self.sys.Xzn_grid
 
     def derivative(self):

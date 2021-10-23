@@ -19,12 +19,12 @@ import collections
 from ..TFmath import match_SOS_pairs
 from .. import representations
 
-class ResultsAid(object):
 
-    def __init__(self, fit_aid, kw = None):
+class ResultsAid(object):
+    def __init__(self, fit_aid, kw=None):
         self._current_order = None
-        self._fitter        = None
-        self.kw             = kw
+        self._fitter = None
+        self.kw = kw
 
         self.initial_arguments = {}
         self.fitting_function = None
@@ -47,12 +47,10 @@ class ResultsAid(object):
     @property
     def fitterRI(self):
         extra = self._fitter_extra
-        fitterRI = extra.get('fitterRI', None)
+        fitterRI = extra.get("fitterRI", None)
         if fitterRI is None:
-            fitterRI = self.fitter.regenerate(
-                coding_map = fitters_ZPK.coding_maps.RI
-            )
-            extra['fitterRI'] = fitterRI
+            fitterRI = self.fitter.regenerate(coding_map=fitters_ZPK.coding_maps.RI)
+            extra["fitterRI"] = fitterRI
         return fitterRI
 
     @property
@@ -76,9 +74,9 @@ class ResultsAid(object):
             sorted_fitters = []
             sorted_residuals = []
             sorted_local_best = []
-            lowest_res = float('inf')
+            lowest_res = float("inf")
             for order, fgroup in sorted(fitters_by_order.items()):
-                fgroup.sort(key = lambda f: f.residuals_average)
+                fgroup.sort(key=lambda f: f.residuals_average)
                 sorted_orders.append(order)
                 sorted_fitters.append(fgroup[0])
                 resavg = fgroup[0].residuals_average
@@ -88,12 +86,12 @@ class ResultsAid(object):
                     sorted_local_best.append(True)
                 else:
                     sorted_local_best.append(False)
-            sorted_local_best =np.asarray(sorted_local_best)
+            sorted_local_best = np.asarray(sorted_local_best)
             self.__fitters_by_order = (
                 np.asarray(sorted_orders),
                 np.asarray(sorted_residuals),
                 # currently a bug in declarative that attribute misses cause RuntimeError rather than AttributeError
-                #numpy now duck-type checks this, and the wrong exception is failing. Instead, casting to list
+                # numpy now duck-type checks this, and the wrong exception is failing. Instead, casting to list
                 list(sorted_fitters),
                 sorted_local_best,
             )
@@ -104,10 +102,10 @@ class ResultsAid(object):
         return self._current_order
 
     def residuals_by_order(self):
-        obo, rbo, fbo, lbo  = self._fitters_by_order
+        obo, rbo, fbo, lbo = self._fitters_by_order
         return obo, rbo
 
-    def choose(self, order = None, direction = None, **kwargs):
+    def choose(self, order=None, direction=None, **kwargs):
         """
         Chooses the filter with the lowest residual of order equal or less than
         requested. The data2filter algorithm will already have chosen a filter,
@@ -129,50 +127,50 @@ class ResultsAid(object):
         alternative choices.
         """
         if direction is None:
-            direction = '<='
+            direction = "<="
 
         if order is None:
             order = self.order
 
         dmap = {
-            'ge' : '>=',
-            'g' :  '>',
-            '>=' : '>=',
-            '>' :  '>',
-            'le' : '<=',
-            'l' :  '<',
-            '<=' : '<=',
-            '<' :  '<',
+            "ge": ">=",
+            "g": ">",
+            ">=": ">=",
+            ">": ">",
+            "le": "<=",
+            "l": "<",
+            "<=": "<=",
+            "<": "<",
         }
 
         try:
             direction = dmap[direction]
         except KeyError:
-            raise ArgumentError((
-                "'direction' argument must be one of {}"
-            ).format(dmap.keys))
+            raise ArgumentError(
+                ("'direction' argument must be one of {}").format(dmap.keys)
+            )
 
-        #using the while just as a goto statement with 'break' keyword
+        # using the while just as a goto statement with 'break' keyword
         while True:
             obo, rbo, fbo, lbo = self._fitters_by_order
             idx_ord = np.searchsorted(obo, order)
             if idx_ord == 0:
-                if direction in ('<=', '<'):
+                if direction in ("<=", "<"):
                     break
             elif idx_ord >= len(obo):
-                if direction in ('>=', '>'):
+                if direction in (">=", ">"):
                     idx_ord = len(obo) - 1
                     break
                 idx_ord = len(obo) - 1
 
             if order == obo[idx_ord]:
-                if direction == '<':
+                if direction == "<":
                     idx_ord -= 1
-                elif direction == '>':
+                elif direction == ">":
                     idx_ord += 1
 
-            if direction in ('<', '<='):
-                idx_ord = np.argmin(rbo[:idx_ord + 1])
+            if direction in ("<", "<="):
+                idx_ord = np.argmin(rbo[: idx_ord + 1])
             break
         fitter = fbo[idx_ord]
 
@@ -181,44 +179,47 @@ class ResultsAid(object):
         return fitter
 
     @contextlib.contextmanager
-    def choice(self, order = None, direction = None, **kwargs):
+    def choice(self, order=None, direction=None, **kwargs):
         """
         Allows a temporary choice of fitter, for investigations without having
         to store the optimal choice. Takes the same arguments as choose().
         """
         fitter_prev = self._fitter
-        self.choose(order = order, direction = direction, **kwargs)
+        self.choose(order=order, direction=direction, **kwargs)
         yield
         self._fitter = fitter_prev
         return
 
-    def as_scipy_signal_ZPKsw(self, with_delay = False):
+    def as_scipy_signal_ZPKsw(self, with_delay=False):
         """
         Returns the chosen filter in scipy format
         """
-        #TODO
+        # TODO
         from ..LIGO.conversion import filter2sortedZPK
+
         z, p, k = filter2sortedZPK(self.fitter)
         z = np.asarray(z) * 2 * np.pi
         p = np.asarray(p) * 2 * np.pi
-        k = k * (2 * np.pi)**(len(p) - len(z))
+        k = k * (2 * np.pi) ** (len(p) - len(z))
 
         if not with_delay:
             if self.fitter.delay_s != 0:
-                warnings.warn((
-                    "fit export not including delay,"
-                    " but filter has delay {}s. Call results.as_scipy_signal_ZPKsw(with_delay = True)"
-                    " and the output will be ZPKD"
-                ).format(self.fitter.delay_s))
+                warnings.warn(
+                    (
+                        "fit export not including delay,"
+                        " but filter has delay {}s. Call results.as_scipy_signal_ZPKsw(with_delay = True)"
+                        " and the output will be ZPKD"
+                    ).format(self.fitter.delay_s)
+                )
             return z, p, k
         else:
             return z, p, k, self.fitter.delay_s
 
     def as_fitterMRF_ZPKz(
         self,
-        t_sample_s = None,
-        F_sample_Hz = None,
-        F_nyquist_Hz = None,
+        t_sample_s=None,
+        F_sample_Hz=None,
+        F_nyquist_Hz=None,
     ):
         """
         Returns the chosen filter in scipy format for the z domain
@@ -227,9 +228,9 @@ class ResultsAid(object):
         best fit in the transformed coordinates.
         """
         F_nyquist_Hz = argF_nyquist_Hz(
-            t_sample_s   = t_sample_s,
-            F_sample_Hz  = F_sample_Hz,
-            F_nyquist_Hz = F_nyquist_Hz,
+            t_sample_s=t_sample_s,
+            F_sample_Hz=F_sample_Hz,
+            F_nyquist_Hz=F_nyquist_Hz,
         )
         fitter_z = self._fitter_extra.get(F_nyquist_Hz, None)
         if fitter_z is None:
@@ -240,9 +241,9 @@ class ResultsAid(object):
 
     def as_scipy_signal_ZPKz(
         self,
-        t_sample_s = None,
-        F_sample_Hz = None,
-        F_nyquist_Hz = None,
+        t_sample_s=None,
+        F_sample_Hz=None,
+        F_nyquist_Hz=None,
     ):
         """
         Returns the chosen filter in scipy format for the z domain
@@ -251,9 +252,9 @@ class ResultsAid(object):
         best fit in the transformed coordinates.
         """
         fitter_z = self.as_fitterMRF_ZPKz(
-            t_sample_s   = t_sample_s,
-            F_sample_Hz  = F_sample_Hz,
-            F_nyquist_Hz = F_nyquist_Hz,
+            t_sample_s=t_sample_s,
+            F_sample_Hz=F_sample_Hz,
+            F_nyquist_Hz=F_nyquist_Hz,
         )
         raise NotImplementedError()
         return
@@ -271,9 +272,7 @@ class ResultsAid(object):
     def ZPKrep(self):
         return self.as_ZPKrep()
 
-    def as_ZPKTF(
-        self, delay2ZPK_args
-    ):
+    def as_ZPKTF(self, delay2ZPK_args):
         """
         Returns the filter as an IIRrational ZPKTF object, for use
         with mathematical analysis. Note, if the delay is nonzero,
@@ -281,7 +280,7 @@ class ResultsAid(object):
         positive (as is usual), the some order of RHP-zero/LHP-pole pairs must
         be added to approximate the delay.
         """
-        #TODO
+        # TODO
         raise NotImplementedError()
 
     def as_matlab_str_ZPKsw(
@@ -291,64 +290,72 @@ class ResultsAid(object):
         Returns the chosen filter in matlab format for the z domain
         (must specify t_sample_s, or F_sample_Hz or F_nyquist_Hz)
         """
-        #TODO
+        # TODO
         raise NotImplementedError()
 
     def as_foton_ZPKsf(
         self,
-        with_delay = False,
+        with_delay=False,
     ):
         """
         Returns the chosen filter as a string foton formatting. Uses the
         frequency domain representation
         """
         from ..LIGO.conversion import filter2fotonZPK
+
         ZPK = filter2fotonZPK(
             self.fitter.ZPKrep,
-            plane = 'f',
-            zpk_output = True,
+            plane="f",
+            zpk_output=True,
         )
         if not with_delay:
             if self.fitter.delay_s != 0:
-                warnings.warn((
-                    "fit export not including delay,"
-                    " but filter has delay {}s. Call results.as_foton_ZPKsf(with_delay = True)"
-                    " and the output will be ZPKD"
-                ).format(self.fitter.delay_s))
+                warnings.warn(
+                    (
+                        "fit export not including delay,"
+                        " but filter has delay {}s. Call results.as_foton_ZPKsf(with_delay = True)"
+                        " and the output will be ZPKD"
+                    ).format(self.fitter.delay_s)
+                )
             return ZPK
         else:
             return tuple(ZPK) + (self.fitter.delay_s,)
 
     def as_foton_ZPKsn(
         self,
-        with_delay = False,
+        with_delay=False,
     ):
         """
         Returns the chosen filter as a string foton formatting. Uses the
         frequency domain representation
         """
         from ..LIGO.conversion import filter2fotonZPK
+
         ZPK = filter2fotonZPK(
             self.fitter.ZPKrep,
-            plane = 'n',
-            zpk_output = True,
+            plane="n",
+            zpk_output=True,
         )
         if not with_delay:
             if self.fitter.delay_s != 0:
-                warnings.warn((
-                    "fit export not including delay,"
-                    " but filter has delay {}s. Call results.as_foton_ZPKsn(with_delay = True)"
-                    " and the output will be ZPKD"
-                ).format(self.fitter.delay_s))
+                warnings.warn(
+                    (
+                        "fit export not including delay,"
+                        " but filter has delay {}s. Call results.as_foton_ZPKsn(with_delay = True)"
+                        " and the output will be ZPKD"
+                    ).format(self.fitter.delay_s)
+                )
             return ZPK
         else:
             return tuple(ZPK) + (self.fitter.delay_s,)
 
-    def as_refine_str(self, sigfigs = 5):
+    def as_refine_str(self, sigfigs=5):
         zzpp_pairs = match_SOS_pairs(
-            self.fitter.zeros.r, self.fitter.zeros.c,
-            self.fitter.poles.r, self.fitter.poles.c,
-            F_nyquist_Hz = None
+            self.fitter.zeros.r,
+            self.fitter.zeros.c,
+            self.fitter.poles.r,
+            self.fitter.poles.c,
+            F_nyquist_Hz=None,
         )
         zs = []
         ps = []
@@ -357,11 +364,19 @@ class ResultsAid(object):
             if r is not None:
                 if r.imag != 0:
                     if r.imag > 0:
-                        rs.append("{real:.{sf}f}+{imag:.{sf}f}j".format(real = r.real, imag = r.imag, sf = sigfigs))
+                        rs.append(
+                            "{real:.{sf}f}+{imag:.{sf}f}j".format(
+                                real=r.real, imag=r.imag, sf=sigfigs
+                            )
+                        )
                     else:
-                        rs.append("{real:.{sf}f}-{imag:.{sf}f}j".format(real = r.real, imag = -r.imag, sf = sigfigs))
+                        rs.append(
+                            "{real:.{sf}f}-{imag:.{sf}f}j".format(
+                                real=r.real, imag=-r.imag, sf=sigfigs
+                            )
+                        )
                 else:
-                    rs.append("{real:.{sf}f}".format(real = r.real, sf = sigfigs))
+                    rs.append("{real:.{sf}f}".format(real=r.real, sf=sigfigs))
 
         for (z1, z2, p1, p2) in zzpp_pairs:
             append(zs, z1)
@@ -372,40 +387,42 @@ class ResultsAid(object):
 
     def as_foton_str_ZPKsf(
         self,
-        annotate_pairs = False,
+        annotate_pairs=False,
     ):
         """
         Returns the chosen filter as a string foton formatting. Uses the
         frequency domain representation
         """
         from ..LIGO.conversion import filter2fotonZPK
+
         return filter2fotonZPK(
             self.fitter.ZPKrep,
-            annotate_pairs = annotate_pairs,
-            plane = 'f',
+            annotate_pairs=annotate_pairs,
+            plane="f",
         )
 
     def as_foton_str_ZPKsn(
         self,
-        annotate_pairs = False,
+        annotate_pairs=False,
     ):
         """
         Returns the chosen filter as a string foton formating. Uses the
         "normalized" frequency domain representation.
         """
-        #TODO
+        # TODO
         from ..LIGO.conversion import filter2fotonZPK
+
         return filter2fotonZPK(
             self.fitter.ZPKrep,
-            annotate_pairs = annotate_pairs,
-            plane = 'n',
+            annotate_pairs=annotate_pairs,
+            plane="n",
         )
 
     def as_foton_str_ZPKz(
         self,
-        t_sample_s = None,
-        F_sample_Hz = None,
-        F_nyquist_Hz = None,
+        t_sample_s=None,
+        F_sample_Hz=None,
+        F_nyquist_Hz=None,
     ):
         """
         Returns the chosen filter in foton format native for the z domain
@@ -413,60 +430,92 @@ class ResultsAid(object):
         transforms into the Z domain, then reruns the optimization to ensure a
         best fit in the transformed coordinates.
         """
-        #TODO
+        # TODO
         from ..LIGO.conversion import filter2fotonZPK
+
         fitter_z = self.as_fitterMRF_ZPKz(
-            t_sample_s   = t_sample_s,
-            F_sample_Hz  = F_sample_Hz,
-            F_nyquist_Hz = F_nyquist_Hz,
+            t_sample_s=t_sample_s,
+            F_sample_Hz=F_sample_Hz,
+            F_nyquist_Hz=F_nyquist_Hz,
         )
-        return filter2fotonZPK(fitter_z.ZPKrep, plane = 'z')
+        return filter2fotonZPK(fitter_z.ZPKrep, plane="z")
 
     def _fitter_export_dict(self, fitter):
         from ..LIGO.conversion import filter2fotonZPK
+
         zpk = tuple(fitter.ZPKrep.ZPK)
-        d = collections.OrderedDict([
-            ("zpk", collections.OrderedDict([
-                ("z" , zpk[0]),
-                ("p" , zpk[1]),
-                ("k" , zpk[2]),
-            ])),
-            ("delay_s", fitter.ZPKrep.delay_s),
-            ("gain", fitter.gain),
-            ("poles", collections.OrderedDict([
-                ("r" , fitter.poles.r),
-                ("c" , fitter.poles.c),
-            ])),
-            ("zeros", collections.OrderedDict([
-                ("r" , fitter.zeros.r),
-                ("c" , fitter.zeros.c),
-            ])),
-            ("poles_overlay", collections.OrderedDict([
-                ("r" , fitter.poles_overlay.r),
-                ("c" , fitter.poles_overlay.c),
-            ])),
-            ("zeros_overlay", collections.OrderedDict([
-                ("r" , fitter.zeros_overlay.r),
-                ("c" , fitter.zeros_overlay.c),
-            ])),
-            ("residuals", fitter.residuals_average),
-            ("residuals_max", fitter.residuals_max),
-            ("residuals_med", fitter.residuals_med),
-            ("foton_Sf", filter2fotonZPK(
-                fitter.ZPKrep,
-                annotate_pairs = False,
-                plane = 'f',
-            ))
-        ])
+        d = collections.OrderedDict(
+            [
+                (
+                    "zpk",
+                    collections.OrderedDict(
+                        [
+                            ("z", zpk[0]),
+                            ("p", zpk[1]),
+                            ("k", zpk[2]),
+                        ]
+                    ),
+                ),
+                ("delay_s", fitter.ZPKrep.delay_s),
+                ("gain", fitter.gain),
+                (
+                    "poles",
+                    collections.OrderedDict(
+                        [
+                            ("r", fitter.poles.r),
+                            ("c", fitter.poles.c),
+                        ]
+                    ),
+                ),
+                (
+                    "zeros",
+                    collections.OrderedDict(
+                        [
+                            ("r", fitter.zeros.r),
+                            ("c", fitter.zeros.c),
+                        ]
+                    ),
+                ),
+                (
+                    "poles_overlay",
+                    collections.OrderedDict(
+                        [
+                            ("r", fitter.poles_overlay.r),
+                            ("c", fitter.poles_overlay.c),
+                        ]
+                    ),
+                ),
+                (
+                    "zeros_overlay",
+                    collections.OrderedDict(
+                        [
+                            ("r", fitter.zeros_overlay.r),
+                            ("c", fitter.zeros_overlay.c),
+                        ]
+                    ),
+                ),
+                ("residuals", fitter.residuals_average),
+                ("residuals_max", fitter.residuals_max),
+                ("residuals_med", fitter.residuals_med),
+                (
+                    "foton_Sf",
+                    filter2fotonZPK(
+                        fitter.ZPKrep,
+                        annotate_pairs=False,
+                        plane="f",
+                    ),
+                ),
+            ]
+        )
         return d
 
     def choice_export_dict(self):
         return self._fitter_export_dict(self.fitter)
 
-    def alternatives_export_dict(self, local_best = True):
-        obo, rbo, fbo, lbo  = self._fitters_by_order
+    def alternatives_export_dict(self, local_best=True):
+        obo, rbo, fbo, lbo = self._fitters_by_order
 
-        #only returns or displays those which are the best for that order or below
+        # only returns or displays those which are the best for that order or below
         if local_best:
             obo = obo[lbo]
             rbo = rbo[lbo]
@@ -474,32 +523,29 @@ class ResultsAid(object):
 
         exd = collections.OrderedDict()
         for order, fit in zip(obo, fbo):
-            key = 'order_{:0>2d}'.format(order)
+            key = "order_{:0>2d}".format(order)
             exd[key] = self._fitter_export_dict(fit)
 
         return exd
 
 
 def argF_nyquist_Hz(
-    t_sample_s = None,
-    F_sample_Hz = None,
-    F_nyquist_Hz = None,
+    t_sample_s=None,
+    F_sample_Hz=None,
+    F_nyquist_Hz=None,
 ):
     if t_sample_s is not None:
-        _F_nyquist_Hz = 1/(2 * t_sample_s)
+        _F_nyquist_Hz = 1 / (2 * t_sample_s)
         if F_nyquist_Hz is not None and _F_nyquist_Hz != F_nyquist_Hz:
             raise ArgumentError(
-                "t_sample_s and F_nyquist_Hz both"
-                " given, but not consistent"
+                "t_sample_s and F_nyquist_Hz both" " given, but not consistent"
             )
         F_nyquist_Hz = _F_nyquist_Hz
     if F_sample_Hz is not None:
-        _F_nyquist_Hz = F_sample_Hz/2
+        _F_nyquist_Hz = F_sample_Hz / 2
         if F_nyquist_Hz is not None and _F_nyquist_Hz != F_nyquist_Hz:
             raise ArgumentError(
-                "F_sample_Hz and F_nyquist_Hz both"
-                " given, but not consistent"
+                "F_sample_Hz and F_nyquist_Hz both" " given, but not consistent"
             )
         F_nyquist_Hz = _F_nyquist_Hz
     return F_nyquist_Hz
-

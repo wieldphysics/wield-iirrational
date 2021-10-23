@@ -34,7 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-
 import warnings
 import numpy as np
 import numpy as numpy
@@ -43,13 +42,16 @@ from wavestate import declarative
 try:
     from scipy.optimize import OptimizeWarning
 except ImportError:
+
     class OptimizeWarning(UserWarning):
         pass
+
 
 try:
     from scipy.optimize import OptimizeResult
 except ImportError:
     OptimizeResult = wavestate.bunch.Bunch
+
 
 def neldermead(
     func,
@@ -92,26 +94,28 @@ def neldermead(
         convergence.
 
     """
-    if 'ftol' in unknown_options:
-        warnings.warn("ftol is deprecated for Nelder-Mead,"
-                      " use fatol instead. If you specified both, only"
-                      " fatol is used.",
-                      DeprecationWarning)
-        if (np.isclose(fatol, 1e-4) and
-                not np.isclose(unknown_options['ftol'], 1e-4)):
+    if "ftol" in unknown_options:
+        warnings.warn(
+            "ftol is deprecated for Nelder-Mead,"
+            " use fatol instead. If you specified both, only"
+            " fatol is used.",
+            DeprecationWarning,
+        )
+        if np.isclose(fatol, 1e-4) and not np.isclose(unknown_options["ftol"], 1e-4):
             # only ftol was probably specified, use it.
-            fatol = unknown_options['ftol']
-        unknown_options.pop('ftol')
-    if 'xtol' in unknown_options:
-        warnings.warn("xtol is deprecated for Nelder-Mead,"
-                      " use xatol instead. If you specified both, only"
-                      " xatol is used.",
-                      DeprecationWarning)
-        if (np.isclose(xatol, 1e-4) and
-                not np.isclose(unknown_options['xtol'], 1e-4)):
+            fatol = unknown_options["ftol"]
+        unknown_options.pop("ftol")
+    if "xtol" in unknown_options:
+        warnings.warn(
+            "xtol is deprecated for Nelder-Mead,"
+            " use xatol instead. If you specified both, only"
+            " xatol is used.",
+            DeprecationWarning,
+        )
+        if np.isclose(xatol, 1e-4) and not np.isclose(unknown_options["xtol"], 1e-4):
             # only xtol was probably specified, use it.
-            xatol = unknown_options['xtol']
-        unknown_options.pop('xtol')
+            xatol = unknown_options["xtol"]
+        unknown_options.pop("xtol")
 
     _check_unknown_options(unknown_options)
     maxfun = maxfev
@@ -136,7 +140,7 @@ def neldermead(
         for k in range(N):
             y = numpy.array(x0, copy=True)
             if y[k] != 0:
-                y[k] = (1 + nonzdelt)*y[k]
+                y[k] = (1 + nonzdelt) * y[k]
             else:
                 y[k] = zdelt
             sim[k + 1] = y
@@ -181,9 +185,11 @@ def neldermead(
 
     iterations = 1
 
-    while (fcalls[0] < maxfun and iterations < maxiter):
-        if (numpy.max(numpy.ravel(numpy.abs(sim[1:] - sim[0]))) <= xatol and
-                numpy.max(numpy.abs(fsim[0] - fsim[1:])) <= fatol):
+    while fcalls[0] < maxfun and iterations < maxiter:
+        if (
+            numpy.max(numpy.ravel(numpy.abs(sim[1:] - sim[0]))) <= xatol
+            and numpy.max(numpy.abs(fsim[0] - fsim[1:])) <= fatol
+        ):
             break
 
         xbar = numpy.add.reduce(sim[:-1], 0) / N
@@ -247,16 +253,16 @@ def neldermead(
 
     if fcalls[0] >= maxfun:
         warnflag = 1
-        msg = _status_message['maxfev']
+        msg = _status_message["maxfev"]
         if disp:
-            print('Warning: ' + msg)
+            print("Warning: " + msg)
     elif iterations >= maxiter:
         warnflag = 2
-        msg = _status_message['maxiter']
+        msg = _status_message["maxiter"]
         if disp:
-            print('Warning: ' + msg)
+            print("Warning: " + msg)
     else:
-        msg = _status_message['success']
+        msg = _status_message["success"]
         if disp:
             print(msg)
             print("         Current function value: %f" % fval)
@@ -264,12 +270,17 @@ def neldermead(
             print("         Function evaluations: %d" % fcalls[0])
 
     result = OptimizeResult(
-        fun=fval, nit=iterations, nfev=fcalls[0],
-        status=warnflag, success=(warnflag == 0),
-        message=msg, x=x, final_simplex=(sim, fsim)
+        fun=fval,
+        nit=iterations,
+        nfev=fcalls[0],
+        status=warnflag,
+        success=(warnflag == 0),
+        message=msg,
+        x=x,
+        final_simplex=(sim, fsim),
     )
     if retall:
-        result['allvecs'] = allvecs
+        result["allvecs"] = allvecs
     return result
 
 
@@ -283,10 +294,10 @@ def _check_unknown_options(unknown_options):
 
 
 _status_message = {
-    'success': 'Optimization terminated successfully.',
-    'maxfev': 'Maximum number of function evaluations has been exceeded.',
-    'maxiter': 'Maximum number of iterations has been exceeded.',
-    'pr_loss': 'Desired error not necessarily achieved due to precision loss.'
+    "success": "Optimization terminated successfully.",
+    "maxfev": "Maximum number of function evaluations has been exceeded.",
+    "maxiter": "Maximum number of iterations has been exceeded.",
+    "pr_loss": "Desired error not necessarily achieved due to precision loss.",
 }
 
 
@@ -300,4 +311,3 @@ def wrap_function(function, args):
         return function(*(wrapper_args + args))
 
     return ncalls, function_wrapper
-

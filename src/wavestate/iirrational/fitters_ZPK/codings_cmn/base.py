@@ -12,7 +12,7 @@
 import numpy as np
 from ... import TFmath
 
-Ipi  = np.pi * 1j
+Ipi = np.pi * 1j
 I2pi = np.pi * 2j
 
 
@@ -31,14 +31,14 @@ class CodingType(object):
     gain_effect = 1
 
     def __init__(self, sys):
-        #preserved through deepcopy so that codings_ignore set can be maintained
+        # preserved through deepcopy so that codings_ignore set can be maintained
         self.coding_id = id(self)
         self.sys = sys
 
     def clone(self, sys):
         new = EmptyCopy()
         d = dict(self.__dict__)
-        d['sys'] = sys
+        d["sys"] = sys
         new.__dict__.update(d)
         new.__class__ = self.__class__
         return new
@@ -69,7 +69,7 @@ class CodingType(object):
         return
 
     def transfer_abs_sq(self):
-        #real/imaginary part of root
+        # real/imaginary part of root
         return TFmath.abs_sq(self.transfer())
 
     def derivative_wtrans(self):
@@ -88,7 +88,6 @@ class CodingType(object):
         return False
 
 
-
 class CodingTypeZ(object):
     disable = False
     coding_id = None
@@ -96,14 +95,14 @@ class CodingTypeZ(object):
     gain_effect = 1
 
     def __init__(self, sys):
-        #preserved through deepcopy so that codings_ignore set can be maintained
+        # preserved through deepcopy so that codings_ignore set can be maintained
         self.coding_id = id(self)
         self.sys = sys
 
     def clone(self, sys):
         new = EmptyCopy()
         d = dict(self.__dict__)
-        d['sys'] = sys
+        d["sys"] = sys
         new.__dict__.update(d)
         new.__class__ = self.__class__
         return new
@@ -170,7 +169,7 @@ class CodingTypeZ(object):
         return
 
     def transfer_abs_sq(self):
-        #real/imaginary part of root
+        # real/imaginary part of root
         return TFmath.abs_sq(self.transfer())
 
     def derivative_wtrans(self):

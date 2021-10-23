@@ -13,10 +13,12 @@ from wavestate.bunch import Bunch
 
 
 def BWz(r, F_nyquist_Hz):
-    return ((1 - r) * F_nyquist_Hz)
+    return (1 - r) * F_nyquist_Hz
+
 
 def BWz_neg(r, F_nyquist_Hz):
-    return ((r - 1) * F_nyquist_Hz)
+    return (r - 1) * F_nyquist_Hz
+
 
 def get_aspect(ax):
     figW, figH = ax.get_figure().get_size_inches()
@@ -24,11 +26,12 @@ def get_aspect(ax):
     _, _, w, h = ax.get_position().bounds
     return (figW * w) / (figH * h)
 
+
 def ZPKrep2Sf(ZPKrep):
     if ZPKrep.F_nyquist_Hz is None:
         return ZPKrep
     else:
-        #TODO, make this use some other standard function
+        # TODO, make this use some other standard function
         def remap(rB):
             rB = rB.copy()
             select_r = rB.r > 0
@@ -40,11 +43,10 @@ def ZPKrep2Sf(ZPKrep):
             return rB
 
     ret = Bunch(
-        zeros         = remap(ZPKrep.zeros),
-        poles         = remap(ZPKrep.poles),
-        zeros_overlay = remap(ZPKrep.zeros_overlay),
-        poles_overlay = remap(ZPKrep.poles_overlay),
-        F_nyquist_Hz = None,
+        zeros=remap(ZPKrep.zeros),
+        poles=remap(ZPKrep.poles),
+        zeros_overlay=remap(ZPKrep.zeros_overlay),
+        poles_overlay=remap(ZPKrep.poles_overlay),
+        F_nyquist_Hz=None,
     )
     return ret
-

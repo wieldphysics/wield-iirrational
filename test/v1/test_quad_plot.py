@@ -19,43 +19,46 @@ except ImportError:
 else:
     module_import_skip = False
 
-@pytest.mark.skipif(module_import_skip, reason = 'cannot import IIRrational_test_data')
+
+@pytest.mark.skipif(module_import_skip, reason="cannot import IIRrational_test_data")
 def test_quad_M0_P2V_10Hz(request, browser, plotsections, plot_verbosity):
-    data_name = 'quad_M0_P2V_10Hz'
+    data_name = "quad_M0_P2V_10Hz"
     out = v1.data2filter(
         IIRrational_data_dev(
             data_name,
-            instance_num = 1,
-            set_num = 2,
+            instance_num=1,
+            set_num=2,
         ),
-        order_initial = 80,
+        order_initial=80,
     )
 
-    with plot_on_assert(__file__, request, out.fitter, plot_anyway = True):
+    with plot_on_assert(__file__, request, out.fitter, plot_anyway=True):
         pass
-        #assert(False)
+        # assert(False)
     return
 
-@pytest.mark.skipif(module_import_skip, reason = 'cannot import IIRrational_test_data')
+
+@pytest.mark.skipif(module_import_skip, reason="cannot import IIRrational_test_data")
 def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
-    data_name = 'quad_M0_P2V_10Hz'
+    data_name = "quad_M0_P2V_10Hz"
     out = v1.data2filter(
         IIRrational_data_dev(
             data_name,
-            instance_num = 1,
-            set_num = 2,
+            instance_num=1,
+            set_num=2,
         ),
-        F_nyquist_Hz = None,
-        order_initial = 80,
-        delay_s = 0,
+        F_nyquist_Hz=None,
+        order_initial=80,
+        delay_s=0,
     )
-    with plot_on_assert(__file__, request, out.fitter, plot_anyway = True):
+    with plot_on_assert(__file__, request, out.fitter, plot_anyway=True):
         pass
-        #assert(False)
+        # assert(False)
     return
 
-#@pytest.mark.skipif(module_import_skip, reason = 'cannot import IIRrational_test_data')
-#def test_quad_M0_P2V_10Hz_rat_Z(browser, plotsections, plot_verbosity):
+
+# @pytest.mark.skipif(module_import_skip, reason = 'cannot import IIRrational_test_data')
+# def test_quad_M0_P2V_10Hz_rat_Z(browser, plotsections, plot_verbosity):
 #    data_name = 'quad_M0_P2V_10Hz'
 #    out = v1.rational_disc_fit(
 #        IIRrational_data_dev(
@@ -78,8 +81,8 @@ def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
 #    plt.show()
 #    return
 #
-#@pytest.mark.skipif(module_import_skip, reason = 'cannot import IIRrational_test_data')
-#def test_quad_M0_P2V_10Hz_rat_S(browser, plotsections, plot_verbosity):
+# @pytest.mark.skipif(module_import_skip, reason = 'cannot import IIRrational_test_data')
+# def test_quad_M0_P2V_10Hz_rat_S(browser, plotsections, plot_verbosity):
 #    data_name = 'quad_M0_P2V_10Hz'
 #    out = v1.rational_disc_fit(
 #        IIRrational_data_dev(
@@ -103,5 +106,5 @@ def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
 #    return
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     test_simple1(False, None, 10)

@@ -28,19 +28,19 @@ def reldeg_split(relative_degree):
 
 def rational_cheby_fit(
     ZPKrep,
-    order           = None,
-    order_max       = None,
-    order_min       = 20,
-    relative_degree = None,
-    aid             = None,
+    order=None,
+    order_max=None,
+    order_min=20,
+    relative_degree=None,
+    aid=None,
 ):
-    aid              = ensure_aid(aid)
+    aid = ensure_aid(aid)
 
     if ZPKrep.F_nyquist_Hz is not None:
         raise RuntimeError("v2 only supports S domain for now")
 
     if order is not None:
-        order     = int(order)
+        order = int(order)
     order_max = int(order_max)
     order_min = int(order_min)
 
@@ -50,19 +50,19 @@ def rational_cheby_fit(
     if order is not None:
         return cheby_single(
             ZPKrep,
-            relative_degree  = relative_degree,
-            order            = order,
-            aid              = aid,
+            relative_degree=relative_degree,
+            order=order,
+            aid=aid,
         )
 
-    #otherwise, scan through
+    # otherwise, scan through
     N_current = N_first
 
     fitter_last = cheby_single(
         ZPKrep,
-        order            = N_current ,
-        relative_degree  = relative_degree,
-        aid              = aid,
+        order=N_current,
+        relative_degree=relative_degree,
+        aid=aid,
     )
     restot_last = fitter_last.residuals_average
 
@@ -81,13 +81,13 @@ def rational_cheby_fit(
 
             fitter = cheby_single(
                 ZPKrep,
-                order           = N_current,
-                relative_degree = relative_degree,
-                aid             = aid,
+                order=N_current,
+                relative_degree=relative_degree,
+                aid=aid,
             )
             restot = fitter.residuals_average
             fitter_red = fitter.copy()
-            fitter_red.matched_pairs_clear(Q_rank_cutoff = .2)
+            fitter_red.matched_pairs_clear(Q_rank_cutoff=0.2)
             restot_red = fitter_red.residuals_average
 
             if restot_last < restot:
@@ -109,7 +109,7 @@ def rational_cheby_fit(
                     fitter_use = fitter_last
                 aid.log_debug(8, "Using current")
                 break
-            #else continue the loop
+            # else continue the loop
             fitter_last = fitter
             restot_last = restot
 
@@ -118,9 +118,9 @@ def rational_cheby_fit(
 
 def cheby_single(
     ZPKrep,
-    order           = 20,
-    relative_degree = 0,
-    aid             = None,
+    order=20,
+    relative_degree=0,
+    aid=None,
 ):
     aid = ensure_aid(aid)
 
@@ -132,9 +132,9 @@ def cheby_single(
 
     reln, reld = reldeg_split(relative_degree)
     fitter = ChebychevFilter(
-        ZPKrep = ZPKrep,
-        nzeros = (order//2) + reln,
-        npoles = (order//2) + reld,
+        ZPKrep=ZPKrep,
+        nzeros=(order // 2) + reln,
+        npoles=(order // 2) + reld,
     )
 
     fitter.fit_zeros()
@@ -148,10 +148,10 @@ def cheby_single(
     fitter.fit_SVD()
     fitter.fit_poles()
     fitter.fit_zeros()
-    fitter.matched_pairs_clear(Q_rank_cutoff = .5)
+    fitter.matched_pairs_clear(Q_rank_cutoff=0.5)
     fitter.stabilize = True
-    #fitter.npoles = len(fitter.poles)
-    #fitter.nzeros = len(fitter.zeros)
+    # fitter.npoles = len(fitter.poles)
+    # fitter.nzeros = len(fitter.zeros)
     ##fitter.stabilize = True
     fitter.fit_poles()
     fitter.fit_zeros()
@@ -164,8 +164,8 @@ def cheby_single(
     fitter.fit_zeros()
     fitter.fit_poles()
     fitter.fit_zeros()
-    fitter.matched_pairs_clear(Q_rank_cutoff = .5)
-    #fitter.stabilize = False
+    fitter.matched_pairs_clear(Q_rank_cutoff=0.5)
+    # fitter.stabilize = False
     fitter.fit_poles()
     fitter.fit_zeros()
     fitter.fit_poles()
@@ -175,5 +175,3 @@ def cheby_single(
     fitter.fit_poles()
     fitter.fit_zeros()
     return fitter
-
-

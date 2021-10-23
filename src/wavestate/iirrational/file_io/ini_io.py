@@ -9,14 +9,14 @@
 """
 
 
-
 def ini_load(fname):
     import configparser
-    dummy_section = 'dummy_section'
-    with open(fname) as f:
-        file_content = '[{}]\n'.format(dummy_section) + f.read()
 
-    cp = configparser.ConfigParser(interpolation = None)
+    dummy_section = "dummy_section"
+    with open(fname) as f:
+        file_content = "[{}]\n".format(dummy_section) + f.read()
+
+    cp = configparser.ConfigParser(interpolation=None)
     cp.read_string(file_content)
     base = dict()
     for op in cp.options(dummy_section):
@@ -28,10 +28,8 @@ def ini_load(fname):
         for op in cp.options(sec):
             d[op] = cp.get(sec, op)
     if set(base.keys()) ^ set(sections.keys()):
-        raise RuntimeError((
-            "ini file {} has setting which conflicts with section name").format(fname)
+        raise RuntimeError(
+            ("ini file {} has setting which conflicts with section name").format(fname)
         )
     base.update(sections)
     return base
-
-

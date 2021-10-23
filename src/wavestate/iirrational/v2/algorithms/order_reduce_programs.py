@@ -22,11 +22,11 @@ def Q_rank_calc(z, p):
         if p.real == z.real:
             Q_rank = 0
         else:
-            #TODO
-            #should use the data spacing to regularize this case
+            # TODO
+            # should use the data spacing to regularize this case
             Q_rank = 1e3
     else:
-        Q_rank = abs(p-z) * (1/(p.real)**2 + 1/(z.real)**2)**.5
+        Q_rank = abs(p - z) * (1 / (p.real) ** 2 + 1 / (z.real) ** 2) ** 0.5
     return Q_rank
 
 
@@ -37,7 +37,7 @@ def Q_rank_single(r):
 
 def ranking_reduction_cc(
     aid,
-    marginalize_delay = True,
+    marginalize_delay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -45,9 +45,9 @@ def ranking_reduction_cc(
     Pc = aid.fitter.poles.c
     Zc = aid.fitter.zeros.c
 
-    #can always works since this is a balanced reduction
+    # can always works since this is a balanced reduction
 
-    #print(len(Zc), len(Pc))
+    # print(len(Zc), len(Pc))
     pairs = set()
     lZP = TFmath.nearest_idx(Zc, Pc)
     pairs.update(enumerate(lZP))
@@ -57,7 +57,7 @@ def ranking_reduction_cc(
         pairs.add((idx_z, idx_p))
 
     lPZ = TFmath.nearest_idx(Pc, -Zc.conjugate())
-    #only include ones which are pairing unstable with stable
+    # only include ones which are pairing unstable with stable
     for idx_p, idx_z in enumerate(lPZ):
         if Pc[idx_p].real * Zc[idx_z].real < 0:
             pairs.add((idx_z, idx_p))
@@ -66,16 +66,18 @@ def ranking_reduction_cc(
         if idx_z is None or idx_p is None:
             continue
         algorithms.resrank_program(
-            aid.fitter, rank_zp_idx_list,
-            'cc', ['ZcDelIdx', idx_z, 'PcDelIdx', idx_p],
-            marginalize_delay = marginalize_delay
+            aid.fitter,
+            rank_zp_idx_list,
+            "cc",
+            ["ZcDelIdx", idx_z, "PcDelIdx", idx_p],
+            marginalize_delay=marginalize_delay,
         )
     return rank_zp_idx_list
 
 
 def ranking_reduction_c(
     aid,
-    marginalize_delay = True,
+    marginalize_delay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -84,30 +86,34 @@ def ranking_reduction_c(
     Zc = aid.fitter.zeros.c
 
     orders = aid.fitter_orders()
-    rdmax = aid.hint('relative_degree_max')
-    rdmin = aid.hint('relative_degree_min')
+    rdmax = aid.hint("relative_degree_max")
+    rdmin = aid.hint("relative_degree_min")
 
     if rdmin is None or orders.reldeg - 2 >= rdmin:
         for idx_z, z in enumerate(Zc):
             algorithms.resrank_program(
-                aid.fitter, rank_zp_idx_list,
-                'c', ['ZcDelIdx', idx_z],
-                marginalize_delay = marginalize_delay
+                aid.fitter,
+                rank_zp_idx_list,
+                "c",
+                ["ZcDelIdx", idx_z],
+                marginalize_delay=marginalize_delay,
             )
 
     if rdmax is None or orders.reldeg + 2 <= rdmax:
         for idx_p, p in enumerate(Pc):
             algorithms.resrank_program(
-                aid.fitter, rank_zp_idx_list,
-                'c', ['PcDelIdx', idx_p],
-                marginalize_delay = marginalize_delay
+                aid.fitter,
+                rank_zp_idx_list,
+                "c",
+                ["PcDelIdx", idx_p],
+                marginalize_delay=marginalize_delay,
             )
     return rank_zp_idx_list
 
 
 def ranking_reduction_r(
     aid,
-    marginalize_delay = True,
+    marginalize_delay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -116,30 +122,34 @@ def ranking_reduction_r(
     Zr = aid.fitter.zeros.r
 
     orders = aid.fitter_orders()
-    rdmax = aid.hint('relative_degree_max')
-    rdmin = aid.hint('relative_degree_min')
+    rdmax = aid.hint("relative_degree_max")
+    rdmin = aid.hint("relative_degree_min")
 
     if rdmin is None or orders.reldeg - 1 >= rdmin:
         for idx_z, z in enumerate(Zr):
             algorithms.resrank_program(
-                aid.fitter, rank_zp_idx_list,
-                'r', ['ZrDelIdx', idx_z],
-                marginalize_delay = marginalize_delay
+                aid.fitter,
+                rank_zp_idx_list,
+                "r",
+                ["ZrDelIdx", idx_z],
+                marginalize_delay=marginalize_delay,
             )
 
     if rdmax is None or orders.reldeg + 1 <= rdmax:
         for idx_p, p in enumerate(Pr):
             algorithms.resrank_program(
-                aid.fitter, rank_zp_idx_list,
-                'r', ['PrDelIdx', idx_p],
-                marginalize_delay = marginalize_delay
+                aid.fitter,
+                rank_zp_idx_list,
+                "r",
+                ["PrDelIdx", idx_p],
+                marginalize_delay=marginalize_delay,
             )
     return rank_zp_idx_list
 
 
 def ranking_reduction_rr(
     aid,
-    marginalize_delay = True,
+    marginalize_delay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -147,7 +157,7 @@ def ranking_reduction_rr(
     Pr = aid.fitter.poles.r
     Zr = aid.fitter.zeros.r
 
-    #doesn't need to check reldeg since this preserves it
+    # doesn't need to check reldeg since this preserves it
 
     pairs = set()
     lZP = TFmath.nearest_idx(Zr, Pr)
@@ -157,9 +167,9 @@ def ranking_reduction_rr(
     for idx_p, idx_z in enumerate(lPZ):
         pairs.add((idx_z, idx_p))
 
-    #TODO, include these via an option in case of starvation?
+    # TODO, include these via an option in case of starvation?
     lPZ = TFmath.nearest_idx(Pr, -Zr)
-    #only include ones which are pairing unstable with stable
+    # only include ones which are pairing unstable with stable
     for idx_p, idx_z in enumerate(lPZ):
         if Pr[idx_p] * Zr[idx_z] < 0:
             pairs.add((idx_z, idx_p))
@@ -168,16 +178,18 @@ def ranking_reduction_rr(
         if idx_z is None or idx_p is None:
             continue
         algorithms.resrank_program(
-            aid.fitter, rank_zp_idx_list,
-            'rr', ['ZrDelIdx', idx_z, 'PrDelIdx', idx_p],
-            marginalize_delay = marginalize_delay
+            aid.fitter,
+            rank_zp_idx_list,
+            "rr",
+            ["ZrDelIdx", idx_z, "PrDelIdx", idx_p],
+            marginalize_delay=marginalize_delay,
         )
     return rank_zp_idx_list
 
 
 def ranking_reduction_c2r(
     aid,
-    marginalize_delay  = True,
+    marginalize_delay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -186,8 +198,8 @@ def ranking_reduction_c2r(
     Zc = aid.fitter.zeros.c
 
     orders = aid.fitter_orders()
-    rdmax = aid.hint('relative_degree_max')
-    rdmin = aid.hint('relative_degree_min')
+    rdmax = aid.hint("relative_degree_max")
+    rdmin = aid.hint("relative_degree_min")
 
     if rdmin is None or orders.reldeg - 1 >= rdmin:
         for idx_z, z in enumerate(Zc):
@@ -197,9 +209,11 @@ def ranking_reduction_c2r(
 
             z_r = -abs(z)
             algorithms.resrank_program(
-                aid.fitter, rank_zp_idx_list,
-                'c2r', ['ZcDelIdx', idx_z, 'ZrAdd', z_r],
-                marginalize_delay = marginalize_delay
+                aid.fitter,
+                rank_zp_idx_list,
+                "c2r",
+                ["ZcDelIdx", idx_z, "ZrAdd", z_r],
+                marginalize_delay=marginalize_delay,
             )
 
     if rdmax is None or orders.reldeg + 1 <= rdmax:
@@ -210,9 +224,11 @@ def ranking_reduction_c2r(
 
             p_r = -abs(p)
             algorithms.resrank_program(
-                aid.fitter, rank_zp_idx_list,
-                'c2r', ['PcDelIdx', idx_p, 'PrAdd', p_r],
-                marginalize_delay = marginalize_delay
+                aid.fitter,
+                rank_zp_idx_list,
+                "c2r",
+                ["PcDelIdx", idx_p, "PrAdd", p_r],
+                marginalize_delay=marginalize_delay,
             )
 
     return rank_zp_idx_list
@@ -220,7 +236,7 @@ def ranking_reduction_c2r(
 
 def ranking_reduction_crr(
     aid,
-    marginalize_delay  = True,
+    marginalize_delay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -242,9 +258,14 @@ def ranking_reduction_crr(
     Pr_BWsort = Pr_BWsort[Pr_argBWsort]
 
     def crr_ranker(
-        Xc, Xc_argQsort,
-        Yr, Yr_BWsort, Yr_argBWsort,
-        Xc_code, Yr_code, include_unbalanced,
+        Xc,
+        Xc_argQsort,
+        Yr,
+        Yr_BWsort,
+        Yr_argBWsort,
+        Xc_code,
+        Yr_code,
+        include_unbalanced,
     ):
         if len(Yr_BWsort) <= 1:
             return
@@ -263,17 +284,19 @@ def ranking_reduction_crr(
                 else:
                     idx_y1 = y_sort_idx
                     idx_y2 = y_sort_idx + 1
-                #remap from sorted idx back into the original list idx
+                # remap from sorted idx back into the original list idx
                 idx_y1 = Yr_argBWsort[idx_y1]
                 idx_y2 = Yr_argBWsort[idx_y2]
-                #ensure that the ordering of the program is guaranteed
+                # ensure that the ordering of the program is guaranteed
                 if idx_y1 > idx_y2:
                     idx_y1, idx_y2 = idx_y2, idx_y1
 
                 algorithms.resrank_program(
-                    aid.fitter, rank_zp_idx_list,
-                    'crr', [Xc_code, idx_x, Yr_code, idx_y1, Yr_code, idx_y2],
-                    marginalize_delay = marginalize_delay
+                    aid.fitter,
+                    rank_zp_idx_list,
+                    "crr",
+                    [Xc_code, idx_x, Yr_code, idx_y1, Yr_code, idx_y2],
+                    marginalize_delay=marginalize_delay,
                 )
 
             if include_unbalanced and len(Yr_BWsort) >= 1:
@@ -286,32 +309,41 @@ def ranking_reduction_crr(
                         idx_y = y_sort_idx
                     else:
                         idx_y = y_sort_idx + 1
-                #remap from sorted idx back into the original list idx
+                # remap from sorted idx back into the original list idx
                 idx_y = Yr_argBWsort[idx_y]
 
                 algorithms.resrank_program(
-                    aid.fitter, rank_zp_idx_list,
-                    'cr', [Xc_code, idx_x, Yr_code, idx_y],
-                    marginalize_delay = marginalize_delay
+                    aid.fitter,
+                    rank_zp_idx_list,
+                    "cr",
+                    [Xc_code, idx_x, Yr_code, idx_y],
+                    marginalize_delay=marginalize_delay,
                 )
 
     orders = aid.fitter_orders()
-    rdmax = aid.hint('relative_degree_max')
-    rdmin = aid.hint('relative_degree_min')
+    rdmax = aid.hint("relative_degree_max")
+    rdmin = aid.hint("relative_degree_min")
 
     crr_ranker(
-        Xc = Zc, Xc_argQsort = Zc_argQsort,
-        Yr = Pr, Yr_BWsort = Pr_BWsort, Yr_argBWsort = Pr_argBWsort,
-        Xc_code = 'ZcDelIdx', Yr_code = 'PrDelIdx',
-        include_unbalanced = rdmin is None or orders.reldeg - 1 >= rdmin,
+        Xc=Zc,
+        Xc_argQsort=Zc_argQsort,
+        Yr=Pr,
+        Yr_BWsort=Pr_BWsort,
+        Yr_argBWsort=Pr_argBWsort,
+        Xc_code="ZcDelIdx",
+        Yr_code="PrDelIdx",
+        include_unbalanced=rdmin is None or orders.reldeg - 1 >= rdmin,
     )
 
     crr_ranker(
-        Xc = Pc, Xc_argQsort = Pc_argQsort,
-        Yr = Zr, Yr_BWsort = Zr_BWsort, Yr_argBWsort = Zr_argBWsort,
-        Xc_code = 'PcDelIdx', Yr_code = 'ZrDelIdx',
-        include_unbalanced = rdmax is None or orders.reldeg + 1 <= rdmax,
+        Xc=Pc,
+        Xc_argQsort=Pc_argQsort,
+        Yr=Zr,
+        Yr_BWsort=Zr_BWsort,
+        Yr_argBWsort=Zr_argBWsort,
+        Xc_code="PcDelIdx",
+        Yr_code="ZrDelIdx",
+        include_unbalanced=rdmax is None or orders.reldeg + 1 <= rdmax,
     )
 
     return rank_zp_idx_list
-

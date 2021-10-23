@@ -19,27 +19,26 @@ from . import ss_algorithms
 
 
 class StateSpaceDense(object):
-
     def __init__(
         self,
-        A        = np.array([[]]),
-        B        = np.array([[]]),
-        C        = np.array([[]]),
-        D        = None,
-        E        = None,
-        inputs   = None,
-        outputs  = None,
-        states   = None,
-        constr   = None,
-        inputsN  = None,
-        outputN  = None,
-        statesN  = None,
-        constrN  = None,
-        name     = None,
-        N_output = None,
-        N_inputs = None,
-        N_states = None,
-        N_constr = None,
+        A=np.array([[]]),
+        B=np.array([[]]),
+        C=np.array([[]]),
+        D=None,
+        E=None,
+        inputs=None,
+        outputs=None,
+        states=None,
+        constr=None,
+        inputsN=None,
+        outputN=None,
+        statesN=None,
+        constrN=None,
+        name=None,
+        N_output=None,
+        N_inputs=None,
+        N_states=None,
+        N_constr=None,
     ):
         self.name = name
         if N_states is None:
@@ -64,13 +63,15 @@ class StateSpaceDense(object):
 
         if E is None:
             if N_constr != N_states:
-                raise RuntimeError((
-                    "E must be given since the number of "
-                    "constraints is different than the number of states"
-                ))
+                raise RuntimeError(
+                    (
+                        "E must be given since the number of "
+                        "constraints is different than the number of states"
+                    )
+                )
             E = np.diag(np.ones(N_states))
         else:
-            assert(E.shape == (N_constr, N_states))
+            assert E.shape == (N_constr, N_states)
 
         if D is None:
             D = np.zeros((N_output, N_inputs))
@@ -88,10 +89,10 @@ class StateSpaceDense(object):
         if inputsN is None:
             inputsN = np.ones(N_inputs)
         self.inputs = Bunch(
-            N        = N_inputs,
-            idx2name = inputs,
-            idx2N    = np.cumsum([0] + list(inputsN), dtype = int),
-            name2idx = {k: i for i, k in enumerate(inputs)},
+            N=N_inputs,
+            idx2name=inputs,
+            idx2N=np.cumsum([0] + list(inputsN), dtype=int),
+            name2idx={k: i for i, k in enumerate(inputs)},
         )
 
         if outputs is None:
@@ -101,10 +102,10 @@ class StateSpaceDense(object):
         if outputN is None:
             outputN = np.ones(N_output)
         self.output = Bunch(
-            N        = N_output,
-            idx2name = outputs,
-            idx2N    = np.cumsum([0] + list(outputN), dtype = int),
-            name2idx = {k: i for i, k in enumerate(outputs)},
+            N=N_output,
+            idx2name=outputs,
+            idx2N=np.cumsum([0] + list(outputN), dtype=int),
+            name2idx={k: i for i, k in enumerate(outputs)},
         )
 
         if states is None:
@@ -114,10 +115,10 @@ class StateSpaceDense(object):
         if statesN is None:
             statesN = [N_states]
         self.states = Bunch(
-            N        = N_states,
-            idx2name = states,
-            idx2N    = np.cumsum([0] + list(statesN), dtype = int),
-            name2idx = {k: i for i, k in enumerate(states)},
+            N=N_states,
+            idx2name=states,
+            idx2N=np.cumsum([0] + list(statesN), dtype=int),
+            name2idx={k: i for i, k in enumerate(states)},
         )
 
         if constr is None:
@@ -127,10 +128,10 @@ class StateSpaceDense(object):
         if constrN is None:
             constrN = [N_constr]
         self.constr = Bunch(
-            idx2name = constr,
-            N        = N_constr,
-            idx2N    = np.cumsum([0] + list(constrN), dtype = int),
-            name2idx = {k: i for i, k in enumerate(constr)},
+            idx2name=constr,
+            N=N_constr,
+            idx2N=np.cumsum([0] + list(constrN), dtype=int),
+            name2idx={k: i for i, k in enumerate(constr)},
         )
 
         check_SS_group(self.inputs)
@@ -140,13 +141,13 @@ class StateSpaceDense(object):
         return
 
     def group(self, which):
-        if which == 'inputs':
+        if which == "inputs":
             return self.inputs
-        elif which == 'output':
+        elif which == "output":
             return self.output
-        elif which == 'states':
+        elif which == "states":
             return self.states
-        elif which == 'constr':
+        elif which == "constr":
             return self.constr
         else:
             raise RuntimeError("State names unrecognized")
@@ -167,34 +168,33 @@ class StateSpaceDense(object):
             mat[:, Sl1] = mat[:, Sl2]
             mat[:, Sl2] = temp
 
-        if which == 'inputs':
+        if which == "inputs":
             copy2(self.B)
             copy2(self.D)
-        elif which == 'output':
+        elif which == "output":
             copy1(self.C)
             copy1(self.D)
-        elif which == 'states':
+        elif which == "states":
             copy2(self.C)
             copy2(self.A)
             copy2(self.E)
-        elif which == 'constr':
+        elif which == "constr":
             copy1(self.B)
             copy1(self.A)
             copy1(self.E)
         return
 
-    def percolate_raw(self, which, ranges, keep = True):
+    def percolate_raw(self, which, ranges, keep=True):
         ranges = sorted(ranges)
 
         if keep:
+
             def percolate1(mat):
                 segments = []
                 for r in ranges:
                     A1, A2 = r
                     Sl1 = slice(A1, A2)
-                    segments.append(
-                        np.copy(mat[Sl1, :])
-                    )
+                    segments.append(np.copy(mat[Sl1, :]))
                 past_r = ranges[0]
                 past_idx = past_r[0]
                 for r in ranges[1:]:
@@ -219,9 +219,7 @@ class StateSpaceDense(object):
                 for r in ranges:
                     A1, A2 = r
                     Sl1 = slice(A1, A2)
-                    segments.append(
-                        np.copy(mat[:, Sl1])
-                    )
+                    segments.append(np.copy(mat[:, Sl1]))
                 past_r = ranges[0]
                 past_idx = past_r[0]
                 for r in ranges[1:]:
@@ -240,7 +238,9 @@ class StateSpaceDense(object):
                     Sl2 = slice(past_idx, next_idx)
                     mat[:, Sl2] = seg
                     past_idx = next_idx
+
         else:
+
             def percolate1(mat):
                 past_r = ranges[0]
                 past_idx = past_r[0]
@@ -271,17 +271,17 @@ class StateSpaceDense(object):
                 Sl2 = slice(past_idx, next_idx)
                 mat[:, Sl2] = mat[:, Sl1]
 
-        if which == 'inputs':
+        if which == "inputs":
             percolate2(self.B)
             percolate2(self.D)
-        elif which == 'output':
+        elif which == "output":
             percolate1(self.C)
             percolate1(self.D)
-        elif which == 'states':
+        elif which == "states":
             percolate2(self.C)
             percolate2(self.A)
             percolate2(self.E)
-        elif which == 'constr':
+        elif which == "constr":
             percolate1(self.B)
             percolate1(self.A)
             percolate1(self.E)
@@ -290,10 +290,10 @@ class StateSpaceDense(object):
         return
 
     def names_collect(
-            self,
-            which,
-            to,
-            fr = None,
+        self,
+        which,
+        to,
+        fr=None,
     ):
         """
         Rename states
@@ -303,33 +303,33 @@ class StateSpaceDense(object):
         G = self.group(which)
 
         if fr is None:
-            #completely rename
+            # completely rename
             G.idx2name.clear()
             G.idx2name = [to]
             G.idx2N = np.asarray([0, G.N])
-            G.name2idx = {to : 0}
+            G.name2idx = {to: 0}
         else:
             raise NotImplementedError()
 
     def names_split(
-            self,
-            which,
-            to,
-            fr,
+        self,
+        which,
+        to,
+        fr,
     ):
         """
         split state names
 
         which is the type, must be one of "inputs, output, states, constr"
         """
-        #G = self.group(which)
+        # G = self.group(which)
         raise NotImplementedError()
 
     def names_change(
-            self,
-            which,
-            to,
-            fr,
+        self,
+        which,
+        to,
+        fr,
     ):
         """
         Rename states
@@ -369,26 +369,24 @@ class StateSpaceDense(object):
         for name in names:
             idx = self.output.name2idx.pop(name)
             self.output.idx2N[idx]
-            ranges.append(
-                (self.output.idx2N[idx], self.output.idx2N[idx + 1])
-            )
+            ranges.append((self.output.idx2N[idx], self.output.idx2N[idx + 1]))
             idx_del.append(idx)
 
         idx_del = sorted(idx_del)
-        #must go highest to lowest due to index deletion
+        # must go highest to lowest due to index deletion
         for idx in reversed(idx_del):
             del Nlist[idx]
             del self.output.idx2name[idx]
-        #now need to fix the name2idx list since the idx have changed
-        #reuse the last idx of the last iteration
+        # now need to fix the name2idx list since the idx have changed
+        # reuse the last idx of the last iteration
         for idx in range(idx, len(self.output.idx2name)):
             name = self.output.idx2name[idx]
             self.output.name2idx[name] = idx
 
-        self.output.idx2N = np.cumsum([0] + list(Nlist), dtype = int)
+        self.output.idx2N = np.cumsum([0] + list(Nlist), dtype=int)
         self.output.N = self.output.idx2N[-1]
 
-        self.percolate_raw('output', ranges, keep = False)
+        self.percolate_raw("output", ranges, keep=False)
         Ntotal = 0
         for r in ranges:
             Ntotal += r[1] - r[0]
@@ -419,18 +417,19 @@ class StateSpaceDense(object):
         Zb = np.zeros_like(self.B)
         Oi = np.diag(np.ones(self.inputs.N))
 
-        A = np.block([
-            [self.A, self.B],
-        ])
+        A = np.block(
+            [
+                [self.A, self.B],
+            ]
+        )
 
-        E = np.block([
-            [self.E, Zb],
-        ])
+        E = np.block(
+            [
+                [self.E, Zb],
+            ]
+        )
 
-        C = np.block([
-            [self.C, self.D],
-            [Zb.T, Oi]
-        ])
+        C = np.block([[self.C, self.D], [Zb.T, Oi]])
 
         D = np.array([]).reshape((N_output, 0))
         B = np.array([]).reshape((N_states, 0))
@@ -444,35 +443,35 @@ class StateSpaceDense(object):
 
         new.constr = copy.deepcopy(self.constr)
         new.inputs = Bunch(
-            idx2name = [],
-            idx2N    = np.asarray([0]),
-            name2idx = {},
-            N        = 0,
+            idx2name=[],
+            idx2N=np.asarray([0]),
+            name2idx={},
+            N=0,
         )
         outlen = len(self.output.idx2name)
-        outN   = self.output.N
+        outN = self.output.N
         name2idx = dict(self.output.name2idx)
         for iname, idx in self.inputs.name2idx.items():
-            assert(iname not in name2idx)
+            assert iname not in name2idx
             name2idx[iname] = idx + outlen
         new.output = Bunch(
-            idx2name = self.output.idx2name + self.inputs.idx2name,
-            idx2N    = np.concatenate([self.output.idx2N, outN + self.inputs.idx2N[1:]]),
-            name2idx = name2idx,
-            N        = self.output.N + self.inputs.N,
+            idx2name=self.output.idx2name + self.inputs.idx2name,
+            idx2N=np.concatenate([self.output.idx2N, outN + self.inputs.idx2N[1:]]),
+            name2idx=name2idx,
+            N=self.output.N + self.inputs.N,
         )
 
         stlen = len(self.states.idx2name)
-        stN   = self.states.N
+        stN = self.states.N
         name2idx = dict(self.states.name2idx)
         for iname, idx in self.inputs.name2idx.items():
-            assert(iname not in name2idx)
+            assert iname not in name2idx
             name2idx[iname] = idx + stlen
         new.states = Bunch(
-            idx2name = self.states.idx2name + self.inputs.idx2name,
-            idx2N    = np.concatenate([self.states.idx2N, stN + self.inputs.idx2N[1:]]),
-            name2idx = name2idx,
-            N        = self.states.N + self.inputs.N,
+            idx2name=self.states.idx2name + self.inputs.idx2name,
+            idx2N=np.concatenate([self.states.idx2N, stN + self.inputs.idx2N[1:]]),
+            name2idx=name2idx,
+            N=self.states.N + self.inputs.N,
         )
         check_SS_group(new.inputs)
         check_SS_group(new.output)
@@ -481,18 +480,18 @@ class StateSpaceDense(object):
         new.name = self.name
         return new
 
-    def xfer(self, F_Hz, iname, oname, isub = 0, osub = 0):
+    def xfer(self, F_Hz, iname, oname, isub=0, osub=0):
         idx_i = self.inputs.name2idx[iname]
         idx_o = self.output.name2idx[oname]
         return xfer_algorithms.ss2xfer(
-            A       = self.A,
-            B       = self.B,
-            C       = self.C,
-            D       = self.D,
-            E       = self.E,
-            F_Hz    = F_Hz,
-            idx_in  = idx_i + isub,
-            idx_out = idx_o + osub,
+            A=self.A,
+            B=self.B,
+            C=self.C,
+            D=self.D,
+            E=self.E,
+            F_Hz=F_Hz,
+            idx_in=idx_i + isub,
+            idx_out=idx_o + osub,
         )
 
     def constrain(self, name, F, outputs):
@@ -501,12 +500,7 @@ class StateSpaceDense(object):
 
         TODO, add ability to have many constraint names
         """
-        return self.constraints(
-            [
-                name,
-                (F, outputs)
-            ]
-        )
+        return self.constraints([name, (F, outputs)])
 
     def constraints(self, name, bond_list):
         """
@@ -556,32 +550,52 @@ class StateSpaceDense(object):
             Aadd = np.vstack(Aadd)
             Dadd = np.vstack(Dadd)
 
-            assert(name not in self.constr.name2idx)
+            assert name not in self.constr.name2idx
 
-            A = np.block([
-                [self.A,  ],
-                [Aadd, ],
-            ])
+            A = np.block(
+                [
+                    [
+                        self.A,
+                    ],
+                    [
+                        Aadd,
+                    ],
+                ]
+            )
 
-            E = np.block([
-                [self.E,                 ],
-                [np.zeros_like(Aadd), ],
-            ])
+            E = np.block(
+                [
+                    [
+                        self.E,
+                    ],
+                    [
+                        np.zeros_like(Aadd),
+                    ],
+                ]
+            )
 
-            B = np.block([
-                [self.B,  ],
-                [Dadd, ]
-            ])
+            B = np.block(
+                [
+                    [
+                        self.B,
+                    ],
+                    [
+                        Dadd,
+                    ],
+                ]
+            )
 
             self.constr.name2idx[name] = len(self.constr.idx2name)
             self.constr.idx2name.append(name)
-            self.constr.idx2N = np.concatenate([self.constr.idx2N, [self.constr.idx2N[-1] + Nplus]])
+            self.constr.idx2N = np.concatenate(
+                [self.constr.idx2N, [self.constr.idx2N[-1] + Nplus]]
+            )
             self.constr.N += Nplus
             self.A = A
             self.E = E
             self.B = B
-            assert(self.A.shape[0] == self.constr.N)
-            assert(self.E.shape[0] == self.constr.N)
+            assert self.A.shape[0] == self.constr.N
+            assert self.E.shape[0] == self.constr.N
             check_SS_group(self.constr)
 
         for bond in bond_list:
@@ -594,25 +608,25 @@ class StateSpaceDense(object):
 
             if isinstance(F, str):
                 F = F.lower()
-                if F == 'bind':
+                if F == "bind":
                     outputs_grp = bond[1:]
                     for outputs in outputs_grp:
                         all_outs.update(outputs)
                         constr = np.array([[-1, 1]])
                         for pair in itertools.combinations(outputs, 2):
                             update(constr, pair)
-                elif F == 'flow':
+                elif F == "flow":
                     outputs_grp = bond[1:]
                     for outputs in outputs_grp:
                         all_outs.update(outputs)
                         update(np.ones(len(outputs)), outputs)
-                elif F == 'zero':
+                elif F == "zero":
                     outputs_grp = bond[1:]
                     for outputs in outputs_grp:
                         all_outs.update(outputs)
                         for output in outputs:
                             update([[1]], outputs)
-                elif F == 'sum_into':
+                elif F == "sum_into":
                     F, output_to, outputs_fr = bond
                     all_outs.add(output_to)
                     all_outs.update(outputs_fr)
@@ -622,12 +636,12 @@ class StateSpaceDense(object):
                 else:
                     raise RuntimeError("Unrecognized bond type")
             else:
-                #then F is a matrix to be used with each set of outputs in the group
+                # then F is a matrix to be used with each set of outputs in the group
                 F, outputs_grp = bond
                 for outputs in outputs_grp:
                     all_outs.update(outputs)
                     update(F, outputs)
-        #now do a final commit since there can be no more names
+        # now do a final commit since there can be no more names
         commit(name)
 
         return all_outs
@@ -638,24 +652,24 @@ class StateSpaceDense(object):
         self.name = name
 
         self.inputs = Bunch(
-            idx2name = [],
-            idx2N    = [0],
-            name2idx = {},
+            idx2name=[],
+            idx2N=[0],
+            name2idx={},
         )
         self.output = Bunch(
-            idx2name = [],
-            idx2N    = [0],
-            name2idx = {},
+            idx2name=[],
+            idx2N=[0],
+            name2idx={},
         )
         self.states = Bunch(
-            idx2name = [],
-            idx2N    = [0],
-            name2idx = {},
+            idx2name=[],
+            idx2N=[0],
+            name2idx={},
         )
         self.constr = Bunch(
-            idx2name = [],
-            idx2N    = [0],
-            name2idx = {},
+            idx2name=[],
+            idx2N=[0],
+            name2idx={},
         )
 
         ss_seq = []
@@ -668,10 +682,8 @@ class StateSpaceDense(object):
             Gtransfer(ss.output, self.output, seq_output)
             Gtransfer(ss.states, self.states, seq_states)
             Gtransfer(ss.constr, self.constr, seq_constr)
-            #print((ss, seq_inputs, seq_output, seq_states, seq_constr))
-            ss_seq.append(
-                (ss, seq_inputs, seq_output, seq_states, seq_constr)
-            )
+            # print((ss, seq_inputs, seq_output, seq_states, seq_constr))
+            ss_seq.append((ss, seq_inputs, seq_output, seq_states, seq_constr))
 
         self.inputs.idx2N = np.asarray(self.inputs.idx2N)
         self.output.idx2N = np.asarray(self.output.idx2N)
@@ -696,18 +708,18 @@ class StateSpaceDense(object):
         for (ss, seq_inputs, seq_output, seq_states, seq_constr) in ss_seq:
             for (Nc1f, Nc2f, Nc1t, Nc2t) in seq_constr:
                 for (Ns1f, Ns2f, Ns1t, Ns2t) in seq_states:
-                    A[Nc1t : Nc2t, Ns1t : Ns2t] = ss.A[Nc1f : Nc2f, Ns1f : Ns2f]
-                    E[Nc1t : Nc2t, Ns1t : Ns2t] = ss.E[Nc1f : Nc2f, Ns1f : Ns2f]
+                    A[Nc1t:Nc2t, Ns1t:Ns2t] = ss.A[Nc1f:Nc2f, Ns1f:Ns2f]
+                    E[Nc1t:Nc2t, Ns1t:Ns2t] = ss.E[Nc1f:Nc2f, Ns1f:Ns2f]
 
                 for (Ni1f, Ni2f, Ni1t, Ni2t) in seq_inputs:
-                    B[Nc1t : Nc2t, Ni1t : Ni2t] = ss.B[Nc1f : Nc2f, Ni1f : Ni2f]
+                    B[Nc1t:Nc2t, Ni1t:Ni2t] = ss.B[Nc1f:Nc2f, Ni1f:Ni2f]
 
             for (No1f, No2f, No1t, No2t) in seq_output:
                 for (Ns1f, Ns2f, Ns1t, Ns2t) in seq_states:
-                    C[No1t : No2t, Ns1t : Ns2t] = ss.C[No1f : No2f, Ns1f : Ns2f]
+                    C[No1t:No2t, Ns1t:Ns2t] = ss.C[No1f:No2f, Ns1f:Ns2f]
 
                 for (Ni1f, Ni2f, Ni1t, Ni2t) in seq_inputs:
-                    D[No1t : No2t, Ni1t : Ni2t] = ss.D[No1f : No2f, Ni1f : Ni2f]
+                    D[No1t:No2t, Ni1t:Ni2t] = ss.D[No1f:No2f, Ni1f:Ni2f]
 
         self.A = A
         self.E = E
@@ -730,14 +742,14 @@ class StateSpaceDense(object):
         self.output = copy.deepcopy(SSs[-1].output)
 
         self.states = Bunch(
-            idx2name = [],
-            idx2N    = [0],
-            name2idx = {},
+            idx2name=[],
+            idx2N=[0],
+            name2idx={},
         )
         self.constr = Bunch(
-            idx2name = [],
-            idx2N    = [0],
-            name2idx = {},
+            idx2name=[],
+            idx2N=[0],
+            name2idx={},
         )
 
         ss_seq = []
@@ -746,10 +758,8 @@ class StateSpaceDense(object):
             seq_constr = []
             Gtransfer(ss.states, self.states, seq_states)
             Gtransfer(ss.constr, self.constr, seq_constr)
-            #print((ss, seq_states, seq_constr))
-            ss_seq.append(
-                (ss, seq_states, seq_constr)
-            )
+            # print((ss, seq_states, seq_constr))
+            ss_seq.append((ss, seq_states, seq_constr))
 
         self.states.idx2N = np.asarray(self.states.idx2N)
         self.constr.idx2N = np.asarray(self.constr.idx2N)
@@ -768,8 +778,8 @@ class StateSpaceDense(object):
         for idx_ss, (ss, seq_states, seq_constr) in enumerate(ss_seq):
             for (Nc1f, Nc2f, Nc1t, Nc2t) in seq_constr:
                 for (Ns1f, Ns2f, Ns1t, Ns2t) in seq_states:
-                    A[Nc1t : Nc2t, Ns1t : Ns2t] = ss.A[Nc1f : Nc2f, Ns1f : Ns2f]
-                    E[Nc1t : Nc2t, Ns1t : Ns2t] = ss.E[Nc1f : Nc2f, Ns1f : Ns2f]
+                    A[Nc1t:Nc2t, Ns1t:Ns2t] = ss.A[Nc1f:Nc2f, Ns1f:Ns2f]
+                    E[Nc1t:Nc2t, Ns1t:Ns2t] = ss.E[Nc1f:Nc2f, Ns1f:Ns2f]
             if idx_ss > 0:
                 B_ud = ss.B
                 idx_down = idx_ss - 1
@@ -778,7 +788,7 @@ class StateSpaceDense(object):
                     A_ud = B_ud @ ss_down.C
                     for (Ns1f, Ns2f, Ns1t, Ns2t) in seq_states_down:
                         for (Nc1f, Nc2f, Nc1t, Nc2t) in seq_constr:
-                            A[Nc1t : Nc2t, Ns1t : Ns2t] = A_ud[Nc1f : Nc2f, Ns1f : Ns2f]
+                            A[Nc1t:Nc2t, Ns1t:Ns2t] = A_ud[Nc1f:Nc2f, Ns1f:Ns2f]
                     if idx_down == 0:
                         break
                     B_ud = B_ud @ ss_down.D
@@ -786,22 +796,22 @@ class StateSpaceDense(object):
 
                 B_into = ss.B @ D
                 for (Nc1f, Nc2f, Nc1t, Nc2t) in seq_constr:
-                    B[Nc1t : Nc2t, :] = B_into[Nc1f : Nc2f, :]
+                    B[Nc1t:Nc2t, :] = B_into[Nc1f:Nc2f, :]
                 D = ss.D @ D
             else:
                 for (Nc1f, Nc2f, Nc1t, Nc2t) in seq_constr:
-                    B[Nc1t : Nc2t, :] = ss.B[Nc1f : Nc2f, :]
+                    B[Nc1t:Nc2t, :] = ss.B[Nc1f:Nc2f, :]
                 D = ss.D
 
         (ss, seq_states, seq_constr) = ss_seq[-1]
         for (Ns1f, Ns2f, Ns1t, Ns2t) in seq_states:
-            C[:, Ns1t : Ns2t] = ss.C[:, Ns1f : Ns2f]
+            C[:, Ns1t:Ns2t] = ss.C[:, Ns1f:Ns2f]
         D_rev = ss.D
-        #now loop down through the D matrices
+        # now loop down through the D matrices
         for (ss, seq_states, seq_constr) in ss_seq[-2::-1]:
             C_into = D_rev @ ss.C
             for (Ns1f, Ns2f, Ns1t, Ns2t) in seq_states:
-                C[:, Ns1t : Ns2t] = C_into[:, Ns1f : Ns2f]
+                C[:, Ns1t:Ns2t] = C_into[:, Ns1f:Ns2f]
             D_rev = D_rev @ ss.D
 
         self.A = A
@@ -815,12 +825,12 @@ class StateSpaceDense(object):
         return self
 
     def inverse(
-            self,
-            name = None,
-            augment_states = 'output',
-            augment_constr = 'new',
-            method = 'DSS',
-            name_transformer = lambda n : n
+        self,
+        name=None,
+        augment_states="output",
+        augment_constr="new",
+        method="DSS",
+        name_transformer=lambda n: n,
     ):
         new = self.__class__.__new__(self.__class__)
 
@@ -857,21 +867,21 @@ class StateSpaceDense(object):
             Gto.idx2N = np.concatenate([Gto.idx2N, [Gto.idx2N[-1] + N]])
             Gto.N = Gto.N + N
 
-        if augment_states == 'inputs':
+        if augment_states == "inputs":
             inject(new.inputs, new.states)
-        elif augment_states == 'output':
+        elif augment_states == "output":
             inject(new.output, new.states)
-        elif augment_states == 'new':
-            create('{}:inv'.format(self.name), N, new.states)
+        elif augment_states == "new":
+            create("{}:inv".format(self.name), N, new.states)
         else:
             raise RuntimeError("augment_names must be one of 'inputs', 'output', 'new'")
 
-        if augment_constr == 'inputs':
+        if augment_constr == "inputs":
             inject(new.inputs, new.constr)
-        elif augment_constr == 'output':
+        elif augment_constr == "output":
             inject(new.output, new.constr)
-        elif augment_constr == 'new':
-            create('{}:inv'.format(self.name), N, new.constr)
+        elif augment_constr == "new":
+            create("{}:inv".format(self.name), N, new.constr)
         else:
             raise RuntimeError("augment_names must be one of 'inputs', 'output', 'new'")
 
@@ -881,13 +891,13 @@ class StateSpaceDense(object):
         C = np.zeros((new.output.N, new.states.N))
         D = np.zeros((new.output.N, new.inputs.N))
 
-        A[:self.constr.N, :self.states.N] = self.A
-        A[:self.constr.N, self.states.N:] = self.B
-        A[self.constr.N:, :self.states.N] = self.C
-        A[self.constr.N:, self.states.N:] = self.D
-        E[:self.constr.N, :self.states.N] = self.E
-        B[self.constr.N:, :self.inputs.N] = -1
-        C[:self.output.N, self.states.N:] = 1
+        A[: self.constr.N, : self.states.N] = self.A
+        A[: self.constr.N, self.states.N :] = self.B
+        A[self.constr.N :, : self.states.N] = self.C
+        A[self.constr.N :, self.states.N :] = self.D
+        E[: self.constr.N, : self.states.N] = self.E
+        B[self.constr.N :, : self.inputs.N] = -1
+        C[: self.output.N, self.states.N :] = 1
 
         new.A = A
         new.E = E
@@ -897,21 +907,23 @@ class StateSpaceDense(object):
 
         return new
 
-    def reduce(self, constr = None, states = None, tol = 1e-10):
-        #from icecream import ic
+    def reduce(self, constr=None, states=None, tol=1e-10):
+        # from icecream import ic
 
-        #properly dealing with names is going to be painful
+        # properly dealing with names is going to be painful
         if states is None:
             states_nZranges = [(0, self.states.N)]
-            self.names_collect('states', to = 'reduced')
+            self.names_collect("states", to="reduced")
         else:
             raise RuntimeError("Does not yet support specifying states for reduction")
 
         if constr is None:
             constr_nZranges = [(0, self.constr.N)]
-            self.names_collect('constr', to = 'reduced')
+            self.names_collect("constr", to="reduced")
         else:
-            raise RuntimeError("Does not yet support specifying constraints for reduction")
+            raise RuntimeError(
+                "Does not yet support specifying constraints for reduction"
+            )
 
         statemask = None
         constr_Zs = []
@@ -919,9 +931,9 @@ class StateSpaceDense(object):
             constrSl = slice(*constrR)
             for statesR in states_nZranges:
                 statesSl = slice(*statesR)
-                #TODO, make the zero check a touch smarter for symbolics
-                mask = ~np.any(self.E[constrSl, statesSl], axis = 1)
-                #ic(mask)
+                # TODO, make the zero check a touch smarter for symbolics
+                mask = ~np.any(self.E[constrSl, statesSl], axis=1)
+                # ic(mask)
                 if statemask is None:
                     statemask = mask
                 else:
@@ -936,9 +948,9 @@ class StateSpaceDense(object):
             statesSl = slice(*statesR)
             for constrR in constr_nZranges:
                 constrSl = slice(*constrR)
-                #TODO, make the zero check a touch smarter for symbolics
-                mask = ~np.any(self.E[constrSl, statesSl], axis = 0)
-                #ic(mask)
+                # TODO, make the zero check a touch smarter for symbolics
+                mask = ~np.any(self.E[constrSl, statesSl], axis=0)
+                # ic(mask)
                 if statemask is None:
                     statemask = mask
                 else:
@@ -948,78 +960,78 @@ class StateSpaceDense(object):
         states_nZranges = anti_ranges(self.states.N, states_Zranges)
 
         for R in constr_Zranges:
-            assert(not np.any(self.E[slice(*R), :]))
+            assert not np.any(self.E[slice(*R), :])
         for R in states_Zranges:
-            assert(not np.any(self.E[:, slice(*R)]))
+            assert not np.any(self.E[:, slice(*R)])
 
-        #now rearrange
+        # now rearrange
         Nst = sum(R1 - R0 for R0, R1 in states_Zranges)
         Nco = sum(R1 - R0 for R0, R1 in constr_Zranges)
         Ist = self.states.N - Nst
         Ico = self.constr.N - Nco
-        self.percolate_raw('states', states_Zranges)
-        self.percolate_raw('constr', constr_Zranges)
-        #print(Nst, Nco)
-        assert(Nst == Nco)
-        assert(not np.any(self.E[Ico:, :]))
-        assert(not np.any(self.E[:, Ist:]))
+        self.percolate_raw("states", states_Zranges)
+        self.percolate_raw("constr", constr_Zranges)
+        # print(Nst, Nco)
+        assert Nst == Nco
+        assert not np.any(self.E[Ico:, :])
+        assert not np.any(self.E[:, Ist:])
 
         A22 = self.A[Ico:, Ist:]
         U, S, V = scipy.linalg.svd(A22)
 
-        #now reorder for smallest first
+        # now reorder for smallest first
         S = S[::-1]
         Nlast = len(S) - np.searchsorted(S, S[-1] * tol)
-        #print("NLAST", Nlast)
-        #redefines constr
+        # print("NLAST", Nlast)
+        # redefines constr
         U = U[:, ::-1]
         Ui = U.T
-        #redefines states
+        # redefines states
         V = V[::-1, :]
         Vi = V.T
 
-        #ic(S)
-        #ic(np.diagonal(mat))
+        # ic(S)
+        # ic(np.diagonal(mat))
         self.B[Ico:, :] = Ui @ self.B[Ico:, :]
         self.C[:, Ist:] = self.C[:, Ist:] @ Vi
-        #A22
-        #one might expect to use diag(S) here, but
-        #the svd is still unstable, so we need to use only orthogonal
-        #transformations
+        # A22
+        # one might expect to use diag(S) here, but
+        # the svd is still unstable, so we need to use only orthogonal
+        # transformations
         if Nlast == len(S):
             self.A[Ico:, Ist:] = np.diag(S)
         else:
             self.A[Ico:, Ist:] = Ui @ self.A[Ico:, Ist:] @ Vi
-        #A12
+        # A12
         self.A[:Ico, Ist:] = self.A[:Ico, Ist:] @ Vi
-        #A21
+        # A21
         self.A[Ico:, :Ist] = Ui @ self.A[Ico:, :Ist]
 
-        #now, select the last few rows that are OK
-        #and reduce them down
+        # now, select the last few rows that are OK
+        # and reduce them down
         S = S[-Nlast:]
         Ist = self.states.N - Nlast
         Ico = self.constr.N - Nlast
 
         A22 = self.A[Ico:, Ist:]
         if False:
-            #this secondary SVD is useful to improve
-            #numerical stability yet further, but appears to be unnecessary
+            # this secondary SVD is useful to improve
+            # numerical stability yet further, but appears to be unnecessary
             U, S, V = scipy.linalg.svd(A22)
-            #now reorder for smallest first
-            #redefines constr
+            # now reorder for smallest first
+            # redefines constr
             Ui = U.T
-            #redefines states
+            # redefines states
             Vi = V.T
-            #ic(S)
+            # ic(S)
             self.B[Ico:, :] = Ui @ self.B[Ico:, :]
             self.C[:, Ist:] = self.C[:, Ist:] @ Vi
 
             self.B[Ico:, :] = Ui @ self.B[Ico:, :]
             self.C[:, Ist:] = self.C[:, Ist:] @ Vi
-            #A12
+            # A12
             self.A[:Ico, Ist:] = self.A[:Ico, Ist:] @ Vi
-            #A21
+            # A21
             self.A[Ico:, :Ist] = Ui @ self.A[Ico:, :Ist]
 
         A12mod = self.A[:Ico, Ist:] / S.reshape(1, -1)
@@ -1035,8 +1047,8 @@ class StateSpaceDense(object):
         self.A = self.A[:Ico, :Ist]
         self.E = self.E[:Ico, :Ist]
 
-        #works because of the state name reduction above
-        #TODO, do the proper splitting/absorption of the reduced states
+        # works because of the state name reduction above
+        # TODO, do the proper splitting/absorption of the reduced states
         self.constr.N -= Nlast
         self.states.N -= Nlast
         self.constr.idx2N[-1] -= Nlast
@@ -1044,27 +1056,24 @@ class StateSpaceDense(object):
 
         return
 
-    def controllable_staircase(self, constr = None, states = None, tol = 1e-10):
-        #properly dealing with names is going to be painful
+    def controllable_staircase(self, constr=None, states=None, tol=1e-10):
+        # properly dealing with names is going to be painful
         if states is None:
             states_nZranges = [(0, self.states.N)]
-            self.names_collect('states', to = 'reduced')
+            self.names_collect("states", to="reduced")
         else:
             raise RuntimeError("Does not yet support specifying states for reduction")
 
         if constr is None:
             constr_nZranges = [(0, self.constr.N)]
-            self.names_collect('constr', to = 'reduced')
+            self.names_collect("constr", to="reduced")
         else:
-            raise RuntimeError("Does not yet support specifying constraints for reduction")
+            raise RuntimeError(
+                "Does not yet support specifying constraints for reduction"
+            )
 
         A, B, C, D, E = ss_algorithms.controllable_staircase(
-            self.A,
-            self.B,
-            self.C,
-            self.D,
-            self.E,
-            tol = tol
+            self.A, self.B, self.C, self.D, self.E, tol=tol
         )
         self.A = A
         self.E = E
@@ -1073,11 +1082,12 @@ class StateSpaceDense(object):
         self.D = D
         return
 
+
 def check_SS_group(G):
-    assert(len(G.idx2N) == 1 + len(G.idx2name))
-    assert(G.N == G.idx2N[-1])
-    assert(G.idx2N is np.asarray(G.idx2N))
-    assert(isinstance(G.idx2name, list))
+    assert len(G.idx2N) == 1 + len(G.idx2name)
+    assert G.N == G.idx2N[-1]
+    assert G.idx2N is np.asarray(G.idx2N)
+    assert isinstance(G.idx2name, list)
 
 
 def Gtransfer(Gfr, Gto, seq):
@@ -1090,13 +1100,13 @@ def Gtransfer(Gfr, Gto, seq):
         nonlocal idx_fr_st, idx_to_st, idx_fr_end, idx_to_end
         if idx_to_st is None:
             return
-        #if idx_fr_st != idx_fr_end and idx_to_st != idx_to_end:
+        # if idx_fr_st != idx_fr_end and idx_to_st != idx_to_end:
         N_fr_st = Gfr.idx2N[idx_fr_st]
         N_fr_end = Gfr.idx2N[idx_fr_end + 1]
 
         N_to_st = Gto.idx2N[idx_to_st]
         N_to_end = Gto.idx2N[idx_to_end + 1]
-        assert(N_to_end - N_to_st == N_fr_end - N_fr_st)
+        assert N_to_end - N_to_st == N_fr_end - N_fr_st
         seq.append((N_fr_st, N_fr_end, N_to_st, N_to_end))
 
     for idx_fr, iname in enumerate(Gfr.idx2name):
@@ -1114,9 +1124,9 @@ def Gtransfer(Gfr, Gto, seq):
                 idx_to_st = idx_to
             idx_to_end = idx_to
         else:
-            #check size
+            # check size
             N2 = Gto.idx2N[idx_to + 1] - Gto.idx2N[idx_to]
-            assert(N == N2)
+            assert N == N2
             do_seq()
             idx_fr_st = idx_fr_end = idx_fr
             idx_to_st = idx_to_end = idx_to
@@ -1124,7 +1134,7 @@ def Gtransfer(Gfr, Gto, seq):
 
 
 def argwhere2ranges(wheres):
-    delta = (wheres[1:] - wheres[:-1] != 1)
+    delta = wheres[1:] - wheres[:-1] != 1
     ranges = []
     idx_p = wheres[0]
     for idx in np.argwhere(delta).reshape(-1):
@@ -1147,4 +1157,3 @@ def anti_ranges(N, ranges):
     if idx_p != idx_n:
         anti_ranges.append((idx_p, idx_n))
     return anti_ranges
-

@@ -8,7 +8,7 @@
 """
 """
 
-#import warnings
+# import warnings
 import contextlib
 from wavestate import declarative
 
@@ -27,21 +27,20 @@ class FitterUnacceptable(Exception):
 
 
 class FitAid(object):
-
     def __init__(
         self,
         doc_db,
-        hints = None,
-        residuals_type = 'log',
+        hints=None,
+        residuals_type="log",
     ):
         self.fitter = None
-        self.fitter_current    = None
+        self.fitter_current = None
         self.fitter_lowres_avg = None
         self.fitter_lowres_max = None
         self.fitter_lowres_med = None
-        self.fitter_loword     = None
+        self.fitter_loword = None
 
-        self.doc_db_method     = None
+        self.doc_db_method = None
 
         if hints is None:
             hints = dict()
@@ -62,14 +61,14 @@ class FitAid(object):
         self.section = [0]
         self.section_stack = []
 
-        #TODO make this a hint
+        # TODO make this a hint
         self.verbosity = 5
 
         return
 
     @property
     def residuals_type(self):
-        return self.hint('residuals_type', default = 'log')
+        return self.hint("residuals_type", default="log")
 
     def _check_residuals(self, fitter):
         if not isinstance(fitter, fitters_ZPK.MultiReprFilterBase):
@@ -77,13 +76,13 @@ class FitAid(object):
         if fitter.residuals_type == self.residuals_type:
             if fitter.residuals_log_im_scale != 1:
                 f_new = fitter.copy(
-                    residuals_type = self.residuals_type,
-                    residuals_log_im_scale = 1,
+                    residuals_type=self.residuals_type,
+                    residuals_log_im_scale=1,
                 )
                 return f_new
         return None
 
-    def hint_set(self, hname, hval, default = False):
+    def hint_set(self, hname, hval, default=False):
         if default:
             self.hints.setdefault(hname, hval)
         else:
@@ -104,7 +103,7 @@ class FitAid(object):
             else:
                 superarg.append(arg)
 
-        default = kwargs.get('default', declarative.NOARG)
+        default = kwargs.get("default", declarative.NOARG)
         if default is declarative.NOARG:
             raise RuntimeError("Must have default return")
 
@@ -125,18 +124,19 @@ class FitAid(object):
 
     def fitter_check(
         self,
-        fitter_new = None,
-        hint_name = None,
-        update    = True,
-        variant   = None,
-        validate  = True,
-        annotate  = "unknown",
+        fitter_new=None,
+        hint_name=None,
+        update=True,
+        variant=None,
+        validate=True,
+        annotate="unknown",
     ):
-        """
-        """
+        """ """
 
         if variant is None:
-            raise RuntimeError('Must specify variant for fitter_check, such as ["OrdUp", "OrdDn", "OrdC"]')
+            raise RuntimeError(
+                'Must specify variant for fitter_check, such as ["OrdUp", "OrdDn", "OrdC"]'
+            )
 
         if self.fitter is None:
             if update:
@@ -148,22 +148,22 @@ class FitAid(object):
         if fitter_new is None:
             fitter_new = self.fitter
 
-        #TODO, should check that it is using standard residuals
+        # TODO, should check that it is using standard residuals
 
-        resavgN = lambda : fitter_new.residuals_average
-        resmaxN = lambda : fitter_new.residuals_max
-        resmedN = lambda : fitter_new.residuals_med
-        resavgC = lambda : self.fitter_current.residuals_average
-        resmaxC = lambda : self.fitter_current.residuals_max
-        resmedC = lambda : self.fitter_current.residuals_med
-        resavgB = lambda : self.fitter_lowres_avg.residuals_average
-        resmaxB = lambda : self.fitter_lowres_max.residuals_max
-        resmedB = lambda : self.fitter_lowres_med.residuals_med
+        resavgN = lambda: fitter_new.residuals_average
+        resmaxN = lambda: fitter_new.residuals_max
+        resmedN = lambda: fitter_new.residuals_med
+        resavgC = lambda: self.fitter_current.residuals_average
+        resmaxC = lambda: self.fitter_current.residuals_max
+        resmedC = lambda: self.fitter_current.residuals_med
+        resavgB = lambda: self.fitter_lowres_avg.residuals_average
+        resmaxB = lambda: self.fitter_lowres_max.residuals_max
+        resmedB = lambda: self.fitter_lowres_med.residuals_med
 
-        print('resavgC:', resavgC())
+        print("resavgC:", resavgC())
 
         if hint_name is None:
-            hint_name = 'default'
+            hint_name = "default"
 
         improved = [True]
 
@@ -171,77 +171,101 @@ class FitAid(object):
             hints,
             calc,
         ):
-            hintval = self.hint(hints, default = None)
+            hintval = self.hint(hints, default=None)
             if hintval is not None and calc > hintval:
                 self.log("Failed {}, {} > {}".format(hints[0], calc, hintval))
                 improved[0] = False
 
-        check_hint([
-            'resavg_Ethresh{0}.{1}'.format(variant, hint_name),
-            'resavg_Ethresh{0}'.format(variant),
-        ], resavgN())
+        check_hint(
+            [
+                "resavg_Ethresh{0}.{1}".format(variant, hint_name),
+                "resavg_Ethresh{0}".format(variant),
+            ],
+            resavgN(),
+        )
 
-        check_hint([
-            'resmax_Ethresh{0}.{1}'.format(variant, hint_name),
-            'resmax_Ethresh{0}'.format(variant),
-        ], resmaxN())
+        check_hint(
+            [
+                "resmax_Ethresh{0}.{1}".format(variant, hint_name),
+                "resmax_Ethresh{0}".format(variant),
+            ],
+            resmaxN(),
+        )
 
-        check_hint([
-            'resavg_Rthresh{0}.{1}'.format(variant, hint_name),
-            'resavg_Rthresh{0}'.format(variant),
-        ], (resavgN() / resavgC()))
+        check_hint(
+            [
+                "resavg_Rthresh{0}.{1}".format(variant, hint_name),
+                "resavg_Rthresh{0}".format(variant),
+            ],
+            (resavgN() / resavgC()),
+        )
 
-        check_hint([
-            'resmax_Rthresh{0}.{1}'.format(variant, hint_name),
-            'resmax_Rthresh{0}'.format(variant),
-        ], (resmaxN() / resmaxC()))
+        check_hint(
+            [
+                "resmax_Rthresh{0}.{1}".format(variant, hint_name),
+                "resmax_Rthresh{0}".format(variant),
+            ],
+            (resmaxN() / resmaxC()),
+        )
 
-        check_hint([
-            'resmed_Rthresh{0}.{1}'.format(variant, hint_name),
-            'resmed_Rthresh{0}'.format(variant),
-        ], (resmedN() / resmedC()))
+        check_hint(
+            [
+                "resmed_Rthresh{0}.{1}".format(variant, hint_name),
+                "resmed_Rthresh{0}".format(variant),
+            ],
+            (resmedN() / resmedC()),
+        )
 
-        check_hint([
-            'resavgB_Rthresh{0}.{1}'.format(variant, hint_name),
-            'resavgB_Rthresh{0}'.format(variant),
-        ], (resavgN() / resavgB()))
+        check_hint(
+            [
+                "resavgB_Rthresh{0}.{1}".format(variant, hint_name),
+                "resavgB_Rthresh{0}".format(variant),
+            ],
+            (resavgN() / resavgB()),
+        )
 
-        check_hint([
-            'resmaxB_Rthresh{0}.{1}'.format(variant, hint_name),
-            'resmaxB_Rthresh{0}'.format(variant),
-        ], (resmaxN() / resmaxB()))
+        check_hint(
+            [
+                "resmaxB_Rthresh{0}.{1}".format(variant, hint_name),
+                "resmaxB_Rthresh{0}".format(variant),
+            ],
+            (resmaxN() / resmaxB()),
+        )
 
-        check_hint([
-            'resmedB_Rthresh{0}.{1}'.format(variant, hint_name),
-            'resmedB_Rthresh{0}'.format(variant),
-        ], (resmedN() / resmedB()))
+        check_hint(
+            [
+                "resmedB_Rthresh{0}.{1}".format(variant, hint_name),
+                "resmedB_Rthresh{0}".format(variant),
+            ],
+            (resmedN() / resmedB()),
+        )
 
-        self.log('IMPROVED: ', improved[0])
+        self.log("IMPROVED: ", improved[0])
         if improved[0] and update:
             self.fitter_update(
                 fitter_new,
-                annotate = None,
+                annotate=None,
             )
             if annotate is not None:
                 self.annotate(
-                    name      = 'fitter_check (improved)',
-                    about     = annotate,
-                    fitter    = fitter_new,
-                    plotter   = plots.plot_fitter_flag,
-                    method    = self.doc_db_method,
-                    verbosity = 6,
+                    name="fitter_check (improved)",
+                    about=annotate,
+                    fitter=fitter_new,
+                    plotter=plots.plot_fitter_flag,
+                    method=self.doc_db_method,
+                    verbosity=6,
                 )
         else:
             if annotate is not None:
                 self.annotate(
-                    name      = 'fitter_check (not improved)',
-                    fitter    = fitter_new,
-                    about     = annotate,
-                    plotter   = plots.plot_fitter_flag,
-                    method    = self.doc_db_method,
-                    verbosity = 10,
+                    name="fitter_check (not improved)",
+                    fitter=fitter_new,
+                    about=annotate,
+                    plotter=plots.plot_fitter_flag,
+                    method=self.doc_db_method,
+                    verbosity=10,
                 )
-        val_func = self.hint('fitter_check_validate', default = None)
+        val_func = self.hint("fitter_check_validate", default=None)
         if validate and val_func is not None and fitter_new is not None:
             val_func(self, fitter_new)
         return improved[0]
@@ -249,17 +273,17 @@ class FitAid(object):
     def fitter_checkup(self):
         improved = self.fitter_check(
             self.fitter,
-            variant = 'OrdC',
+            variant="OrdC",
         )
         if not improved:
             self.fitter = self.fitter_current.copy()
         return improved
 
     def fitter_update(
-            self,
-            fitter = None,
-            validate = True,
-            annotate  = "unknown",
+        self,
+        fitter=None,
+        validate=True,
+        annotate="unknown",
     ):
         if fitter is None:
             fitter = self.fitter
@@ -268,19 +292,19 @@ class FitAid(object):
         avg1 = fitter.residuals_average
         algorithms.sign_check_flip(fitter)
         avg2 = fitter.residuals_average
-        assert(avg2 <= avg1)
+        assert avg2 <= avg1
 
         if annotate is not None:
             self.annotate(
-                name      = 'fitter_update',
-                about     = annotate,
-                fitter    = fitter,
-                plotter   = plots.plot_fitter_flag,
-                method    = self.doc_db_method,
-                verbosity = 8,
+                name="fitter_update",
+                about=annotate,
+                fitter=fitter,
+                plotter=plots.plot_fitter_flag,
+                method=self.doc_db_method,
+                verbosity=8,
             )
 
-        val_func = self.hint('fitter_update_validate', default = None)
+        val_func = self.hint("fitter_update_validate", default=None)
         if validate and val_func is not None and fitter is not None:
             val_func(self, fitter)
 
@@ -290,7 +314,7 @@ class FitAid(object):
             return
 
         if fitter_use is not None:
-            fitter_use.optimize(aid = self)
+            fitter_use.optimize(aid=self)
             fitter_copy = [fitter_use]
         else:
             fitter_use = fitter
@@ -301,7 +325,7 @@ class FitAid(object):
                 fitter_copy.append(fitter.copy())
             return fitter_copy[0]
 
-        #print("ZPK", fitter_use.ZPKsf)
+        # print("ZPK", fitter_use.ZPKsf)
 
         new_res = fitter_use.residuals_average
         new_res_max = fitter_use.residuals_max
@@ -309,10 +333,10 @@ class FitAid(object):
         new_ord = fitter_order(fitter_use)
 
         if self.fitter_current is not None:
-            old_res     = self.fitter_lowres_avg.residuals_average
+            old_res = self.fitter_lowres_avg.residuals_average
             old_res_max = self.fitter_lowres_max.residuals_max
             old_res_med = self.fitter_lowres_med.residuals_med
-            old_ord     = fitter_order(self.fitter_loword)
+            old_ord = fitter_order(self.fitter_loword)
 
             if new_res < old_res:
                 self.fitter_lowres_avg = copy1()
@@ -328,41 +352,34 @@ class FitAid(object):
 
             self.fitter_current = copy1()
         else:
-            self.fitter_current    = copy1()
+            self.fitter_current = copy1()
             self.fitter_lowres_avg = copy1()
             self.fitter_lowres_max = copy1()
             self.fitter_lowres_med = copy1()
-            self.fitter_loword     = copy1()
+            self.fitter_loword = copy1()
 
-        #print("UPDATED: ", self.fitter_current.residuals_average)
-        
+        # print("UPDATED: ", self.fitter_current.residuals_average)
+
         return fitter_use
 
     def log(self, *args, **kwargs):
-        #hint = kwargs.get('hint', None)
+        # hint = kwargs.get('hint', None)
 
-        if self.hint('no_log', default = False):
+        if self.hint("no_log", default=False):
             return
 
-        if self.hint('log_print', default = True):
+        if self.hint("log_print", default=True):
             print(*args)
 
-        #TODO put in the doc_db
+        # TODO put in the doc_db
 
-    def digest_write(
-        self,
-        folder,
-        format = 'markdown',
-        **kwargs
-    ):
-        if format in ['md', 'markdown']:
-            return annotate.docdb2markdown(
-                folder,
-                self.doc_db,
-                **kwargs
-            )
+    def digest_write(self, folder, format="markdown", **kwargs):
+        if format in ["md", "markdown"]:
+            return annotate.docdb2markdown(folder, self.doc_db, **kwargs)
         else:
-            raise RuntimeError("Format Not Recognized, must be one of: ['md', 'markdown']")
+            raise RuntimeError(
+                "Format Not Recognized, must be one of: ['md', 'markdown']"
+            )
 
     @contextlib.contextmanager
     def annotate_into(self, name):
@@ -370,7 +387,7 @@ class FitAid(object):
 
         self.doc_db = annotate.annotate_into(
             self.doc_db,
-            name = name,
+            name=name,
         )
         yield
 
@@ -392,21 +409,20 @@ class FitAid(object):
         name,
         verbosity,
         about,
-        method          = None,
-        verbosity_limit = None,
-        fitter          = None,
-        plotter         = None,
+        method=None,
+        verbosity_limit=None,
+        fitter=None,
+        plotter=None,
     ):
         if method is None:
             method = self.doc_db_method
         annotate.annotate(
             self.doc_db,
-            name            = name,
-            verbosity       = verbosity,
-            method          = method,
-            about           = about,
-            verbosity_limit = verbosity_limit,
-            fitter          = fitter,
-            plotter         = plotter,
+            name=name,
+            verbosity=verbosity,
+            method=method,
+            about=about,
+            verbosity_limit=verbosity_limit,
+            fitter=fitter,
+            plotter=plotter,
         )
-

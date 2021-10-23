@@ -14,12 +14,13 @@ import subprocess
 
 def pandoc_pdf(out_name):
     def exporter(md_name, folder):
-        subprocess.call(['pandoc', '-o', out_name, md_name], cwd = folder)
+        subprocess.call(["pandoc", "-o", out_name, md_name], cwd=folder)
+
     return exporter
+
 
 def npm_markdown_pdf(out_name):
     def exporter(md_name, folder):
-        subprocess.call(['markdown-pdf', md_name, '-o', out_name], cwd = folder)
+        subprocess.call(["markdown-pdf", md_name, "-o", out_name], cwd=folder)
+
     return exporter
-
-

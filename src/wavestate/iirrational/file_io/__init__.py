@@ -29,20 +29,22 @@ from .utilities import (
     subkey_search,
 )
 
+
 def save(fname, d):
     typeB = determine_type(fname)
     write_any(
-        fname = typeB.fname,
-        ftype = typeB.ftype,
-        fdict = d,
+        fname=typeB.fname,
+        ftype=typeB.ftype,
+        fdict=d,
     )
 
-def load(fname, ftype = None):
+
+def load(fname, ftype=None):
     typeB = determine_type(fname)
     if ftype is None:
         ftype = typeB.ftype
 
     return load_any(
-        fname = typeB.fname,
-        ftype = ftype,
+        fname=typeB.fname,
+        ftype=ftype,
     )

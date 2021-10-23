@@ -16,38 +16,42 @@ def test_QRH():
 
     N = 10
     M = np.random.rand(N, N)
-    M = np.array([
-        [1, 0, 0],
-        [1, 1, 0],
-        [0, 0, 0],
-    ], float)
+    M = np.array(
+        [
+            [1, 0, 0],
+            [1, 1, 0],
+            [0, 0, 0],
+        ],
+        float,
+    )
 
     eye = np.eye(M.shape[0], M.shape[1])
 
     R, [Q], [QT] = matrix_algorithms.QR(
-        mat = M,
-        mshadow  = None,
-        qmul     = [eye],
-        qAmul    = [eye],
-        pivoting = False,
-        #method   = 'Householder',
-        method   = 'Givens',
-        Rexact   = False,
+        mat=M,
+        mshadow=None,
+        qmul=[eye],
+        qAmul=[eye],
+        pivoting=False,
+        # method   = 'Householder',
+        method="Givens",
+        Rexact=False,
     )
     R2, [Q], [QT] = matrix_algorithms.QR(
-        mat = M,
-        mshadow  = None,
-        qmul     = [eye],
-        qAmul    = [eye],
-        pivoting = False,
-        #method   = 'Householder',
-        method   = 'Givens',
-        Rexact   = True,
+        mat=M,
+        mshadow=None,
+        qmul=[eye],
+        qAmul=[eye],
+        pivoting=False,
+        # method   = 'Householder',
+        method="Givens",
+        Rexact=True,
     )
 
     import tabulate
-    print('near', tabulate.tabulate(R))
-    print('exact', tabulate.tabulate(R2))
+
+    print("near", tabulate.tabulate(R))
+    print("exact", tabulate.tabulate(R2))
     print(tabulate.tabulate(Q))
     print(tabulate.tabulate(QT))
 
@@ -60,32 +64,35 @@ def test_QRHpivot():
 
     N = 10
     M = np.random.rand(N, N)
-    M = np.array([
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-    ], float)
+    M = np.array(
+        [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 1, 0],
+        ],
+        float,
+    )
 
     eye = np.eye(M.shape[0], M.shape[1])
 
     R, [Q], [QT], P = matrix_algorithms.QR(
-        mat = M,
-        mshadow  = None,
-        qmul     = [eye],
-        qAmul    = [eye],
-        pivoting = True,
-        #method   = 'Householder',
-        method   = 'Givens',
-        Rexact   = True,
+        mat=M,
+        mshadow=None,
+        qmul=[eye],
+        qAmul=[eye],
+        pivoting=True,
+        # method   = 'Householder',
+        method="Givens",
+        Rexact=True,
     )
 
     import tabulate
+
     print(P)
     print(tabulate.tabulate(R))
-    #print(tabulate.tabulate(Q))
-    #print(tabulate.tabulate(QT))
+    # print(tabulate.tabulate(Q))
+    # print(tabulate.tabulate(QT))
 
     numpy.testing.assert_almost_equal(Q @ Q.T, eye)
     numpy.testing.assert_almost_equal(Q @ QT, eye)
     numpy.testing.assert_almost_equal((Q @ R)[:, P], M)
-

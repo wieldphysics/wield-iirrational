@@ -8,12 +8,12 @@
 """
 """
 
-version_info = (0, 0, 3, 'dev0')
-version = '.'.join(str(v) for v in version_info)
+version_info = (0, 0, 3, "dev0")
+version = ".".join(str(v) for v in version_info)
 __version__ = version
 
 # this section of code is removed in "release" branch versions
-__version__ = __version__ + '-<unknown>'
+__version__ = __version__ + "-<unknown>"
 
 try:
     import setuptools_scm
@@ -21,9 +21,9 @@ try:
 
     scm_version = setuptools_scm.get_version(
         relative_to=__file__,
-        root='../../../',
+        root="../../../",
         fallback_version=__version__,
-        version_scheme='guess-next-dev',
+        version_scheme="guess-next-dev",
     )
 
     scm_v = parse_version(parse_version(scm_version).base_version)
@@ -31,12 +31,18 @@ try:
 
     if scm_v != version_v:
         import warnings
-        warnings.warn('git base version {} is different than the stored version {}'.format(scm_v, version_v))
+
+        warnings.warn(
+            "git base version {} is different than the stored version {}".format(
+                scm_v, version_v
+            )
+        )
 
     version = scm_version
     __version__ = scm_version
 except ValueError as e:
     import warnings
+
     warnings.warn(str(e))
 except (ModuleNotFoundError, TypeError, LookupError):
     pass

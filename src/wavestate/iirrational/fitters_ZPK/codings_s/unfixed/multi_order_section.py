@@ -14,25 +14,26 @@ import numpy as np
 from .base import (
     CodingType,
     Ipi,
-    #I2pi
+    # I2pi
 )
-#import scipy.linalg
+
+# import scipy.linalg
 
 
 class CodingMOS(CodingType):
-    #settable!
+    # settable!
     N_parameters = None
-    N_coeffs     = 0
+    N_coeffs = 0
     p_coeffs = (1,)
 
     def setup(
-            self,
-            N_coeffs = None,
-            disable = None,
+        self,
+        N_coeffs=None,
+        disable=None,
     ):
         if N_coeffs is not None:
             self.N_coeffs = N_coeffs
-            coeffs = list(self.p_coeffs)[:self.N_parameters + 1]
+            coeffs = list(self.p_coeffs)[: self.N_parameters + 1]
             self.p_coeffs = np.array(coeffs + [0] * (1 + self.N_coeffs - len(coeffs)))
 
         N_parameters = self.N_coeffs
@@ -47,9 +48,9 @@ class CodingMOS(CodingType):
 
     def update(self, *coeffs):
         if self.disable:
-            assert(not coeffs)
+            assert not coeffs
             return
-        assert(len(coeffs) == self.N_parameters)
+        assert len(coeffs) == self.N_parameters
         self.p_coeffs = coeffs
 
     def reduce(self):
@@ -64,7 +65,7 @@ class CodingMOS(CodingType):
         return
 
     def transfer(self):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         Xn = sys.Xn_grid
         Xn_power = Xn
         value = 1
@@ -74,7 +75,7 @@ class CodingMOS(CodingType):
         return value
 
     def derivative(self):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         Xn = sys.Xn_grid
         Xn_power = Xn
         jac_list = []
@@ -84,7 +85,7 @@ class CodingMOS(CodingType):
         return jac_list
 
     def derivative_wtrans(self, sys):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         Xn = sys.Xn_grid
         Xn_power = Xn
         jac_list = []
@@ -96,5 +97,5 @@ class CodingMOS(CodingType):
         return value, jac_list
 
     def roots(self):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         return np.polynomial.polynomial.polyroots([1] + self.p_coeffs)

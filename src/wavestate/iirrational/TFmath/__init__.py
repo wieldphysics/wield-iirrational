@@ -9,7 +9,6 @@
 """
 
 
-
 from .TF import (
     TF_ZPK,
     ZtoS,
@@ -23,11 +22,14 @@ from .roots_bin import (
     roots_re_pair,
 )
 
+
 def abs_sq(x):
-    return x.real**2 + x.imag**2
+    return x.real ** 2 + x.imag ** 2
+
 
 def norm_sq(v):
     return v.real.dot(v.real) + v.imag.dot(v.imag)
+
 
 from numpy.polynomial.polynomial import polyvalfromroots
 
@@ -39,4 +41,3 @@ from .roots_matching import (
     SOS_pair_rolloff,
     match_SOS_pairs,
 )
-

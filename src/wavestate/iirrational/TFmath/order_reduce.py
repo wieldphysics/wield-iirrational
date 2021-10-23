@@ -19,12 +19,14 @@ def Q_rank_calc(z, p):
         if p.real == z.real:
             Q_rank = 0
         else:
-            #TODO
-            #should use the data spacing to regularize this case
+            # TODO
+            # should use the data spacing to regularize this case
             Q_rank = 1e3
     else:
-        res_ratio = (z.real/p.real)
-        Q_rank = abs(p-z) * (1/(p.real)**2 + 1/(z.real)**2)**.5 + abs(res_ratio - 1/res_ratio)
+        res_ratio = z.real / p.real
+        Q_rank = abs(p - z) * (1 / (p.real) ** 2 + 1 / (z.real) ** 2) ** 0.5 + abs(
+            res_ratio - 1 / res_ratio
+        )
     return Q_rank
 
 
@@ -35,26 +37,24 @@ def Q_rank_single(r):
 
 def order_reduce_zpk(
     zpk,
-    Q_rank_cutoff = 1e-5,
-    Q_rank_cutoff_unstable = None,
-    reduce_c = True,
-    reduce_r = False,
-    RBalgo = representations.root_bunch.RBalgo,
+    Q_rank_cutoff=1e-5,
+    Q_rank_cutoff_unstable=None,
+    reduce_c=True,
+    reduce_r=False,
+    RBalgo=representations.root_bunch.RBalgo,
 ):
     zeros = RBalgo.expect_atleast(
-        zpk[0],
-        constraint = RBalgo.root_constraints.mirror_real
+        zpk[0], constraint=RBalgo.root_constraints.mirror_real
     )
     poles = RBalgo.expect_atleast(
-        zpk[1],
-        constraint = RBalgo.root_constraints.mirror_real
+        zpk[1], constraint=RBalgo.root_constraints.mirror_real
     )
     Pc = poles.c
     Zc = zeros.c
     Pr = poles.r
     Zr = zeros.r
 
-    #print(len(Zc), len(Pc))
+    # print(len(Zc), len(Pc))
     if reduce_c:
         if Q_rank_cutoff_unstable:
             rpB = nearest_pairs(Zc[Zc.real > 0], Pc[Pc.real > 0])
@@ -64,7 +64,7 @@ def order_reduce_zpk(
             removed_rzp_list = []
             for z, p in rpB.r12_list:
                 Q_rank = Q_rank_calc(p, z)
-                #print(z, p, Q_rank)
+                # print(z, p, Q_rank)
                 if Q_rank < Q_rank_cutoff_unstable:
                     removed_rzp_list.append((Q_rank, z, p))
                     continue
@@ -77,7 +77,7 @@ def order_reduce_zpk(
         removed_rzp_list = []
         for z, p in rpB.r12_list:
             Q_rank = Q_rank_calc(p, z)
-            #print(z, p, Q_rank)
+            # print(z, p, Q_rank)
             if Q_rank < Q_rank_cutoff:
                 removed_rzp_list.append((Q_rank, z, p))
                 continue
@@ -93,7 +93,7 @@ def order_reduce_zpk(
             removed_rzp_list = []
             for z, p in rpB.r12_list:
                 Q_rank = Q_rank_calc(p, z)
-                #print(z, p, Q_rank)
+                # print(z, p, Q_rank)
                 if Q_rank < Q_rank_cutoff_unstable:
                     removed_rzp_list.append((Q_rank, z, p))
                     continue
@@ -106,7 +106,7 @@ def order_reduce_zpk(
         removed_rzp_list = []
         for z, p in rpB.r12_list:
             Q_rank = Q_rank_calc(p, z)
-            #print(z, p, Q_rank)
+            # print(z, p, Q_rank)
             if Q_rank < Q_rank_cutoff:
                 removed_rzp_list.append((Q_rank, z, p))
                 continue
@@ -116,5 +116,5 @@ def order_reduce_zpk(
     return (
         np.concatenate([Zr, Zc, np.conjugate(Zc)]),
         np.concatenate([Pr, Pc, np.conjugate(Pc)]),
-        zpk[2]
+        zpk[2],
     )

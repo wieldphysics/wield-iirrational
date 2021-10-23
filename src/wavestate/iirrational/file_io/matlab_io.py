@@ -41,18 +41,19 @@ def squeezerec(key, obj):
 
 def load_matlab(fname):
     import scipy.io
+
     d = dict()
     d = scipy.io.loadmat(
         fname,
-        mdict = d,
-        squeeze_me = True,
-        chars_as_strings = True,
-        #mat_dtype = True,
+        mdict=d,
+        squeeze_me=True,
+        chars_as_strings=True,
+        # mat_dtype = True,
     )
     d = squeezerec(None, d)
-    d.pop('__globals__', None)
-    d.pop('__header__', None)
-    d.pop('__version__', None)
+    d.pop("__globals__", None)
+    d.pop("__header__", None)
+    d.pop("__version__", None)
     return d
 
 
@@ -60,7 +61,7 @@ def desqueezerec(key, obj):
     if obj is None:
         return np.array([])
     elif isinstance(obj, dict):
-        #convert to recarray?
+        # convert to recarray?
         for k, v in list(obj.items()):
             obj[k] = desqueezerec(k, v)
         return obj
@@ -70,8 +71,9 @@ def desqueezerec(key, obj):
 
 def write_matlab(fname, obj):
     import scipy.io
+
     d = scipy.io.savemat(
         fname,
-        mdict = desqueezerec(None, obj),
+        mdict=desqueezerec(None, obj),
     )
     return d

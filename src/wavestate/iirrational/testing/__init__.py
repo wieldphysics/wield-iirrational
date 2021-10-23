@@ -26,17 +26,8 @@ datasets.update(simple_set_1.datasets)
 datasets.update(random_sets.datasets)
 
 
-def IIRrational_data(
-    name,
-    set_num = 0,
-    instance_num = 0,
-    **kwargs
-):
-    return datasets[name].generator(
-        sN = set_num,
-        iN = instance_num,
-        **kwargs
-    )
+def IIRrational_data(name, set_num=0, instance_num=0, **kwargs):
+    return datasets[name].generator(sN=set_num, iN=instance_num, **kwargs)
 
 
 __all__ = [

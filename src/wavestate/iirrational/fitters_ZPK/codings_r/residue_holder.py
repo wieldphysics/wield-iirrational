@@ -14,10 +14,11 @@ import numpy as np
 from .base import (
     CodingType,
     Ipi,
-    #I2pi
+    # I2pi
 )
 from ... import TFmath
-#import scipy.linalg
+
+# import scipy.linalg
 
 
 class CodingResidues(CodingType):
@@ -35,14 +36,14 @@ class CodingResidues(CodingType):
         self.N_parameters = N_parameters
         return
 
-    #def update_ZPK(self, ZPK):
+    # def update_ZPK(self, ZPK):
     #    res_list, ZPKsum = TFmath.ZPK2residues()
     #    return
 
     def update(self, *params):
         idx_p = 0
         for coding in self.codings_full:
-            subP = params[idx_p:idx_p + coding.N_parameters]
+            subP = params[idx_p : idx_p + coding.N_parameters]
             coding.update(*subP)
             idx_p += coding.N_parameters
         return
@@ -50,9 +51,7 @@ class CodingResidues(CodingType):
     def reduce(self):
         params = []
         for coding in self.codings_full:
-            params.extend(
-                coding.reduce()
-            )
+            params.extend(coding.reduce())
         return params
 
     def option_set(self, **kwargs):
@@ -77,12 +76,8 @@ class CodingResidues(CodingType):
     def ZPK(self, sys):
         residue_list = []
         for c_r in self.codings_r:
-            residue_list.extend(
-                c_r.residues(sys)
-            )
+            residue_list.extend(c_r.residues(sys))
 
         ZPKsum = self.coding_K.ZPK(sys)
 
         return TFmath.residues2ZPK(residue_list, ZPKsum)
-
-

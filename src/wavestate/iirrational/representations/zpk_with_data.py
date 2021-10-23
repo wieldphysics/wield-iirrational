@@ -28,22 +28,22 @@ class ZPKwData(DepBunch):
 
     def __build__(
         self,
-        _args         = None,
-        data          = NOARG,
-        F_Hz          = NOARG,
-        W             = NOARG,
-        delay_s       = NOARG,
-        zeros         = NOARG,
-        poles         = NOARG,
-        gain          = NOARG,
-        zeros_overlay = NOARG,
-        poles_overlay = NOARG,
-        ZPK           = NOARG,
-        ZPK_overlay   = NOARG,
-        F_nyquist_Hz  = NOARG,
-        parent        = NOARG,
-        residuals_log_im_scale   = NOARG,
-        ZPKrep        = NOARG
+        _args=None,
+        data=NOARG,
+        F_Hz=NOARG,
+        W=NOARG,
+        delay_s=NOARG,
+        zeros=NOARG,
+        poles=NOARG,
+        gain=NOARG,
+        zeros_overlay=NOARG,
+        poles_overlay=NOARG,
+        ZPK=NOARG,
+        ZPK_overlay=NOARG,
+        F_nyquist_Hz=NOARG,
+        parent=NOARG,
+        residuals_log_im_scale=NOARG,
+        ZPKrep=NOARG,
     ):
 
         if _args is not None:
@@ -62,7 +62,7 @@ class ZPKwData(DepBunch):
             poles_overlay = ZPK_overlay[1]
 
         if gain is NOARG and ZPK is not NOARG:
-                gain = ZPK[2]
+            gain = ZPK[2]
 
         if ZPK_overlay is not NOARG:
             gain2 = ZPK_overlay[2]
@@ -134,19 +134,20 @@ class ZPKwData(DepBunch):
         if data is not None:
             if W is None:
                 W = 1
-            F_Hz, data, W, residuals_log_im_scale = np.broadcast_arrays(F_Hz,
-                data, W, residuals_log_im_scale)
+            F_Hz, data, W, residuals_log_im_scale = np.broadcast_arrays(
+                F_Hz, data, W, residuals_log_im_scale
+            )
 
-        self.F_Hz         = F_Hz
-        self.data         = data
-        self.W            = W
-        self.delay_s      = delay_s
+        self.F_Hz = F_Hz
+        self.data = data
+        self.W = W
+        self.delay_s = delay_s
 
-        self.zeros         = zeros
-        self.poles         = poles
+        self.zeros = zeros
+        self.poles = poles
         self.zeros_overlay = zeros_overlay
         self.poles_overlay = poles_overlay
-        self.gain          = gain * gain2
+        self.gain = gain * gain2
 
         self.F_nyquist_Hz = F_nyquist_Hz
 
@@ -161,55 +162,45 @@ class ZPKwData(DepBunch):
 
     @depB_property
     def order_sos(self):
-        return (max(
-            len(self.poles) + len(self.poles_overlay),
-            len(self.zeros) + len(self.zeros_overlay),
-        ) + 1)//2
+        return (
+            max(
+                len(self.poles) + len(self.poles_overlay),
+                len(self.zeros) + len(self.zeros_overlay),
+            )
+            + 1
+        ) // 2
 
     @depB_property
     def order_relative(self):
-        return (
-            (len(self.zeros) + len(self.zeros_overlay))
-            - (len(self.poles) + len(self.poles_overlay))
+        return (len(self.zeros) + len(self.zeros_overlay)) - (
+            len(self.poles) + len(self.poles_overlay)
         )
 
     @depB_property
     def F_nyquist_Hz(self, val):
         if val is None:
             return val
-        assert(val > 0)
+        assert val > 0
         return val
 
     @depB_property
     def zeros(self, val):
-        val = self.RBalgo.expect_atleast(
-            val,
-            constraint = self.root_constraint
-        )
+        val = self.RBalgo.expect_atleast(val, constraint=self.root_constraint)
         return val
 
     @depB_property
     def poles(self, val):
-        val = self.RBalgo.expect_atleast(
-            val,
-            constraint = self.root_constraint
-        )
+        val = self.RBalgo.expect_atleast(val, constraint=self.root_constraint)
         return val
 
     @depB_property
     def zeros_overlay(self, val):
-        val = self.RBalgo.expect_atleast(
-            val,
-            constraint = self.root_constraint
-        )
+        val = self.RBalgo.expect_atleast(val, constraint=self.root_constraint)
         return val
 
     @depB_property
     def poles_overlay(self, val):
-        val = self.RBalgo.expect_atleast(
-            val,
-            constraint = self.root_constraint
-        )
+        val = self.RBalgo.expect_atleast(val, constraint=self.root_constraint)
         return val
 
     @depB_property
@@ -217,7 +208,7 @@ class ZPKwData(DepBunch):
         if self.F_nyquist_Hz is None:
             return 1j * self.F_Hz
         else:
-            #use Z^-1
+            # use Z^-1
             return np.exp(1j * np.pi * self.F_Hz / self.F_nyquist_Hz)
 
     @depB_property
@@ -227,56 +218,62 @@ class ZPKwData(DepBunch):
     @depB_property
     def ZPK(self):
         return ZPKTF(
-            zeros = self.zeros * self.zeros_overlay,
-            poles = self.poles * self.poles_overlay,
-            gain  = self.gain,
-            F_nyquist_Hz = self.F_nyquist_Hz,
+            zeros=self.zeros * self.zeros_overlay,
+            poles=self.poles * self.poles_overlay,
+            gain=self.gain,
+            F_nyquist_Hz=self.F_nyquist_Hz,
         )
 
     @depB_property
     def ZPKfit(self):
-        return ZPKTF((
-            self.zeros,
-            self.poles,
-            self.gain,
-        ), F_nyquist_Hz = self.F_nyquist_Hz,)
+        return ZPKTF(
+            (
+                self.zeros,
+                self.poles,
+                self.gain,
+            ),
+            F_nyquist_Hz=self.F_nyquist_Hz,
+        )
 
     @depB_property
     def ZPKoverlay(self):
-        return ZPKTF((
-            self.zeros_overlay,
-            self.poles_overlay,
-            1,
-        ), F_nyquist_Hz = self.F_nyquist_Hz,)
+        return ZPKTF(
+            (
+                self.zeros_overlay,
+                self.poles_overlay,
+                1,
+            ),
+            F_nyquist_Hz=self.F_nyquist_Hz,
+        )
 
     @depB_property
     def xfer_fit(self):
-        #TODO must add pole-zero rephasing for Z filters
+        # TODO must add pole-zero rephasing for Z filters
 
-        #TODO, make this name consistent in all classes
+        # TODO, make this name consistent in all classes
         h, lnG = self.poles_overlay.val_lnG(self.X_grid)
-        h, lnG = self.poles.val_lnG(self.X_grid, h = h, lnG = lnG)
+        h, lnG = self.poles.val_lnG(self.X_grid, h=h, lnG=lnG)
 
-        h, lnG = self.zeros_overlay.val_lnG(self.X_grid, h = 1/h, lnG = -lnG)
-        h, lnG = self.zeros.val_lnG(self.X_grid, h = h, lnG = lnG)
+        h, lnG = self.zeros_overlay.val_lnG(self.X_grid, h=1 / h, lnG=-lnG)
+        h, lnG = self.zeros.val_lnG(self.X_grid, h=h, lnG=lnG)
         if self.delay_s != 0:
             h = h * np.exp(-2j * np.pi * self.delay_s * self.F_Hz)
         return h * (np.exp(lnG) * self.gain)
 
     def xfer_eval(self, F_Hz):
-        #TODO must add pole-zero rephasing for Z filters
+        # TODO must add pole-zero rephasing for Z filters
 
-        #TODO, make this name consistent in all classes
+        # TODO, make this name consistent in all classes
         if self.F_nyquist_Hz is None:
             X_grid = 1j * F_Hz
         else:
-            #use Z^-1
+            # use Z^-1
             X_grid = np.exp(1j * np.pi * F_Hz / self.F_nyquist_Hz)
         h, lnG = self.poles_overlay.val_lnG(X_grid)
-        h, lnG = self.poles.val_lnG(X_grid, h = h, lnG = lnG)
+        h, lnG = self.poles.val_lnG(X_grid, h=h, lnG=lnG)
 
-        h, lnG = self.zeros_overlay.val_lnG(X_grid, h = 1/h, lnG = -lnG)
-        h, lnG = self.zeros.val_lnG(X_grid, h = h, lnG = lnG)
+        h, lnG = self.zeros_overlay.val_lnG(X_grid, h=1 / h, lnG=-lnG)
+        h, lnG = self.zeros.val_lnG(X_grid, h=h, lnG=lnG)
         if self.delay_s != 0:
             h = h * np.exp(-2j * np.pi * self.delay_s * F_Hz)
         return h * (np.exp(lnG) * self.gain)
@@ -291,20 +288,24 @@ class ZPKwData(DepBunch):
     @depB_property
     def order_total(self):
         return (
-            len(self.poles) + len(self.poles_overlay)
-            + len(self.zeros) + len(self.zeros_overlay)
+            len(self.poles)
+            + len(self.poles_overlay)
+            + len(self.zeros)
+            + len(self.zeros_overlay)
         )
 
     @depB_property
     def order_sos(self):
-        return (max(
-            len(self.poles) + len(self.poles_overlay),
-            len(self.zeros) + len(self.zeros_overlay),
-        ) + 1)//2
+        return (
+            max(
+                len(self.poles) + len(self.poles_overlay),
+                len(self.zeros) + len(self.zeros_overlay),
+            )
+            + 1
+        ) // 2
 
     @depB_property
     def order_relative(self):
-        return (
-            (len(self.zeros) + len(self.zeros_overlay))
-            - (len(self.poles) + len(self.poles_overlay))
+        return (len(self.zeros) + len(self.zeros_overlay)) - (
+            len(self.poles) + len(self.poles_overlay)
         )

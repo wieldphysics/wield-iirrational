@@ -13,25 +13,26 @@ import collections
 
 NOARG = declarative.unique_generator
 
-def subkey_search(fdict, subkey, default = NOARG):
+
+def subkey_search(fdict, subkey, default=NOARG):
     if subkey is None:
         return fdict
     subdict = fdict
-    skeys = subkey.split('.')
+    skeys = subkey.split(".")
 
     while skeys:
         if not isinstance(subdict, collections.Mapping):
             raise TypeError("Intermediate type not a dictionary")
 
         try:
-            subdict = subdict['.'.join(skeys)]
+            subdict = subdict[".".join(skeys)]
         except KeyError:
             pass
         else:
             break
 
         for idx in range(1, len(skeys)):
-            semikey = '.'.join(skeys[:-idx])
+            semikey = ".".join(skeys[:-idx])
             try:
                 subdict = subdict[semikey]
             except KeyError:
@@ -41,10 +42,9 @@ def subkey_search(fdict, subkey, default = NOARG):
                 break
         else:
             if default is NOARG:
-                #this is the for-else syntax, only triggered if the for loop never
-                #finds a match
+                # this is the for-else syntax, only triggered if the for loop never
+                # finds a match
                 raise KeyError("Could not recursively find {}".format(subkey))
             else:
                 return default
     return subdict
-

@@ -9,19 +9,21 @@
 """
 
 
-#import numpy as np
+# import numpy as np
 
 from ..codings_cmn import (
     CodingType,
-    #Ipi,
-    #I2pi
+    # Ipi,
+    # I2pi
 )
-#import scipy.linalg
+
+# import scipy.linalg
+
 
 class CodingFBW(CodingType):
     N_parameters = 2
-    p_BW_Hz       = 0
-    p_F_Hz       = 0
+    p_BW_Hz = 0
+    p_F_Hz = 0
 
     def update(self, real, imag):
         self.p_BW_Hz = real
@@ -49,26 +51,24 @@ class CodingFBW(CodingType):
             return 1
 
     def transfer(self):
-        #real/imaginary part of root
+        # real/imaginary part of root
         r, i = -self.p_BW_Hz, self.p_F_Hz
-        X    = self.sys.Xsf_grid
-        Xsq  = self.sys.Xsf_grid_sq
-        return ((r*r + i*i) - 2 * X * r + Xsq)
+        X = self.sys.Xsf_grid
+        Xsq = self.sys.Xsf_grid_sq
+        return (r * r + i * i) - 2 * X * r + Xsq
 
     def derivative(self):
         if self.disable:
             return []
-        #real/imaginary part of root
+        # real/imaginary part of root
         r, i = -self.p_BW_Hz, self.p_F_Hz
-        X    = self.sys.Xsf_grid
+        X = self.sys.Xsf_grid
         return [
             -2 * (r - X),
             (2 * i),
         ]
 
     def roots_c(self):
-        #real/imaginary part of root
+        # real/imaginary part of root
         r, i = -self.p_BW_Hz, abs(self.p_F_Hz)
         return [r + 1j * i]
-
-

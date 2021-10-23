@@ -23,12 +23,14 @@ def Q_rank_calc(z, p):
         if p.real == z.real:
             Q_rank = 0
         else:
-            #TODO
-            #should use the data spacing to regularize this case
+            # TODO
+            # should use the data spacing to regularize this case
             Q_rank = 1e3
     else:
-        res_ratio = (z.real/p.real)
-        Q_rank = abs(p-z) * (1/(p.real)**2 + 1/(z.real)**2)**.5 + abs(res_ratio - 1/res_ratio)
+        res_ratio = z.real / p.real
+        Q_rank = abs(p - z) * (1 / (p.real) ** 2 + 1 / (z.real) ** 2) ** 0.5 + abs(
+            res_ratio - 1 / res_ratio
+        )
     return Q_rank
 
 
@@ -39,12 +41,12 @@ def Q_rank_single(r):
 
 def order_reduce(
     aid,
-    Q_rank_cutoff = 1,
-    optimize = True,
-    reduce_c = True,
-    reduce_r = False,
+    Q_rank_cutoff=1,
+    optimize=True,
+    reduce_c=True,
+    reduce_r=False,
 ):
-    #TODO, can run a high Q_rank_cutoff and the progressively add pairs back in!
+    # TODO, can run a high Q_rank_cutoff and the progressively add pairs back in!
     #
     aid = ensure_aid(aid)
 
@@ -53,7 +55,7 @@ def order_reduce(
     Pr = aid.fitter.poles.r
     Zr = aid.fitter.zeros.r
 
-    #print(len(Zc), len(Pc))
+    # print(len(Zc), len(Pc))
     if reduce_c:
         rpB = TFmath.nearest_pairs(Zc, Pc)
         Zc = list(rpB.l1_remain)
@@ -62,7 +64,7 @@ def order_reduce(
         removed_rzp_list = []
         for z, p in rpB.r12_list:
             Q_rank = Q_rank_calc(p, z)
-            #print(z, p, Q_rank)
+            # print(z, p, Q_rank)
             if Q_rank < Q_rank_cutoff:
                 removed_rzp_list.append((Q_rank, z, p))
                 continue
@@ -77,19 +79,19 @@ def order_reduce(
         removed_rzp_list = []
         for z, p in rpB.r12_list:
             Q_rank = Q_rank_calc(p, z)
-            #print(z, p, Q_rank)
+            # print(z, p, Q_rank)
             if Q_rank < Q_rank_cutoff:
                 removed_rzp_list.append((Q_rank, z, p))
                 continue
             Zr.append(z)
             Pr.append(p)
 
-    #print(len(aid.fitter.zeros), len(aid.fitter.poles))
+    # print(len(aid.fitter.zeros), len(aid.fitter.poles))
     fitter_new = aid.fitter.regenerate(
-        z_c = Zc,
-        p_c = Pc,
-        z_r = Zr,
-        p_r = Pr,
+        z_c=Zc,
+        p_c=Pc,
+        z_r=Zr,
+        p_r=Pr,
     )
     if optimize:
         with fitter_new.with_codings_only([fitter_new.gain_coding]):
@@ -99,11 +101,9 @@ def order_reduce(
         aid.fitter_update(fitter_new)
     else:
         algorithms.sign_check_flip(fitter_new)
-        aid.fitter_update(
-            fitter_new,
-            representative = False
-        )
+        aid.fitter_update(fitter_new, representative=False)
     return removed_rzp_list
+
 
 def order_restore(
     aid,
@@ -114,9 +114,11 @@ def order_restore(
     removed_rzp_list.sort()
     for r, z, p in removed_rzp_list:
         algorithms.resrank_program(
-            aid.fitter, rank_zp_idx_list,
-            'zp_restore', ['ZcAdd', z, 'PcAdd', p],
-            marginalize_delay = False,
+            aid.fitter,
+            rank_zp_idx_list,
+            "zp_restore",
+            ["ZcAdd", z, "PcAdd", p],
+            marginalize_delay=False,
         )
 
     did_reduce = True
@@ -125,35 +127,36 @@ def order_restore(
         trials, rank_zp_idx_list = algorithms.ranking_reduction_trials(
             aid,
             rank_zp_idx_list,
-            greedy = True,
-            return_remaining = True,
-            num_total_max = 10,
+            greedy=True,
+            return_remaining=True,
+            num_total_max=10,
         )
         if not trials:
             return False
         algorithms.sign_check_flip(trials[0].fitter)
-        #print("HMM", aid.fitter.residuals_average, trials[0].fitter.residuals_average)
+        # print("HMM", aid.fitter.residuals_average, trials[0].fitter.residuals_average)
         trial = trials[0]
         did_reduce = aid.fitter_check(
             trial.fitter,
-            hint_name = 'ordrestore',
-            variant = trial.ord_str,
+            hint_name="ordrestore",
+            variant=trial.ord_str,
         )
         if did_reduce:
             ever_restored = True
     return ever_restored
 
+
 def order_reduce_successive(
     aid,
-    num_total_max = 4,
-    num_type_max  = 2,
-    marginalize_delay = True,
+    num_total_max=4,
+    num_type_max=2,
+    marginalize_delay=True,
 ):
-    deg_min = aid.hint('total_degree_min')
+    deg_min = aid.hint("total_degree_min")
     if deg_min is None:
         return
     while aid.fitter_orders().maxzp > deg_min:
-        greedy_order = aid.hint('greedy_order')
+        greedy_order = aid.hint("greedy_order")
         if greedy_order is None:
             greedy = False
         elif greedy_order < aid.fitter_orders().maxzp:
@@ -163,57 +166,73 @@ def order_reduce_successive(
         rank_zp_idx_list = []
 
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_c(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_c(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_r(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_r(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_c2r(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_c2r(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_cc(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_cc(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_rr(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_rr(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_crr(aid, marginalize_delay  = marginalize_delay)
+            order_reduce_programs.ranking_reduction_crr(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
-        rank_zp_idx_list.sort(key = lambda pb: pb.rank)
+        rank_zp_idx_list.sort(key=lambda pb: pb.rank)
         trials = algorithms.ranking_reduction_trials(
             aid,
             rank_zp_idx_list,
-            num_total_max      = num_total_max,
-            num_type_max       = num_type_max,
-            ranking_factor_max = 100,
-            greedy             = greedy,
+            num_total_max=num_total_max,
+            num_type_max=num_type_max,
+            ranking_factor_max=100,
+            greedy=greedy,
         )
         if not trials:
             return False
         trial = trials[0]
         algorithms.sign_check_flip(trial.fitter)
-        #print("HMM", aid.fitter.residuals_average, trial.fitter.residuals_average)
+        # print("HMM", aid.fitter.residuals_average, trial.fitter.residuals_average)
         aid.fitter_update(
             trial.fitter,
-            representative = True,
+            representative=True,
         )
-        aid.log_progress(5, (
-            'order reduced to {}, residuals={:.2e}'
-        ).format(aid.fitter_orders().maxzp, aid.fitter.residuals_average))
+        aid.log_progress(
+            5,
+            ("order reduced to {}, residuals={:.2e}").format(
+                aid.fitter_orders().maxzp, aid.fitter.residuals_average
+            ),
+        )
     return
+
 
 def order_reduce_selective(
     aid,
-    num_total_max = 4,
-    num_type_max  = 2,
-    marginalize_delay  = True,
+    num_total_max=4,
+    num_type_max=2,
+    marginalize_delay=True,
 ):
-    #TODO, make num_trials a hint value
+    # TODO, make num_trials a hint value
     ever_reduced = False
     did_reduce = True
     while did_reduce:
-        greedy_order = aid.hint('greedy_order')
+        greedy_order = aid.hint("greedy_order")
         if greedy_order is None:
             greedy = False
         elif greedy_order < aid.fitter_orders().maxzp:
@@ -224,48 +243,62 @@ def order_reduce_selective(
         rank_zp_idx_list = []
 
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_c(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_c(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_r(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_r(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_c2r(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_c2r(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_cc(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_cc(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_rr(aid, marginalize_delay = marginalize_delay)
+            order_reduce_programs.ranking_reduction_rr(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
         rank_zp_idx_list.extend(
-            order_reduce_programs.ranking_reduction_crr(aid, marginalize_delay  = marginalize_delay)
+            order_reduce_programs.ranking_reduction_crr(
+                aid, marginalize_delay=marginalize_delay
+            )
         )
-        rank_zp_idx_list.sort(key = lambda pb: pb.rank)
+        rank_zp_idx_list.sort(key=lambda pb: pb.rank)
         trials = algorithms.ranking_reduction_trials(
             aid,
             rank_zp_idx_list,
-            num_total_max      = num_total_max,
-            num_type_max       = num_type_max,
-            ranking_factor_max = 100,
-            greedy             = greedy,
+            num_total_max=num_total_max,
+            num_type_max=num_type_max,
+            ranking_factor_max=100,
+            greedy=greedy,
         )
         if not trials:
             return False
         trial = trials[0]
         algorithms.sign_check_flip(trial.fitter)
-        #print("HMM", aid.fitter.residuals_average, trial.fitter.residuals_average)
+        # print("HMM", aid.fitter.residuals_average, trial.fitter.residuals_average)
         did_reduce = aid.fitter_check(
             trial.fitter,
-            hint_name = 'ordred',
-            variant = 'OrdDn',
+            hint_name="ordred",
+            variant="OrdDn",
         )
         if did_reduce:
-            aid.log_progress(5, (
-                'order reduced to {}, residuals={:.2e}'
-            ).format(aid.fitter_orders().maxzp, aid.fitter.residuals_average))
+            aid.log_progress(
+                5,
+                ("order reduced to {}, residuals={:.2e}").format(
+                    aid.fitter_orders().maxzp, aid.fitter.residuals_average
+                ),
+            )
             ever_reduced = True
         else:
-            aid.log_progress(6, 'order not reduced')
+            aid.log_progress(6, "order not reduced")
     return ever_reduced
-

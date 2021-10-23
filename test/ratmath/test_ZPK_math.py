@@ -11,32 +11,41 @@ test_pairs = [
     (
         ((), (-1,), 1),
         ((), (), 1),
-    ), (
+    ),
+    (
         ((), (-1, -1), 1),
         ((), (), 1),
-    ), (
+    ),
+    (
         ((), (-1, -1, -1), 1),
         ((), (), 1),
-    ), (
+    ),
+    (
         ((), (-2, -1, -1), 1),
         ((), (), 1),
-    ), (
-        ((-3, ), (-1,), 1),
+    ),
+    (
+        ((-3,), (-1,), 1),
         ((), (), 1),
-    ), (
+    ),
+    (
         ((-2, -3), (-1, -1), 1),
         ((), (), 1),
-    ), (
+    ),
+    (
         ((), (-1, -1, -1), 1),
-        ((-3, ), (-2,), 1),
-    ), (
+        ((-3,), (-2,), 1),
+    ),
+    (
         ((), (-2, -1, -1), 1),
         ((), (), 1),
-    ), (
-        ((), (-2, -1+1j, -1-1j), 1),
-        ((-2 + 1j, -2 - 1j), (-3+1j, -3-1j), 1),
+    ),
+    (
+        ((), (-2, -1 + 1j, -1 - 1j), 1),
+        ((-2 + 1j, -2 - 1j), (-3 + 1j, -3 - 1j), 1),
     ),
 ]
+
 
 @pytest.mark.parametrize("ZPK1, ZPK2", test_pairs)
 def test_ZPK_sum(ZPK1, ZPK2):
@@ -44,11 +53,14 @@ def test_ZPK_sum(ZPK1, ZPK2):
     print("2: ", ZPK2)
     ZPK1 = ZPKCalc(*ZPK1, F_nyquist_Hz=None)
     ZPK2 = ZPKCalc(*ZPK2, F_nyquist_Hz=None)
-    ZPK3 = ZPKCalc(*ratmath.ZPKsum(
-        ZPK1,
-        ZPK2,
-        #scale = 2
-    ), F_nyquist_Hz=None)
+    ZPK3 = ZPKCalc(
+        *ratmath.ZPKsum(
+            ZPK1,
+            ZPK2,
+            # scale = 2
+        ),
+        F_nyquist_Hz=None
+    )
     print("3: ", ZPK3)
 
     F_Hz = np.linspace(0, 100, 100)
@@ -58,4 +70,3 @@ def test_ZPK_sum(ZPK1, ZPK2):
 
     ratio = TF3 / (TF1 + TF2)
     np.testing.assert_almost_equal(ratio, 1)
-

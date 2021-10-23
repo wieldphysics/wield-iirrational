@@ -21,9 +21,7 @@ def filter2sortedZPK(filt):
     z, p, k = zpk
 
     zzpp_pairs = match_SOS_pairs(
-        zpk.zeros.r, zpk.zeros.c,
-        zpk.poles.r, zpk.poles.c,
-        F_nyquist_Hz = None
+        zpk.zeros.r, zpk.zeros.c, zpk.poles.r, zpk.poles.c, F_nyquist_Hz=None
     )
 
     poles = []
@@ -40,30 +38,30 @@ def filter2sortedZPK(filt):
             poles.append(p2)
     return zeros, poles, k
 
+
 def filter2fotonZPK(
-        filt,
-        annotate_pairs = True,
-        scale_gain     = True,
-        plane          = None,
-        zpk_output     = False,
+    filt,
+    annotate_pairs=True,
+    scale_gain=True,
+    plane=None,
+    zpk_output=False,
 ):
     if plane is None:
-        plane = 'f'
+        plane = "f"
     zpk = representations.asZPKTF(filt)
 
     zzpp_pairs = match_SOS_pairs(
-        zpk.zeros.r, zpk.zeros.c,
-        zpk.poles.r, zpk.poles.c,
-        F_nyquist_Hz = None
+        zpk.zeros.r, zpk.zeros.c, zpk.poles.r, zpk.poles.c, F_nyquist_Hz=None
     )
     k = zpk.gain
 
     if scale_gain:
-        if plane == 'f':
-            k = k / ((np.pi*2)**(len(zpk.zeros) - len(zpk.poles)))
-        elif plane == 'w':
+        if plane == "f":
+            k = k / ((np.pi * 2) ** (len(zpk.zeros) - len(zpk.poles)))
+        elif plane == "w":
             pass
-        elif plane == 'n':
+        elif plane == "n":
+
             def root_gain(r1, r2):
                 k_adj = 1
                 if r1 is not None:
@@ -92,6 +90,7 @@ def filter2fotonZPK(
     if zpk_output:
         zero_list = []
         pole_list = []
+
         def root_collect(r1, r2):
             ret = []
             if r1 is not None:
@@ -104,23 +103,34 @@ def filter2fotonZPK(
             return ret
 
         for idx, (z1, z2, p1, p2) in enumerate(zzpp_pairs):
-            zero_list.extend(root_collect(z1, z2,))
-            pole_list.extend(root_collect(p1, p2,))
+            zero_list.extend(
+                root_collect(
+                    z1,
+                    z2,
+                )
+            )
+            pole_list.extend(
+                root_collect(
+                    p1,
+                    p2,
+                )
+            )
         return zero_list, pole_list, k
 
     def matlab_complex_str(num):
         if num is None:
             return None
-        if(np.imag(num) == 0.):
-            return ("{0}".format(num))
+        if np.imag(num) == 0.0:
+            return "{0}".format(num)
         else:
             r, i = np.real(num), np.imag(num)
             if i > 0:
-                return ("{0} + {1}*i".format(r, i))
+                return "{0} + {1}*i".format(r, i)
             else:
-                return ("{0} - {1}*i".format(r, -i))
+                return "{0} - {1}*i".format(r, -i)
 
     if annotate_pairs:
+
         def root_strs(r1, r2, idx):
             s1 = matlab_complex_str(r1)
             s2 = matlab_complex_str(r2)
@@ -146,6 +156,7 @@ def filter2fotonZPK(
                 return []
 
     else:
+
         def root_strs(r1, r2, idx):
             s1 = matlab_complex_str(r1)
             s2 = matlab_complex_str(r2)
@@ -173,25 +184,37 @@ def filter2fotonZPK(
     pole_list = []
     zero_list = []
     for idx, (z1, z2, p1, p2) in enumerate(zzpp_pairs):
-        zero_list.extend(root_strs(z1, z2, idx + 1,))
-        pole_list.extend(root_strs(p1, p2, idx + 1,))
+        zero_list.extend(
+            root_strs(
+                z1,
+                z2,
+                idx + 1,
+            )
+        )
+        pole_list.extend(
+            root_strs(
+                p1,
+                p2,
+                idx + 1,
+            )
+        )
 
     ZPK_template = 'ZPK([{zeros}],[{poles}], {gain}, "{plane}")'
     if len(zero_list) == 0:
-        zstr = ''
+        zstr = ""
     else:
-        zstr = '\n  ' + '\n  '.join(zero_list) + '\n'
+        zstr = "\n  " + "\n  ".join(zero_list) + "\n"
 
     if len(pole_list) == 0:
-        pstr = ''
+        pstr = ""
     else:
-        pstr = '\n  ' + '\n  '.join(pole_list) + '\n'
+        pstr = "\n  " + "\n  ".join(pole_list) + "\n"
 
     return ZPK_template.format(
-        zeros = zstr,
-        poles = pstr,
-        gain  = k,
-        plane = plane,
+        zeros=zstr,
+        poles=pstr,
+        gain=k,
+        plane=plane,
     )
 
 

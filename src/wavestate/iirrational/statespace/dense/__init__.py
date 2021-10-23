@@ -9,7 +9,6 @@
 """
 
 
-
 from .statespace import (
     StateSpaceDense,
 )
@@ -44,5 +43,3 @@ from .eig_algorithms import (
     eigspaces_right,
     eigspaces_right_real,
 )
-
-

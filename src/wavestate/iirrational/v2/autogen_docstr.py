@@ -284,5 +284,4 @@ tunings:
                         Maximum bandwidth of any pole or zero in the fit. This affects the
                         asymptotic rolloff when relative_degree is constrained.
 """
-#this file is auto generated during the setup.py build phase.
-
+# this file is auto generated during the setup.py build phase.

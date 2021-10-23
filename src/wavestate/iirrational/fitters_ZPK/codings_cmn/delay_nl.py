@@ -10,10 +10,7 @@
 
 
 import numpy as np
-from .base import (
-    CodingType,
-    I2pi
-)
+from .base import CodingType, I2pi
 
 
 class CodingDelayNL(CodingType):
@@ -31,16 +28,16 @@ class CodingDelayNL(CodingType):
         cpy.delay_s = self.delay_s
         return cpy
 
-    def setup(self, delay_s = None):
+    def setup(self, delay_s=None):
         if delay_s is not None:
             self.delay_s = delay_s
         return
 
-    def update(self, delay_nl = None):
+    def update(self, delay_nl=None):
         if self.N_parameters > 0:
             self.p_delay_nl = delay_nl
         else:
-            assert(delay_nl is None)
+            assert delay_nl is None
 
     def reduce(self):
         if self.N_parameters > 0:
@@ -62,7 +59,7 @@ class CodingDelayNL(CodingType):
 
     @property
     def delay_s(self):
-        return self.delay_s_min + self.delay_s_diff * (1 - np.cos(self.p_delay_nl))/2
+        return self.delay_s_min + self.delay_s_diff * (1 - np.cos(self.p_delay_nl)) / 2
 
     @delay_s.setter
     def delay_s(self, val):
@@ -99,8 +96,9 @@ class CodingDelayNL(CodingType):
             if sD > -self.deriv_deadzone:
                 sD = -self.deriv_deadzone
         dDdP = self.delay_s_diff * sD / 2
-        return [-I2pi * self.sys.F_Hz * dDdP * np.exp(-I2pi * self.delay_s * self.sys.F_Hz)]
+        return [
+            -I2pi * self.sys.F_Hz * dDdP * np.exp(-I2pi * self.delay_s * self.sys.F_Hz)
+        ]
 
     def roots(self):
         return []
-

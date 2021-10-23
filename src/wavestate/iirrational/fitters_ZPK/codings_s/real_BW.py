@@ -8,7 +8,7 @@
 """
 """
 
-#import numpy as np
+# import numpy as np
 
 from ..codings_cmn import (
     CodingType,
@@ -17,9 +17,9 @@ from ..codings_cmn import (
 
 class CodingRealBW(CodingType):
     N_parameters = 1
-    unstable     = False
-    p_BW_Hz      = 0
-    restabilize  = False
+    unstable = False
+    p_BW_Hz = 0
+    restabilize = False
 
     def update(self, BW):
         self.p_BW_Hz = BW
@@ -28,7 +28,7 @@ class CodingRealBW(CodingType):
         return [self.p_BW_Hz]
 
     def update_roots(self, r1):
-        assert(r1.imag == 0)
+        assert r1.imag == 0
         if self.restabilize:
             if r1.real > 0:
                 r1 = -r1
@@ -51,7 +51,7 @@ class CodingRealBW(CodingType):
             return 1
 
     def transfer(self):
-        #real, linear BW
+        # real, linear BW
         r = -self.p_BW_Hz
         return self.sys.Xsf_grid - r
 
@@ -61,4 +61,3 @@ class CodingRealBW(CodingType):
     def roots_r(self):
         r = -self.p_BW_Hz
         return [r]
-

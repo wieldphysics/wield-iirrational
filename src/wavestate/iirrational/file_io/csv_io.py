@@ -16,7 +16,7 @@ def load_csv(fname, parse_str, parse_map):
     Can raise KeyError if parse_str does not map into parse_map
     """
     delimiter = parse_str[0]
-    if delimiter in ['-']:
+    if delimiter in ["-"]:
         delimiter = None
     parse_str = parse_str[1:]
 
@@ -31,8 +31,8 @@ def load_csv(fname, parse_str, parse_map):
 
     farr = np.genfromtxt(
         fname,
-        delimiter = delimiter,
-        filling_values = float('NaN'),
+        delimiter=delimiter,
+        filling_values=float("NaN"),
     )
 
     fdict = dict()
@@ -45,5 +45,3 @@ def load_csv(fname, parse_str, parse_map):
                 fdict[sk] = farr[idx_col]
 
     return fdict
-
-

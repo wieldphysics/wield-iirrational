@@ -28,5 +28,6 @@ from .delay_pair import (
 )
 
 from .gain_delay import (
-    CodingGain, CodingDelay,
+    CodingGain,
+    CodingDelay,
 )

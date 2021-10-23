@@ -23,12 +23,7 @@ from . import plots
 
 
 def make_description(
-    generator,
-    sets        = 1,
-    instances   = 1,
-    description = None,
-    annotation  = None,
-    **kwargs
+    generator, sets=1, instances=1, description=None, annotation=None, **kwargs
 ):
     doc = generator.__doc__
     if description is None:
@@ -39,12 +34,12 @@ def make_description(
     else:
         description = annotate.padding_remove(description)
         if annotation is None and doc is not None:
-            annotation  = annotate.padding_remove(doc)
+            annotation = annotate.padding_remove(doc)
     return wavestate.bunch.Bunch(
-        generator   = generator,
-        instances   = instances,
-        description = description,
-        annotation  = annotation,
+        generator=generator,
+        instances=instances,
+        description=description,
+        annotation=annotation,
         **kwargs
     )
 
@@ -53,35 +48,35 @@ def generator_autofill(
     F_Hz,
     SNR,
     F_nyquist_Hz,
-    data               = None,
-    bestfit_ZPK_z      = None,
-    bestfit_ZPK_s      = None,
-    delay_s            = 0,
-    residuals_log_best = None,
-    sN                 = 0,
-    iN                 = 0,
+    data=None,
+    bestfit_ZPK_z=None,
+    bestfit_ZPK_s=None,
+    delay_s=0,
+    residuals_log_best=None,
+    sN=0,
+    iN=0,
     **kwargs
 ):
     if bestfit_ZPK_s:
-        #replace with the ZPKs filled out fully
+        # replace with the ZPKs filled out fully
         bestfit_ZPK_s = TFmath.ZPK_fill(bestfit_ZPK_s)
 
     if bestfit_ZPK_z:
-        #replace with the ZPKs filled out fully
+        # replace with the ZPKs filled out fully
         bestfit_ZPK_z = TFmath.ZPK_fill(bestfit_ZPK_z)
 
     if not bestfit_ZPK_z and F_nyquist_Hz is not None:
         if bestfit_ZPK_s:
             bestfit_ZPK_z = TFmath.StoZ(
                 bestfit_ZPK_s,
-                F_nyquist_Hz = F_nyquist_Hz,
+                F_nyquist_Hz=F_nyquist_Hz,
             )
 
     if not bestfit_ZPK_s and F_nyquist_Hz is not None:
         if bestfit_ZPK_z:
             bestfit_ZPK_s = TFmath.ZtoS(
                 bestfit_ZPK_z,
-                F_nyquist_Hz = F_nyquist_Hz,
+                F_nyquist_Hz=F_nyquist_Hz,
             )
 
     if data is None:
@@ -89,20 +84,20 @@ def generator_autofill(
             rand = np.random.RandomState()
             rand.seed(iN)
             N = len(F_Hz)
-            rel_noise = (rand.normal(1, 1/SNR, N) + 1j * rand.normal(0, 1/SNR, N))
+            rel_noise = rand.normal(1, 1 / SNR, N) + 1j * rand.normal(0, 1 / SNR, N)
         else:
             rel_noise = 1
 
         if bestfit_ZPK_s:
             data = rel_noise * TFmath.TF_ZPK(
                 F_Hz,
-                ZPK = bestfit_ZPK_s,
+                ZPK=bestfit_ZPK_s,
             )
         elif bestfit_ZPK_z:
             data = rel_noise * TFmath.TF_ZPK(
                 F_Hz,
-                ZPK = bestfit_ZPK_s,
-                F_nyquist_Hz = F_nyquist_Hz,
+                ZPK=bestfit_ZPK_s,
+                F_nyquist_Hz=F_nyquist_Hz,
             )
 
         if delay_s is not None:
@@ -110,48 +105,48 @@ def generator_autofill(
 
     if bestfit_ZPK_z is not None:
         rep_z = representations.ZPKwData(
-            data         = data,
-            F_Hz         = F_Hz,
-            W            = SNR,
-            F_nyquist_Hz = F_nyquist_Hz,
-            ZPK          = bestfit_ZPK_z,
-            delay_s      = delay_s,
+            data=data,
+            F_Hz=F_Hz,
+            W=SNR,
+            F_nyquist_Hz=F_nyquist_Hz,
+            ZPK=bestfit_ZPK_z,
+            delay_s=delay_s,
         )
     else:
         rep_z = None
 
     if bestfit_ZPK_s is not None:
         rep_s = representations.ZPKwData(
-            data         = data,
-            F_Hz         = F_Hz,
-            W            = SNR,
-            F_nyquist_Hz = None,
-            ZPK          = bestfit_ZPK_s,
-            delay_s      = delay_s,
+            data=data,
+            F_Hz=F_Hz,
+            W=SNR,
+            F_nyquist_Hz=None,
+            ZPK=bestfit_ZPK_s,
+            delay_s=delay_s,
         )
     else:
         rep_s = None
 
     return wavestate.bunch.Bunch(
-        F_Hz               = F_Hz,
-        data               = data,
-        SNR                = SNR,
-        F_nyquist_Hz       = F_nyquist_Hz,
-        residuals_log_best = residuals_log_best,
-        bestfit_ZPK_z      = bestfit_ZPK_z,
-        bestfit_ZPK_s      = bestfit_ZPK_s,
-        rep_z              = rep_z,
-        rep_s              = rep_s,
-        iN                 = iN,
-        sN                 = sN,
+        F_Hz=F_Hz,
+        data=data,
+        SNR=SNR,
+        F_nyquist_Hz=F_nyquist_Hz,
+        residuals_log_best=residuals_log_best,
+        bestfit_ZPK_z=bestfit_ZPK_z,
+        bestfit_ZPK_s=bestfit_ZPK_s,
+        rep_z=rep_z,
+        rep_s=rep_s,
+        iN=iN,
+        sN=sN,
         **kwargs
     )
 
 
 def assert_almost_equal(arr1, arr2, decimals):
     np.testing.assert_allclose(arr1, arr2, decimals)
-    #np.testing.assert_allclose(arr1.real, arr2.real, decimals)
-    #np.testing.assert_allclose(arr1.imag, arr2.imag, decimals)
+    # np.testing.assert_allclose(arr1.real, arr2.real, decimals)
+    # np.testing.assert_allclose(arr1.imag, arr2.imag, decimals)
 
 
 def sign_validate(aid, fitter):
@@ -163,41 +158,46 @@ def sign_validate(aid, fitter):
     data = rep.data
     rat = data / xfer
     rat_ang = np.exp(1j * np.angle(rat))
-    ang_avg_rep = np.sum(rat_ang * rep.W**2) / np.sum(rep.W**2)
+    ang_avg_rep = np.sum(rat_ang * rep.W ** 2) / np.sum(rep.W ** 2)
 
     xfer = fitter.xfer_fit
     data = fitter.data
     rat = data / xfer
     rat_ang = np.exp(1j * np.angle(rat))
-    ang_avg_fit = np.sum(rat_ang * fitter.W**2) / np.sum(fitter.W**2)
-    #print("SGN: ", ang_avg_rep, ang_avg_fit)
-    #axB = plots.plots.plot_fit(
+    ang_avg_fit = np.sum(rat_ang * fitter.W ** 2) / np.sum(fitter.W ** 2)
+    # print("SGN: ", ang_avg_rep, ang_avg_fit)
+    # axB = plots.plots.plot_fit(
     #    fitter,
     #    fname = 'test1.png',
-    #)
-    #axB = plots.plots.plot_fitter_flag(
+    # )
+    # axB = plots.plots.plot_fitter_flag(
     #    fitter,
     #    fname = 'test3.png',
-    #)
-    #axB = plots.plots.plot_fit(
+    # )
+    # axB = plots.plots.plot_fit(
     #    fitter.ZPKrep,
     #    fname = 'test2.png',
-    #)
+    # )
 
     if isinstance(fitter, fitters_ZPK.MultiReprFilterBase):
         for coding in list(fitter.num_codings) + list(fitter.den_codings):
-            rB = representations.RootBunch(u = coding.roots(), constraint = representations.root_constraints.no_constraint)
+            rB = representations.RootBunch(
+                u=coding.roots(),
+                constraint=representations.root_constraints.no_constraint,
+            )
             h1 = coding.transfer()
             h, lnG = rB.val_lnG(fitter.Xex_grid)
             h = h * np.exp(lnG)
             assert_almost_equal(h / h1, 1, 4)
 
-    assert(ang_avg_fit.real > 0 and ang_avg_rep.real > 0)
+    assert ang_avg_fit.real > 0 and ang_avg_rep.real > 0
+
 
 sign_validate_hint = {
-    'fitter_update_validate' : sign_validate,
-    'fitter_check_validate' : sign_validate,
+    "fitter_update_validate": sign_validate,
+    "fitter_check_validate": sign_validate,
 }
+
 
 def rational_fitter_validate(rat_fitter, fitter):
     """
@@ -213,9 +213,10 @@ def rational_fitter_validate(rat_fitter, fitter):
     assert_almost_equal(mrf / rep2, 1, 5)
     print("Checking Rational Fitter")
 
+
 def sign_validate_and_plot_hint(pyfile, request):
     def sign_validate_plot(aid, fitter):
-        with plots.plot_on_assert(pyfile, request, fitter, plot_anyway = False):
+        with plots.plot_on_assert(pyfile, request, fitter, plot_anyway=False):
             try:
                 sign_validate(aid, fitter)
             except AssertionError:
@@ -224,20 +225,22 @@ def sign_validate_and_plot_hint(pyfile, request):
                 print(fitter.zeros)
                 print(fitter.zeros_overlay)
                 print(fitter.ZPKrep)
-                #assert(False)
+                # assert(False)
                 raise
+
     hint = {
-        'fitter_update_validate'   : sign_validate_plot,
-        'fitter_check_validate'    : sign_validate_plot,
-        'rational_fitter_validate' : rational_fitter_validate,
+        "fitter_update_validate": sign_validate_plot,
+        "fitter_check_validate": sign_validate_plot,
+        "rational_fitter_validate": rational_fitter_validate,
     }
     return hint
+
 
 def stability_validate_and_plot_hint(pyfile, request):
     def sign_validate_plot(aid, fitter):
-        with plots.plot_on_assert(pyfile, request, fitter, plot_anyway = False):
-            assert(np.all(fitter.ZPKrep.poles.c.real <= 0))
-            assert(np.all(fitter.ZPKrep.poles.r.real <= 0))
+        with plots.plot_on_assert(pyfile, request, fitter, plot_anyway=False):
+            assert np.all(fitter.ZPKrep.poles.c.real <= 0)
+            assert np.all(fitter.ZPKrep.poles.r.real <= 0)
             try:
                 sign_validate(aid, fitter)
             except AssertionError:
@@ -246,18 +249,20 @@ def stability_validate_and_plot_hint(pyfile, request):
                 print(fitter.zeros)
                 print(fitter.zeros_overlay)
                 print(fitter.ZPKrep)
-                #assert(False)
+                # assert(False)
                 raise
+
     hint = {
-        'fitter_update_validate'   : sign_validate_plot,
-        'fitter_check_validate'    : sign_validate_plot,
-        'rational_fitter_validate' : rational_fitter_validate,
+        "fitter_update_validate": sign_validate_plot,
+        "fitter_check_validate": sign_validate_plot,
+        "rational_fitter_validate": rational_fitter_validate,
     }
     return hint
+
 
 def sign_validate_and_digest_hint(pyfile, request):
     def sign_validate_plot(aid, fitter):
-        with plots.digest_on_assert(pyfile, request, aid, plot_anyway = False):
+        with plots.digest_on_assert(pyfile, request, aid, plot_anyway=False):
             try:
                 sign_validate(aid, fitter)
             except AssertionError:
@@ -266,16 +271,12 @@ def sign_validate_and_digest_hint(pyfile, request):
                 print(fitter.zeros)
                 print(fitter.zeros_overlay)
                 print(fitter.ZPKrep)
-                #assert(False)
+                # assert(False)
                 raise
+
     hint = {
-        'fitter_update_validate'   : sign_validate_plot,
-        'fitter_check_validate'    : sign_validate_plot,
-        'rational_fitter_validate' : rational_fitter_validate,
+        "fitter_update_validate": sign_validate_plot,
+        "fitter_check_validate": sign_validate_plot,
+        "rational_fitter_validate": rational_fitter_validate,
     }
     return hint
-
-
-
-
-

@@ -148,7 +148,7 @@ from .common import (
     update_tr_radius,
     scale_for_robust_loss_function,
     print_header_nonlinear,
-    print_iteration_nonlinear
+    print_iteration_nonlinear,
 )
 
 try:
@@ -157,13 +157,7 @@ except ImportError:
     OptimizeResult = wavestate.bunch.Bunch
 
 
-def trf(
-    fun, jac,
-    x0, f0, J0,
-    ftol, xtol, gtol,
-    max_nfev, x_scale,
-    verbose
-):
+def trf(fun, jac, x0, f0, J0, ftol, xtol, gtol, max_nfev, x_scale, verbose):
     x = x0.copy()
 
     f = f0
@@ -178,7 +172,7 @@ def trf(
 
     g = compute_grad(J, f)
 
-    jac_scale = isinstance(x_scale, str) and x_scale == 'jac'
+    jac_scale = isinstance(x_scale, str) and x_scale == "jac"
     if jac_scale:
         scale, scale_inv = compute_jac_scale(J)
     else:
@@ -207,8 +201,9 @@ def trf(
             termination_status = 1
 
         if verbose == 2:
-            print_iteration_nonlinear(iteration, nfev, cost, actual_reduction,
-                                      step_norm, g_norm)
+            print_iteration_nonlinear(
+                iteration, nfev, cost, actual_reduction, step_norm, g_norm
+            )
 
         if termination_status is not None or nfev == max_nfev:
             break
@@ -224,7 +219,8 @@ def trf(
         actual_reduction = -1
         while actual_reduction <= 0 and nfev < max_nfev:
             step_h, alpha, n_iter = solve_lsq_trust_region(
-                n, m, uf, s, V, Delta, initial_alpha=alpha)
+                n, m, uf, s, V, Delta, initial_alpha=alpha
+            )
 
             predicted_reduction = -evaluate_quadratic(J_h, g_h, step_h)
             step = d * step_h
@@ -243,14 +239,19 @@ def trf(
             actual_reduction = cost - cost_new
 
             Delta_new, ratio = update_tr_radius(
-                Delta, actual_reduction, predicted_reduction,
-                step_h_norm, step_h_norm > 0.95 * Delta)
+                Delta,
+                actual_reduction,
+                predicted_reduction,
+                step_h_norm,
+                step_h_norm > 0.95 * Delta,
+            )
             alpha *= Delta / Delta_new
             Delta = Delta_new
 
             step_norm = norm(step)
             termination_status = check_termination(
-                actual_reduction, cost, step_norm, norm(x), ratio, ftol, xtol)
+                actual_reduction, cost, step_norm, norm(x), ratio, ftol, xtol
+            )
 
             if termination_status is not None:
                 break
@@ -281,6 +282,14 @@ def trf(
 
     active_mask = np.zeros_like(x)
     return OptimizeResult(
-        x=x, cost=cost, fun=f_true, jac=J, grad=g, optimality=g_norm,
-        active_mask=active_mask, nfev=nfev, njev=njev,
-        status=termination_status)
+        x=x,
+        cost=cost,
+        fun=f_true,
+        jac=J,
+        grad=g,
+        optimality=g_norm,
+        active_mask=active_mask,
+        nfev=nfev,
+        njev=njev,
+        status=termination_status,
+    )

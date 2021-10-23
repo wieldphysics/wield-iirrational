@@ -14,25 +14,26 @@ import numpy as np
 from .base import (
     CodingType,
     Ipi,
-    #I2pi
+    # I2pi
 )
-#import scipy.linalg
+
+# import scipy.linalg
 
 
 class CodingRealAmp(CodingType):
-    N_parameters   = 1
-    unstable       = False
-    p_amplitude    = 0
+    N_parameters = 1
+    unstable = False
+    p_amplitude = 0
     lock_amplitude = False
     hide_amplitude = False
-    restabilize    = False
+    restabilize = False
 
     def setup(
-            self,
-            hide_all       = None,
-            lock_amplitude = None,
-            hide_amplitude = None,
-            disable        = None,
+        self,
+        hide_all=None,
+        lock_amplitude=None,
+        hide_amplitude=None,
+        disable=None,
     ):
         if hide_all:
             hide_amplitude = True
@@ -54,12 +55,12 @@ class CodingRealAmp(CodingType):
 
         self.N_parameters = N_parameters
 
-    def update(self, amplitude = None):
+    def update(self, amplitude=None):
         if self.disable:
-            assert(amplitude is None)
+            assert amplitude is None
             return
         if self.hide_amplitude:
-            assert(amplitude is None)
+            assert amplitude is None
         else:
             if not self.lock_amplitude:
                 self.p_amplitude = amplitude
@@ -73,10 +74,10 @@ class CodingRealAmp(CodingType):
             return [self.p_amplitude]
 
     def update_roots(self, r1):
-        assert(r1.imag == 0)
+        assert r1.imag == 0
         if self.restabilize:
             if r1 > 1:
-                r1 = 1/r1
+                r1 = 1 / r1
         self.p_amplitude = r1
         return
 
@@ -89,13 +90,13 @@ class CodingRealAmp(CodingType):
         return self.p_amplitude
 
     def transfer(self):
-        #real, linear amplitude
+        # real, linear amplitude
         return 1 - self.p_amplitude * sys.Xn_grid
 
     def derivative(self):
         if self.disable:
             return []
-        #real/imaginary part of root
+        # real/imaginary part of root
         if not self.hide_amplitude:
             jac = [
                 -sys.Xn_grid if not self.lock_amplitude else 0,

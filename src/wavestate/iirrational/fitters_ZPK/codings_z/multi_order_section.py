@@ -15,19 +15,20 @@ from ..codings_cmn import (
     CodingTypeZ,
 )
 
+
 class CodingMOS(CodingTypeZ):
-    #settable!
+    # settable!
     N_parameters = None
-    N_coeffs     = 0
+    N_coeffs = 0
     p_coeffs = (1,)
 
     def setup(
-            self,
-            N_coeffs = None,
+        self,
+        N_coeffs=None,
     ):
         if N_coeffs is not None:
             self.N_coeffs = N_coeffs
-            coeffs = list(self.p_coeffs)[:self.N_parameters + 1]
+            coeffs = list(self.p_coeffs)[: self.N_parameters + 1]
             self.p_coeffs = np.array(coeffs + [0] * (1 + self.N_coeffs - len(coeffs)))
 
         N_parameters = self.N_coeffs
@@ -35,7 +36,7 @@ class CodingMOS(CodingTypeZ):
         return
 
     def update(self, *coeffs):
-        assert(len(coeffs) == self.N_parameters)
+        assert len(coeffs) == self.N_parameters
         self.p_coeffs = coeffs
 
     def reduce(self):
@@ -48,7 +49,7 @@ class CodingMOS(CodingTypeZ):
         return
 
     def transfer(self):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         Xn = self.sys.Xzn_grid
         Xn_power = Xn
         value = 1
@@ -58,7 +59,7 @@ class CodingMOS(CodingTypeZ):
         return value
 
     def derivative(self):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         Xn = self.sys.Xzn_grid
         Xn_power = Xn
         jac_list = []
@@ -68,7 +69,7 @@ class CodingMOS(CodingTypeZ):
         return jac_list
 
     def derivative_wtrans(self, sys):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         Xn = sys.Xzn_grid
         Xn_power = Xn
         jac_list = []
@@ -80,5 +81,5 @@ class CodingMOS(CodingTypeZ):
         return value, jac_list
 
     def roots(self):
-        #multi-order sections (number indicates the order)
+        # multi-order sections (number indicates the order)
         return np.polynomial.polynomial.polyroots([1] + self.p_coeffs)

@@ -19,5 +19,3 @@ from .markdown import (
     docdb2markdown,
     padding_remove,
 )
-
-

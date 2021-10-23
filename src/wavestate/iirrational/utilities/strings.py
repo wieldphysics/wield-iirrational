@@ -10,9 +10,11 @@
 
 import re
 
-_re_any_words = re.compile('\s*\S+')
-_re_leading_space = re.compile('\s*')
-def padding_remove(docstring_like, tabsize = 4):
+_re_any_words = re.compile("\s*\S+")
+_re_leading_space = re.compile("\s*")
+
+
+def padding_remove(docstring_like, tabsize=4):
     """
     Both removes the leading line paddings on triple quoted strings and removes common indentation
     (expands tabs to do so)
@@ -39,4 +41,4 @@ def padding_remove(docstring_like, tabsize = 4):
     else:
         fixed_lines = []
 
-    return ''.join(fixed_lines)
+    return "".join(fixed_lines)

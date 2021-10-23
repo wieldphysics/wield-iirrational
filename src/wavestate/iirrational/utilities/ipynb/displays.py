@@ -10,15 +10,17 @@
 
 
 import IPython
+
 _ip = IPython.get_ipython()
 
 if _ip is not None:
     _ip.magic("load_ext autoreload")
     _ip.magic("autoreload 2")
 
-    #if this is run from the console then inline can't be found. This hack seems to get around it
+    # if this is run from the console then inline can't be found. This hack seems to get around it
     try:
         import ipykernel.pylab.backend_inline
+
         backend = ipykernel.pylab.backend_inline.InlineBackend.instance()
         backend.rc.clear()
 
@@ -27,7 +29,7 @@ if _ip is not None:
     except Exception:
         _ip.magic("matplotlib")
         _ip.magic("pylab")
-    #mpl.use('GTK3Cairo')
+    # mpl.use('GTK3Cairo')
 
 import numpy as np
 import matplotlib as mpl
@@ -55,7 +57,7 @@ from IPython.display import (
     Markdown,
 )
 
-#for more options in mpl
+# for more options in mpl
 import IIRrational.utilities.mpl
 
 from IIRrational.utilities.mpl.utils import (
@@ -81,9 +83,10 @@ except ImportError:
     pass
 
 
-def setup_auto_savefig(ipynb_name, check_warn = False):
+def setup_auto_savefig(ipynb_name, check_warn=False):
     from os import path
-    new =  path.splitext(ipynb_name)[0] + '-ipynb'
+
+    new = path.splitext(ipynb_name)[0] + "-ipynb"
     asavefig.org_subfolder = new
 
 

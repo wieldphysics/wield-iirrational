@@ -21,29 +21,29 @@ from . import nyquist_move
 
 
 def rational_disc_fit_mag(
-    argB             = args.UNSPEC,
-    F_Hz             = args.UNSPEC,
-    data             = args.UNSPEC,
-    nyquist_final_Hz = args.UNSPEC,
-    SNR              = args.UNSPEC,
-    SNR_cutoff       = args.UNSPEC,
-    order            = args.UNSPEC,
-    order_max        = args.UNSPEC,
-    doc_db           = None,
-    aid              = None,
+    argB=args.UNSPEC,
+    F_Hz=args.UNSPEC,
+    data=args.UNSPEC,
+    nyquist_final_Hz=args.UNSPEC,
+    SNR=args.UNSPEC,
+    SNR_cutoff=args.UNSPEC,
+    order=args.UNSPEC,
+    order_max=args.UNSPEC,
+    doc_db=None,
+    aid=None,
 ):
-    aid              = ensure_aid(aid)
+    aid = ensure_aid(aid)
 
-    F_Hz             = args.argscan(locals(), argB, args.REQ, arg = 'F_Hz')
-    data             = args.argscan(locals(), argB, args.REQ, arg = 'data')
-    nyquist_final_Hz = args.argscan(locals(), argB, None,     arg = 'nyquist_final_Hz')
-    SNR              = args.argscan(locals(), argB, args.REQ, arg = 'SNR')
-    SNR_cutoff       = args.argscan(locals(), argB, 100,      arg = 'SNR_cutoff')
-    order            = args.argscan(locals(), argB, None,     arg = 'order')
-    order_max        = args.argscan(locals(), argB, 100 ,     arg = 'order_max')
+    F_Hz = args.argscan(locals(), argB, args.REQ, arg="F_Hz")
+    data = args.argscan(locals(), argB, args.REQ, arg="data")
+    nyquist_final_Hz = args.argscan(locals(), argB, None, arg="nyquist_final_Hz")
+    SNR = args.argscan(locals(), argB, args.REQ, arg="SNR")
+    SNR_cutoff = args.argscan(locals(), argB, 100, arg="SNR_cutoff")
+    order = args.argscan(locals(), argB, None, arg="order")
+    order_max = args.argscan(locals(), argB, 100, arg="order_max")
 
     if order is not None:
-        order     = int(order)
+        order = int(order)
 
     if order_max is not None:
         order_max = int(order_max)
@@ -53,14 +53,14 @@ def rational_disc_fit_mag(
 
     if order is not None:
         return SVD_method_mag(
-            F_Hz             = F_Hz,
-            data             = data,
-            nyquist_final_Hz = nyquist_final_Hz,
-            SNR              = SNR,
-            SNR_cutoff       = SNR_cutoff,
-            order            = order,
-            doc_db           = doc_db,
-            aid              = aid,
+            F_Hz=F_Hz,
+            data=data,
+            nyquist_final_Hz=nyquist_final_Hz,
+            SNR=SNR,
+            SNR_cutoff=SNR_cutoff,
+            order=order,
+            doc_db=doc_db,
+            aid=aid,
         )
 
     if doc_db is None:
@@ -68,21 +68,21 @@ def rational_disc_fit_mag(
         doc_db_current = None
 
     doc_db_true = doc_db
-    #otherwise, scan through
+    # otherwise, scan through
     N_current = N_first
 
     if doc_db is not None:
         doc_db_last = declarative.DeepBunch()
         doc_db_last.update_recursive(doc_db)
     fitter_last = SVD_method_mag(
-        F_Hz             = F_Hz,
-        data             = data,
-        nyquist_final_Hz = None,
-        SNR              = SNR,
-        SNR_cutoff       = SNR_cutoff,
-        order            = N_current ,
-        doc_db           = doc_db_last,
-        aid              = aid,
+        F_Hz=F_Hz,
+        data=data,
+        nyquist_final_Hz=None,
+        SNR=SNR,
+        SNR_cutoff=SNR_cutoff,
+        order=N_current,
+        doc_db=doc_db_last,
+        aid=aid,
     )
     restot_last = fitter_last.residuals_average
 
@@ -102,18 +102,18 @@ def rational_disc_fit_mag(
             doc_db_current = declarative.DeepBunch()
             doc_db_current.update_recursive(doc_db)
         fitter = SVD_method_mag(
-            F_Hz             = F_Hz      ,
-            data             = data      ,
-            nyquist_final_Hz = None      ,
-            SNR              = SNR       ,
-            SNR_cutoff       = SNR_cutoff,
-            order            = N_current ,
-            doc_db           = doc_db_current,
-            aid              = aid,
+            F_Hz=F_Hz,
+            data=data,
+            nyquist_final_Hz=None,
+            SNR=SNR,
+            SNR_cutoff=SNR_cutoff,
+            order=N_current,
+            doc_db=doc_db_current,
+            aid=aid,
         )
         restot = fitter.residuals_average
         fitter_red = fitter.copy()
-        fitter_red.matched_pairs_clear(Q_rank_cutoff = .2)
+        fitter_red.matched_pairs_clear(Q_rank_cutoff=0.2)
         restot_red = fitter_red.residuals_average
 
         if restot_last < restot:
@@ -143,7 +143,7 @@ def rational_disc_fit_mag(
                     doc_db.update_recursive(doc_db_last)
             aid.log("Using current")
             break
-        #else continue the loop
+        # else continue the loop
         fitter_last = fitter
         restot_last = restot
         doc_db_last = doc_db_current
@@ -152,36 +152,36 @@ def rational_disc_fit_mag(
     if nyquist_final_Hz is not None:
         nyquist_move.nyquist_move(
             fitter,
-            nyquist_new = nyquist_final_Hz,
-            split_neg_real = True,
-            clear_neg_real = True,
-            aid              = aid,
+            nyquist_new=nyquist_final_Hz,
+            split_neg_real=True,
+            clear_neg_real=True,
+            aid=aid,
         )
     return fitter
 
 
 def SVD_method_mag(
-    argB             = args.UNSPEC,
-    F_Hz             = args.UNSPEC,
-    data             = args.UNSPEC,
-    nyquist_final_Hz = args.UNSPEC,
-    SNR              = args.UNSPEC,
-    SNR_cutoff       = args.UNSPEC,
-    order            = args.UNSPEC,
-    doc_db           = None,
-    aid              = None,
+    argB=args.UNSPEC,
+    F_Hz=args.UNSPEC,
+    data=args.UNSPEC,
+    nyquist_final_Hz=args.UNSPEC,
+    SNR=args.UNSPEC,
+    SNR_cutoff=args.UNSPEC,
+    order=args.UNSPEC,
+    doc_db=None,
+    aid=None,
 ):
     aid = ensure_aid(aid)
 
-    F_Hz             = args.argscan(locals(), argB, args.REQ, arg = 'F_Hz')
-    data             = args.argscan(locals(), argB, args.REQ, arg = 'data')
-    nyquist_final_Hz = args.argscan(locals(), argB, None,     arg = 'nyquist_final_Hz')
-    SNR              = args.argscan(locals(), argB, args.REQ, arg = 'SNR')
-    SNR_cutoff       = args.argscan(locals(), argB, 100,      arg = 'SNR_cutoff')
-    order            = args.argscan(locals(), argB, 50,       arg = 'order')
+    F_Hz = args.argscan(locals(), argB, args.REQ, arg="F_Hz")
+    data = args.argscan(locals(), argB, args.REQ, arg="data")
+    nyquist_final_Hz = args.argscan(locals(), argB, None, arg="nyquist_final_Hz")
+    SNR = args.argscan(locals(), argB, args.REQ, arg="SNR")
+    SNR_cutoff = args.argscan(locals(), argB, 100, arg="SNR_cutoff")
+    order = args.argscan(locals(), argB, 50, arg="order")
 
-    F_Hz_sort    = np.sort(F_Hz)
-    F_nyquist_Hz = (F_Hz_sort[-1] + (F_Hz_sort[-1] - F_Hz_sort[-2]))
+    F_Hz_sort = np.sort(F_Hz)
+    F_nyquist_Hz = F_Hz_sort[-1] + (F_Hz_sort[-1] - F_Hz_sort[-2])
     F_nyquist_Hz = 1 * F_Hz_sort[-1]
 
     if SNR_cutoff is not None:
@@ -191,16 +191,16 @@ def SVD_method_mag(
             SNR = np.minimum(SNR, SNR_cutoff)
 
     kwargs = dict(
-        #delay_s = -.5 / F_nyquist_Hz
+        # delay_s = -.5 / F_nyquist_Hz
     )
 
     fitter_x = fitters_rational.RationalDiscFilterMag(
-        F_Hz         = F_Hz,
-        data         = data,
-        W            = SNR,
-        npoles       = order,
-        nzeros       = order,
-        F_nyquist_Hz = F_nyquist_Hz,
+        F_Hz=F_Hz,
+        data=data,
+        W=SNR,
+        npoles=order,
+        nzeros=order,
+        F_nyquist_Hz=F_nyquist_Hz,
         **kwargs
     )
     fitter_x.fit_zeros()
@@ -210,12 +210,12 @@ def SVD_method_mag(
     fitter_x.fit_zeros()
     annotate.annotate(
         doc_db,
-        name      = 'initial_direct',
-        fitter    = fitter_x,
-        plotter   = plots.plot_fitter_flag,
-        method    = 'fit_poles, fit_zeros',
-        verbosity = 9,
-        about = (
+        name="initial_direct",
+        fitter=fitter_x,
+        plotter=plots.plot_fitter_flag,
+        method="fit_poles, fit_zeros",
+        verbosity=9,
+        about=(
             """
             initial guess without SVD technique
             """
@@ -223,13 +223,13 @@ def SVD_method_mag(
     )
 
     fitter_p = fitters_rational.RationalDiscFilterMag(
-        #parent       = fitter_x,
-        F_Hz         = F_Hz,
-        data         = data,
-        W            = SNR,
-        npoles       = order,
-        nzeros       = order,
-        F_nyquist_Hz = F_nyquist_Hz,
+        # parent       = fitter_x,
+        F_Hz=F_Hz,
+        data=data,
+        W=SNR,
+        npoles=order,
+        nzeros=order,
+        F_nyquist_Hz=F_nyquist_Hz,
         **kwargs
     )
     fitter_p.fit_poles_mod_zeros()
@@ -242,12 +242,12 @@ def SVD_method_mag(
     fitter_p.fit_zeros()
     annotate.annotate(
         doc_db,
-        name      = 'initial_poles',
-        fitter    = fitter_p,
-        plotter   = plots.plot_fitter_flag,
-        method    = 'fit_poles_mod_zeros',
-        verbosity = 9,
-        about = (
+        name="initial_poles",
+        fitter=fitter_p,
+        plotter=plots.plot_fitter_flag,
+        method="fit_poles_mod_zeros",
+        verbosity=9,
+        about=(
             """
             Performs the SVD for a rough initial guess
             """
@@ -256,16 +256,16 @@ def SVD_method_mag(
 
     #
     rep_z = fitters_rational.RationalDiscFilterMag(
-        #parent       = fitter_x,
-        F_Hz         = F_Hz,
-        data         = data,
-        W            = SNR,
-        npoles       = order,
-        nzeros       = order,
-        F_nyquist_Hz = F_nyquist_Hz,
+        # parent       = fitter_x,
+        F_Hz=F_Hz,
+        data=data,
+        W=SNR,
+        npoles=order,
+        nzeros=order,
+        F_nyquist_Hz=F_nyquist_Hz,
         **kwargs
     )
-    #put on mindelay for zeros to help ensure stable poles in froissart doublets
+    # put on mindelay for zeros to help ensure stable poles in froissart doublets
     rep_z.fit_zeros_mod_poles()
     rep_z.fit_poles()
     rep_z.fit_zeros()
@@ -275,97 +275,111 @@ def SVD_method_mag(
     rep_z.fit_zeros()
     annotate.annotate(
         doc_db,
-        name      = 'initial_zeros',
-        fitter    = rep_z,
-        plotter   = plots.plot_fitter_flag,
-        method    = 'fit_poles_mod_zeros',
-        verbosity = 9,
-        about = (
+        name="initial_zeros",
+        fitter=rep_z,
+        plotter=plots.plot_fitter_flag,
+        method="fit_poles_mod_zeros",
+        verbosity=9,
+        about=(
             """
             Performs the SVD for a rough initial guess
             """
         ),
     )
 
-    aid.log("(direct = {0:.3e}, Psvd= {0:.3e}, Zsvd= {0:.3e})".format(fitter_x.residuals_average, fitter_p.residuals_average, rep_z.residuals_average,))
+    aid.log(
+        "(direct = {0:.3e}, Psvd= {0:.3e}, Zsvd= {0:.3e})".format(
+            fitter_x.residuals_average,
+            fitter_p.residuals_average,
+            rep_z.residuals_average,
+        )
+    )
     fitter_list = [
         fitter_x,
-        #fitter_p,
-        #rep_z,
+        # fitter_p,
+        # rep_z,
     ]
-    fitter_list.sort(key = lambda f : f.residuals_average)
+    fitter_list.sort(key=lambda f: f.residuals_average)
     fitter = fitter_list[0]
     if fitter is fitter_p:
         annotate.annotate(
             doc_db,
-            name      = 'choose poles',
-            method    = 'if',
-            verbosity = 3,
-            about = (
+            name="choose poles",
+            method="if",
+            verbosity=3,
+            about=(
                 """
                 Chose the Poles SVD fitter as it had the smaller residual of {0:.2e} vs. {1:.2e} for the zeros
-                """.format(fitter_p.residuals_average, rep_z.residuals_average)
+                """.format(
+                    fitter_p.residuals_average, rep_z.residuals_average
+                )
             ),
         )
-        #fitter.fit_poles_mod_zeros()
-        #fitter.fit_zeros()
+        # fitter.fit_poles_mod_zeros()
+        # fitter.fit_zeros()
     elif fitter is rep_z:
         annotate.annotate(
             doc_db,
-            name      = 'choose zeros',
-            method    = 'if',
-            verbosity = 3,
-            about = (
+            name="choose zeros",
+            method="if",
+            verbosity=3,
+            about=(
                 """
                 Chose the zeros SVD fitter as it had the smaller residual of {0:.2e} vs. {1:.2e} for the poles
-                """.format(rep_z.residuals_average, fitter_p.residuals_average)
+                """.format(
+                    rep_z.residuals_average, fitter_p.residuals_average
+                )
             ),
         )
-        #fitter.fit_zeros_mod_poles()
-        #fitter.fit_poles()
+        # fitter.fit_zeros_mod_poles()
+        # fitter.fit_poles()
     elif fitter is fitter_x:
         annotate.annotate(
             doc_db,
-            name      = 'choose direct',
-            method    = 'if',
-            verbosity = 3,
-            about = (
+            name="choose direct",
+            method="if",
+            verbosity=3,
+            about=(
                 """
                 Chose the direct (non-SVD) fitter as it had the smallest residual of {0:.2e}
-                """.format(fitter_x.residuals_average)
+                """.format(
+                    fitter_x.residuals_average
+                )
             ),
         )
-    #return fitter
-    #fitter.match_pair_iter(Q_rank_cutoff = .4, zeros_first = False)
+    # return fitter
+    # fitter.match_pair_iter(Q_rank_cutoff = .4, zeros_first = False)
     fitter.fit_poles()
     fitter.fit_zeros()
-    #fitter.match_pair_iter(Q_rank_cutoff = .4)
+    # fitter.match_pair_iter(Q_rank_cutoff = .4)
     fitter.fit_poles()
     fitter.fit_zeros()
 
     r_last = 1e10
     for idx in range(3):
-        #fitter.match_pair_iter(Q_rank_cutoff = .4)
+        # fitter.match_pair_iter(Q_rank_cutoff = .4)
         fitter.fit_poles()
         r_p = fitter.residuals_average
         fitter.fit_zeros()
         r_z = fitter.residuals_average
         r = min(r_p, r_z)
-        #aid.log(r / r_last)
+        # aid.log(r / r_last)
         r_last = r
 
     annotate.annotate(
         doc_db,
-        name     = 'seq_iter_3',
-        fitter   = fitter,
-        plotter  = plots.plot_fitter_flag,
-        method   = 'RationalDiscFilterMag.fit_poles, RationalDiscFilterMag.fit_zeros',
-        about    = (
+        name="seq_iter_3",
+        fitter=fitter,
+        plotter=plots.plot_fitter_flag,
+        method="RationalDiscFilterMag.fit_poles, RationalDiscFilterMag.fit_zeros",
+        about=(
             """
             First iterations, enforcing stabilized poles residual of {0:.2e}
-            """.format(fitter.residuals_average)
+            """.format(
+                fitter.residuals_average
+            )
         ),
-        verbosity       = 9,
+        verbosity=9,
     )
 
     fitter.fit_zeros()
@@ -373,45 +387,47 @@ def SVD_method_mag(
     fitter.fit_poles()
     r_p = fitter.residuals_average
     if r_z < r_p:
-        #FIT POLES SHOULD BE THE LAST FIT! The residuals tend to be lowest under the poles
+        # FIT POLES SHOULD BE THE LAST FIT! The residuals tend to be lowest under the poles
         fitter.fit_zeros()
         pass
 
     annotate.annotate(
         doc_db,
-        name     = 'seq_iter_4',
-        fitter   = fitter,
-        plotter  = plots.plot_fitter_flag,
-        method   = 'RationalDiscFilterMag.fit_poles, RationalDiscFilterMag.fit_zeros',
-        about    = (
+        name="seq_iter_4",
+        fitter=fitter,
+        plotter=plots.plot_fitter_flag,
+        method="RationalDiscFilterMag.fit_poles, RationalDiscFilterMag.fit_zeros",
+        about=(
             """
             First iterations, enforcing stabilized poles residual of {0:.2e}
-            """.format(fitter.residuals_average)
+            """.format(
+                fitter.residuals_average
+            )
         ),
-        verbosity       = 4,
+        verbosity=4,
     )
     aid.log("LINEAR Final Residuals: ", fitter.residuals_average)
 
     if nyquist_final_Hz is not None:
         fitter = fitters_rational.RationalDiscFilter(
-            F_Hz         = F_Hz,
-            data         = data,
-            W            = SNR,
-            npoles       = order,
-            nzeros       = order,
-            F_nyquist_Hz = F_nyquist_Hz,
-            ZPK          = fitter.ZPK,
+            F_Hz=F_Hz,
+            data=data,
+            W=SNR,
+            npoles=order,
+            nzeros=order,
+            F_nyquist_Hz=F_nyquist_Hz,
+            ZPK=fitter.ZPK,
             **kwargs
         )
         ZPK = nyquist_move.nyquist_move(
             fitter,
-            nyquist_new = nyquist_final_Hz,
-            split_neg_real = True,
-            clear_neg_real = True,
-            aid              = aid,
+            nyquist_new=nyquist_final_Hz,
+            split_neg_real=True,
+            clear_neg_real=True,
+            aid=aid,
         )
 
-    #annotate.annotate(
+    # annotate.annotate(
     #    doc_db,
     #    name     = 'nyquist_move',
     #    fitter   = fitter,
@@ -423,17 +439,17 @@ def SVD_method_mag(
     #        """.format(fitter.residuals_average)
     #    ),
     #    verbosity       = 3,
-    #)
+    # )
 
-    #NOTE: shouldn't currently calculate residuals_average using the post-nyquist fitter as it is not numerically stable
-    #TODO: switch to MRF for this residual
+    # NOTE: shouldn't currently calculate residuals_average using the post-nyquist fitter as it is not numerically stable
+    # TODO: switch to MRF for this residual
     annotate.annotate(
         doc_db,
-        name     = "Final",
-        method   = "SVD_method",
-        fitter   = fitter,
-        plotter  = plots.plot_fitter_flag,
-        about    = (
+        name="Final",
+        method="SVD_method",
+        fitter=fitter,
+        plotter=plots.plot_fitter_flag,
+        about=(
             """
             Uses SVD to create initial guess of fit for data, followed by several iterative fits
             (see reference ???).
@@ -445,8 +461,6 @@ def SVD_method_mag(
 
             """.format()
         ),
-        verbosity       = 2,
+        verbosity=2,
     )
     return fitter
-
-

@@ -11,23 +11,25 @@
 
 import numpy as np
 import matplotlib.collections as mplcollect
-#import matplotlib as mpl
-#from matplotlib import patches
+
+# import matplotlib as mpl
+# from matplotlib import patches
 import matplotlib.transforms as mpltrans
 
 from . import utilities
+
 
 def plot_ZP_grab(
     self,
     fitter,
     duals,
-    color = 'black',
-    axB   = None,
+    color="black",
+    axB=None,
 ):
     def rlog_F(r):
         F_Hz = r.imag
         BW = abs(r.real)
-        #select = abs(r) < 1
+        # select = abs(r) < 1
         return BW, F_Hz
 
     ax = axB.mag2
@@ -36,11 +38,11 @@ def plot_ZP_grab(
     x_p = []
     y_p = []
     for b in duals:
-        #coding_z = fitter.num_codings[b.idx_z]
-        #z_rl, z_F = rlog_F(coding_z.roots_c(fitter)[0])
+        # coding_z = fitter.num_codings[b.idx_z]
+        # z_rl, z_F = rlog_F(coding_z.roots_c(fitter)[0])
         z_rl, z_F = rlog_F(b.z)
-        #coding_p = fitter.den_codings[b.idx_p]
-        #p_rl, p_F = rlog_F(coding_p.roots_c(fitter)[0])
+        # coding_p = fitter.den_codings[b.idx_p]
+        # p_rl, p_F = rlog_F(coding_p.roots_c(fitter)[0])
         p_rl, p_F = rlog_F(b.p)
 
         trans = mpltrans.composite_transform_factory(
@@ -59,18 +61,17 @@ def plot_ZP_grab(
     y_p = np.asarray(y_p)
 
     aspect = utilities.get_aspect(ax)
-    r = .01 + ((x_z - x_p)**2 + (y_z - y_p)**2 / aspect**1)**.5,
-    angles = np.angle((x_z - x_p) + 1j * (y_z - y_p) / aspect, deg = True)
+    r = (0.01 + ((x_z - x_p) ** 2 + (y_z - y_p) ** 2 / aspect ** 1) ** 0.5,)
+    angles = np.angle((x_z - x_p) + 1j * (y_z - y_p) / aspect, deg=True)
     col = mplcollect.EllipseCollection(
-        widths      = r,
-        heights     = .012,
-        angles      = angles,
-        units       = 'width',
-        facecolors  = 'none',
-        edgecolors  = color,
-        offsets     = np.vstack([(x_z + x_p)/2, (y_z + y_p)/2]).T,
-        transOffset = ax.transAxes,
+        widths=r,
+        heights=0.012,
+        angles=angles,
+        units="width",
+        facecolors="none",
+        edgecolors=color,
+        offsets=np.vstack([(x_z + x_p) / 2, (y_z + y_p) / 2]).T,
+        transOffset=ax.transAxes,
     )
     ax.add_collection(col)
     return axB
-

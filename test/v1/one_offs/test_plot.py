@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 def simple1_interactive(browser, plotsections, plot_verbosity):
 
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
+    ax = fig.add_subplot(1, 1, 1)
     ax.plot(np.linspace(1, 10, 100))
 
     plt.ioff()
@@ -19,5 +19,5 @@ def simple1_interactive(browser, plotsections, plot_verbosity):
     return
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     test_simple1(False, None, 10)

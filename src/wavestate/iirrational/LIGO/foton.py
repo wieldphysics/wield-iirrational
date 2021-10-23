@@ -27,9 +27,9 @@ ROOT.gSystem.AddDynamicPath("/usr/lib64")
 ROOT.gSystem.Load("libRdmtsigp")
 ROOT.gSystem.Load("libRgdsplot")
 
-#some tests of ROOT to cause an early failure at IMPORT if missing
+# some tests of ROOT to cause an early failure at IMPORT if missing
 ROOT.filterwiz.FilterFile
-#ROOT.iirorder
+# ROOT.iirorder
 ROOT.FilterDesign
 ROOT.iir2z
 ROOT.iir2zpk
@@ -40,11 +40,11 @@ ROOT.iir2poly
 TcplxD = ROOT.basicplx(ROOT.Double)
 TcplxF = ROOT.basicplx(float)
 
-__docformat__ = 'restructuredtext'
+__docformat__ = "restructuredtext"
 __all__ = [
-    'FilterFile',
-    'iir2zpk',
-    'iir2zpkstr',
+    "FilterFile",
+    "iir2zpk",
+    "iir2zpkstr",
 ]
 
 
@@ -53,38 +53,38 @@ def _reverse_dict(d):
 
 
 input_switches = {
-    'AlwaysOn' :     1,
-    'always_on' :    1,
-    'alwayson' :     1,
-    'ZeroHistory' :  2,
-    'zero_history' : 2,
-    'zerohistory' :  2,
+    "AlwaysOn": 1,
+    "always_on": 1,
+    "alwayson": 1,
+    "ZeroHistory": 2,
+    "zero_history": 2,
+    "zerohistory": 2,
 }
 
 input_switches_R = [
-    'always_on',
-    'zero_history',
+    "always_on",
+    "zero_history",
 ]
 
 output_switches = {
-    'immediately':    1,
-    'Immediately':    1,
-    'immediate':      1,
-    'Immediate':      1,
-    'ramp' :          2,
-    'Ramp' :          2,
-    'inputcrossing':  3,
-    'InputCrossing':  3,
-    'input_crossing': 3,
-    'zerocrossing' :  4,
-    'ZeroCrossing' :  4,
-    'zero_crossing' : 4,
+    "immediately": 1,
+    "Immediately": 1,
+    "immediate": 1,
+    "Immediate": 1,
+    "ramp": 2,
+    "Ramp": 2,
+    "inputcrossing": 3,
+    "InputCrossing": 3,
+    "input_crossing": 3,
+    "zerocrossing": 4,
+    "ZeroCrossing": 4,
+    "zero_crossing": 4,
 }
 output_switches_R = [
-    'immediate',
-    'ramp',
-    'input_crossing',
-    'zero_crossing',
+    "immediate",
+    "ramp",
+    "input_crossing",
+    "zero_crossing",
 ]
 
 design_types = [
@@ -95,21 +95,21 @@ design_types = [
 ]
 
 if False:
-    #to calm lint on py2
+    # to calm lint on py2
     unicode = None
 
 if sys.version_info > (3, 0):
-    str_types = (str, )
+    str_types = (str,)
 else:
     str_types = (str, unicode)
 
 
 def check_ftype(ftype, F1_Hz, F2_Hz):
-    assert(ftype in design_types)
-    assert(F1_Hz is not None)
+    assert ftype in design_types
+    assert F1_Hz is not None
     if ftype in ["BandPass", "BandStop"]:
-        assert(F2_Hz is not None)
-        assert(F2_Hz > F1_Hz)
+        assert F2_Hz is not None
+        assert F2_Hz > F1_Hz
         return True
     return False
 
@@ -126,10 +126,11 @@ class FilterFile(object):
       >>> filterfile['LSC_CARM']['PHlead'].name
       'PHlead'
 
-      """
+    """
+
     def __init__(
-            self,
-            filename = None,
+        self,
+        filename=None,
     ):
         self._filter_file_raw = ROOT.filterwiz.FilterFile()
         self.filename = filename
@@ -146,7 +147,7 @@ class FilterFile(object):
             item = lookup()
         except:
             raise KeyError(key)
-        #need to use specifically this syntax for ROOT to check Null pointers
+        # need to use specifically this syntax for ROOT to check Null pointers
         # The python standard is None does NOT WORK
         if item == None:
             raise KeyError(key)
@@ -191,8 +192,8 @@ class FilterFile(object):
             for sec in fm:
                 if not sec.valid():
                     val = False
-                    print(name + '[' + str(sec.index) + ']', file = sys.stderr)
-                    print('invalid', file = sys.stderr)
+                    print(name + "[" + str(sec.index) + "]", file=sys.stderr)
+                    print("invalid", file=sys.stderr)
         return val
 
     def read(self, filename):
@@ -205,9 +206,11 @@ class FilterFile(object):
         if not ext:
             a, b = os.path.split(filename)
             if not a:
-                site = os.environ['site']
-                ifo = os.environ['ifo']
-                filename = '/opt/rtcds/{0}/{1}/chans/{2}.txt'.format(site, ifo, filename.upper())
+                site = os.environ["site"]
+                ifo = os.environ["ifo"]
+                filename = "/opt/rtcds/{0}/{1}/chans/{2}.txt".format(
+                    site, ifo, filename.upper()
+                )
                 print("Appears to be a system name, reading from")
                 print(filename)
         self.filename = os.path.abspath(filename)
@@ -223,6 +226,7 @@ class FilterFile(object):
             self._filter_file_raw.write(self.filename)
         else:
             self._filter_file_raw.write(*args)
+
 
 class Module(object):
     def __init__(self, lookup):
@@ -270,7 +274,7 @@ class Module(object):
 
     def __contains__(self, key):
         try:
-            #access just to test for presence
+            # access just to test for presence
             self[key]
             return True
         except:
@@ -286,22 +290,26 @@ class Section(object):
         self._lookup_fm = lookup_fm
         self._key = key
         if not self.valid:
-            warnings.warn("This module '{0}' does not currently have valid design string!".format(self.name))
+            warnings.warn(
+                "This module '{0}' does not currently have valid design string!".format(
+                    self.name
+                )
+            )
 
     def xfer(self, F_Hz):
         return iir2xfer(self.filter_raw, F_Hz)
 
     @property
     def ZPKs(self):
-        return iir2zpk(self.filter_raw, plane = 's')
+        return iir2zpk(self.filter_raw, plane="s")
 
     @property
     def ZPKsf(self):
-        return iir2zpk(self.filter_raw, plane = 'f')
+        return iir2zpk(self.filter_raw, plane="f")
 
     @property
     def ZPKf(self):
-        return iir2zpk(self.filter_raw, plane = 'f')
+        return iir2zpk(self.filter_raw, plane="f")
 
     @property
     def ZPKz(self):
@@ -399,12 +407,12 @@ class Section(object):
     def timeout(self, val):
         return self.sec.setTimeout(val)
 
-    #@property
-    #def header(self):
+    # @property
+    # def header(self):
     #        return self.sec.getHeader()
 
-    #@header.setter
-    #def header(self, val):
+    # @header.setter
+    # def header(self, val):
     #        return self.sec.setHeader(val)
 
     @property
@@ -427,11 +435,17 @@ class Section(object):
         prev_valid = self.valid
         prev_design = self.design
         if not prev_valid:
-            warnings.warn("This module '{0}' does not currently have valid design string!".format(self.name))
+            warnings.warn(
+                "This module '{0}' does not currently have valid design string!".format(
+                    self.name
+                )
+            )
         retval = self._set_design(self.design + cmd)
         if not self.valid and prev_valid:
             self.design = prev_design
-            raise RuntimeError("Addition to design string '{0}' Makes the design invalid".format(cmd))
+            raise RuntimeError(
+                "Addition to design string '{0}' Makes the design invalid".format(cmd)
+            )
         return retval
 
     def _set_design(self, newdesign):
@@ -439,23 +453,23 @@ class Section(object):
         self.refresh()
 
     def copyfrom(self, src):
-        self.name          = src.name
-        self.design        = src.design
-        self.input_switch  = src.input_switch
+        self.name = src.name
+        self.design = src.design
+        self.input_switch = src.input_switch
         self.output_switch = src.output_switch
-        self.ramp          = src.ramp
-        self.tolerance     = src.tolerance
-        self.timeout       = src.timeout
+        self.ramp = src.ramp
+        self.tolerance = src.tolerance
+        self.timeout = src.timeout
 
     def ZPK_add(
-            self,
-            filt,
-            plane = 'f',
-            annotate = True,
-            F_gain_Hz = None,
-            scale_gain = True,
+        self,
+        filt,
+        plane="f",
+        annotate=True,
+        F_gain_Hz=None,
+        scale_gain=True,
     ):
-        assert(plane in ['s', 'f', 'n'])
+        assert plane in ["s", "f", "n"]
 
         zpk = TFmath.ANY2ZPKCalc(filt)
         Z, P, K = zpk
@@ -474,46 +488,40 @@ class Section(object):
                     R /= P[idx]
                     G = G / (1j * F_gain_Hz - P[idx])
                 idx += 1
-            if plane == 'f':
-                K = abs(K / G * (2 * np.pi)**(len(P) - len(Z)))
-            elif plane == 's':
+            if plane == "f":
+                K = abs(K / G * (2 * np.pi) ** (len(P) - len(Z)))
+            elif plane == "s":
                 K = abs(K / G)
-            elif plane == 'n':
+            elif plane == "n":
                 raise RuntimeError("F_gain_Hz not supported for normalized plane")
 
         zpk_str = conversion.filter2fotonZPK(
             (Z, P, K),
-            plane = plane,
-            annotate_pairs = annotate,
-            scale_gain = scale_gain,
+            plane=plane,
+            annotate_pairs=annotate,
+            scale_gain=scale_gain,
         )
 
         return self.add(zpk_str)
 
-    def ZPK_set(
-            self,
-            ZPK,
-            check_response = True,
-            F_response_Hz = None,
-            **kwargs
-    ):
-        #TODO, add design confirmations that the response is preserved
-        self.design = ''
+    def ZPK_set(self, ZPK, check_response=True, F_response_Hz=None, **kwargs):
+        # TODO, add design confirmations that the response is preserved
+        self.design = ""
         return self.ZPK_add(ZPK, **kwargs)
 
-    def ZPKz_add(self, ZPK, F_nyquist_Hz = None):
+    def ZPKz_add(self, ZPK, F_nyquist_Hz=None):
         if F_nyquist_Hz is not None:
-            assert(F_nyquist_Hz * 2 == self.rate)
+            assert F_nyquist_Hz * 2 == self.rate
 
         def matlab_complex_str(num):
-            if(np.imag(num) == 0.):
-                return ("{0}".format(num))
+            if np.imag(num) == 0.0:
+                return "{0}".format(num)
             else:
-                return ("{0} + {1}*i".format(np.real(num), np.imag(num)))
+                return "{0} + {1}*i".format(np.real(num), np.imag(num))
 
         Z, P, K = ZPK
 
-        ZPK_template = 'zroots([{zeros}],[{poles}],\n{gain})'
+        ZPK_template = "zroots([{zeros}],[{poles}],\n{gain})"
         pole_list = []
         zero_list = []
         for pole in P:
@@ -522,9 +530,9 @@ class Section(object):
             pole_list.append(matlab_complex_str(zero))
 
         zpk_str = ZPK_template.format(
-            zeros ='\n\t' + ';\n\t'.join(zero_list) + '\n',
-            poles ='\n\t' + ';\n\t'.join(pole_list) + '\n',
-            gain  = K,
+            zeros="\n\t" + ";\n\t".join(zero_list) + "\n",
+            poles="\n\t" + ";\n\t".join(pole_list) + "\n",
+            gain=K,
         )
         return self.add(zpk_str)
 
@@ -534,170 +542,170 @@ class Section(object):
     def zroots_set(self, ZPK, **kwargs):
         return self.ZPKz_set(ZPK, **kwargs)
 
-    def gain_add(self, gain, usedb = False):
+    def gain_add(self, gain, usedb=False):
         """
-          @param g gain.
-          @param format scalar or dB
-          @return true if successful
+        @param g gain.
+        @param format scalar or dB
+        @return true if successful
         """
         if usedb:
-            return self.add(
-                'gain({0}, "db")\n'.format(gain)
-            )
+            return self.add('gain({0}, "db")\n'.format(gain))
         else:
-            return self.add(
-                'gain({0}, "scalar")\n'.format(gain)
-            )
+            return self.add('gain({0}, "scalar")\n'.format(gain))
 
     def gain_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.gain_add(*args, **kwargs)
+
     gain_set.__doc__ = gain_add.__doc__
 
-    def butter_add(self, ftype = 'LowPass', order = None, F1_Hz = None, F2_Hz = None):
+    def butter_add(self, ftype="LowPass", order=None, F1_Hz=None, F2_Hz=None):
         """
-          @param type Filter type
-          @param order Filter order
-          @param f1 Pass band edge (Hz)
-          @param f2 Another pass band edge (Hz)
-          @return true if successful
+        @param type Filter type
+        @param order Filter order
+        @param f1 Pass band edge (Hz)
+        @param f2 Another pass band edge (Hz)
+        @return true if successful
         """
         kw = dict(
-            ftype = ftype,
-            order = order,
-            F1_Hz = F1_Hz,
-            F2_Hz = F2_Hz,
+            ftype=ftype,
+            order=order,
+            F1_Hz=F1_Hz,
+            F2_Hz=F2_Hz,
         )
-        if check_ftype(ftype = ftype, F1_Hz = F1_Hz, F2_Hz = F2_Hz):
+        if check_ftype(ftype=ftype, F1_Hz=F1_Hz, F2_Hz=F2_Hz):
             return self.add(
                 'butter("{ftype}", {order}, {F1_Hz}, {F2_Hz})\n'.format(**kw)
             )
         else:
-            return self.add(
-                'butter("{ftype}", {order}, {F1_Hz})\n'.format(**kw)
-            )
+            return self.add('butter("{ftype}", {order}, {F1_Hz})\n'.format(**kw))
 
     def butter_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.butter_add(*args, **kwargs)
+
     butter_set.__doc__ = butter_add.__doc__
 
-    def resgain_add(self, f0 = None, Q = None, height = None):
+    def resgain_add(self, f0=None, Q=None, height=None):
         """
-          @param f0 Center frequency.
-          @param Q Quality factor ( Q = (Center freq)/(Width) ).
-          @param height Height of the peak (dB).
+        @param f0 Center frequency.
+        @param Q Quality factor ( Q = (Center freq)/(Width) ).
+        @param height Height of the peak (dB).
         """
-        return self.add('resgain({f0}, {Q}, {height})\n'.format(
-            f0 = f0,
-            Q = Q,
-            height = height,
-        ))
+        return self.add(
+            "resgain({f0}, {Q}, {height})\n".format(
+                f0=f0,
+                Q=Q,
+                height=height,
+            )
+        )
 
     def resgain_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.resgain_add(*args, **kwargs)
+
     resgain_set.__doc__ = resgain_add.__doc__
 
-    def notch_add(self, f0 = None, Q = None, depth = None):
+    def notch_add(self, f0=None, Q=None, depth=None):
         """
-          @param f0 Center frequency.
-          @param Q Quality factor ( Q = (Center freq)/(Width) ).
-          @param depth depth of the peak (dB).
+        @param f0 Center frequency.
+        @param Q Quality factor ( Q = (Center freq)/(Width) ).
+        @param depth depth of the peak (dB).
         """
-        return self.add('notch({f0}, {Q}, {height})\n'.format(
-            f0 = f0,
-            Q = Q,
-            depth = depth,
-        ))
+        return self.add(
+            "notch({f0}, {Q}, {height})\n".format(
+                f0=f0,
+                Q=Q,
+                depth=depth,
+            )
+        )
 
     def notch_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.notch_add(*args, **kwargs)
+
     notch_set.__doc__ = notch_add.__doc__
 
-    def elliptic_add(self, ftype = 'LowPass', order = None, rp = None, F1_Hz = None, F2_Hz = None):
-        """
-        """
-        check_ftype(ftype = ftype, F1_Hz = F1_Hz, F2_Hz = F2_Hz)
+    def elliptic_add(
+        self, ftype="LowPass", order=None, rp=None, F1_Hz=None, F2_Hz=None
+    ):
+        """ """
+        check_ftype(ftype=ftype, F1_Hz=F1_Hz, F2_Hz=F2_Hz)
         kw = dict(
-            ftype = ftype,
-            order = order,
-            F1_Hz = F1_Hz,
-            F2_Hz = F2_Hz,
+            ftype=ftype,
+            order=order,
+            F1_Hz=F1_Hz,
+            F2_Hz=F2_Hz,
         )
-        if check_ftype(ftype = ftype, F1_Hz = F1_Hz, F2_Hz = F2_Hz):
+        if check_ftype(ftype=ftype, F1_Hz=F1_Hz, F2_Hz=F2_Hz):
             return self.add(
                 'elliptic("{ftype}", {order}, {F1_Hz}, {F2_Hz})\n'.format(**kw)
             )
         else:
-            return self.add(
-                'elliptic("{ftype}", {order}, {F1_Hz})\n'.format(**kw)
-            )
+            return self.add('elliptic("{ftype}", {order}, {F1_Hz})\n'.format(**kw))
 
     def elliptic_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.elliptic_add(*args, **kwargs)
+
     elliptic_set.__doc__ = elliptic_add.__doc__
 
-    def cheby1_add(self, ftype = 'LowPass', order = None, rp = None, F1_Hz = None, F2_Hz = None):
+    def cheby1_add(self, ftype="LowPass", order=None, rp=None, F1_Hz=None, F2_Hz=None):
         """
-          @param type Filter type
-          @param order Filter order
-          @param as Stop band attenuation (dB)
-          @param f1 Pass band edge (Hz)
-          @param f2 Another pass band edge (Hz)
+        @param type Filter type
+        @param order Filter order
+        @param as Stop band attenuation (dB)
+        @param f1 Pass band edge (Hz)
+        @param f2 Another pass band edge (Hz)
         """
         kw = dict(
-            ftype = ftype,
-            order = order,
-            F1_Hz = F1_Hz,
-            F2_Hz = F2_Hz,
+            ftype=ftype,
+            order=order,
+            F1_Hz=F1_Hz,
+            F2_Hz=F2_Hz,
         )
-        if check_ftype(ftype = ftype, F1_Hz = F1_Hz, F2_Hz = F2_Hz):
+        if check_ftype(ftype=ftype, F1_Hz=F1_Hz, F2_Hz=F2_Hz):
             return self.add(
                 'cheby1("{ftype}", {order}, {F1_Hz}, {F2_Hz})\n'.format(**kw)
             )
         else:
-            return self.add(
-                'cheby2("{ftype}", {order}, {F1_Hz})\n'.format(**kw)
-            )
+            return self.add('cheby2("{ftype}", {order}, {F1_Hz})\n'.format(**kw))
 
     def cheby1_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.cheby1_add(*args, **kwargs)
+
     cheby1_set.__doc__ = cheby1_add.__doc__
 
-    def cheby2_add(self, ftype = 'LowPass', order = None, rp = None, F1_Hz = None, F2_Hz = None):
+    def cheby2_add(self, ftype="LowPass", order=None, rp=None, F1_Hz=None, F2_Hz=None):
         """
-          @param type Filter type
-          @param order Filter order
-          @param f1 Pass band edge (Hz)
-          @param f2 Another pass band edge (Hz)
-          @return true if successful
+        @param type Filter type
+        @param order Filter order
+        @param f1 Pass band edge (Hz)
+        @param f2 Another pass band edge (Hz)
+        @return true if successful
         """
         kw = dict(
-            ftype = ftype,
-            order = order,
-            F1_Hz = F1_Hz,
-            F2_Hz = F2_Hz,
+            ftype=ftype,
+            order=order,
+            F1_Hz=F1_Hz,
+            F2_Hz=F2_Hz,
         )
-        if check_ftype(ftype = ftype, F1_Hz = F1_Hz, F2_Hz = F2_Hz):
+        if check_ftype(ftype=ftype, F1_Hz=F1_Hz, F2_Hz=F2_Hz):
             return self.add(
                 'cheby2("{ftype}", {order}, {F1_Hz}, {F2_Hz})\n'.format(**kw)
             )
         else:
-            return self.add(
-                'cheby2("{ftype}", {order}, {F1_Hz})\n'.format(**kw)
-            )
+            return self.add('cheby2("{ftype}", {order}, {F1_Hz})\n'.format(**kw))
 
     def cheby2_set(self, *args, **kwargs):
-        self.design = ''
+        self.design = ""
         return self.cheby2_add(*args, **kwargs)
+
     cheby2_set.__doc__ = cheby2_add.__doc__
 
 
-def iir2zpkstr(filt, plane='s', prewarp=True):
+def iir2zpkstr(filt, plane="s", prewarp=True):
     """Returns the zeros and poles of an IIR filter.
     The returned string has the format "zpk(...)", if the plane is
     "s", "n" or "f". It is of the form "rpoly(...)", if the plane is
@@ -712,7 +720,7 @@ def iir2zpkstr(filt, plane='s', prewarp=True):
     return zpk
 
 
-def iir2zpk(filt, plane='s', prewarp=True):
+def iir2zpk(filt, plane="s", prewarp=True):
     """Returns the zeros and poles of an IIR filter.
     The returned string has the format "zpk(...)", if the plane is
     "s", "n" or "f". It is of the form "rpoly(...)", if the plane is
@@ -722,13 +730,13 @@ def iir2zpk(filt, plane='s', prewarp=True):
         arg = filt.filter_raw.get()
     except AttributeError:
         arg = filt.get()
-    assert(plane in ['s', 'f', 'n'])
+    assert plane in ["s", "f", "n"]
 
     nsos = ROOT.iirsoscount(arg)
     Nz = ctypes.c_int(0)
     Np = ctypes.c_int(0)
-    arr_z = np.empty(4*nsos, np.double)
-    arr_p = np.empty(4*nsos, np.double)
+    arr_z = np.empty(4 * nsos, np.double)
+    arr_p = np.empty(4 * nsos, np.double)
     gain = ROOT.Double(0)
     ROOT.iir2zpk(
         arg,
@@ -738,13 +746,14 @@ def iir2zpk(filt, plane='s', prewarp=True):
         cppyy.bind_object(arr_p, TcplxD),
         gain,
         plane,
-        prewarp
+        prewarp,
     )
     Np = Np.value
     Nz = Nz.value
-    poles = arr_p[:2 * Np:2] + 1j * arr_p[1:2 * Np:2]
-    zeros = arr_z[:2 * Nz:2] + 1j * arr_z[1:2 * Nz:2]
+    poles = arr_p[: 2 * Np : 2] + 1j * arr_p[1 : 2 * Np : 2]
+    zeros = arr_z[: 2 * Nz : 2] + 1j * arr_z[1 : 2 * Nz : 2]
     return zeros, poles, gain
+
 
 def iir2xfer(filt, F_Hz):
     """Returns the zeros and poles of an IIR filter.
@@ -756,8 +765,8 @@ def iir2xfer(filt, F_Hz):
         arg = filt.filter_raw.get()
     except AttributeError:
         arg = filt.get()
-    F_Hz = np.asarray(F_Hz, dtype = np.float32, order = 'C')
-    arr_H = np.empty(len(F_Hz) * 2, dtype = np.float32, order = 'C')
+    F_Hz = np.asarray(F_Hz, dtype=np.float32, order="C")
+    arr_H = np.empty(len(F_Hz) * 2, dtype=np.float32, order="C")
 
     arg.Xfer(
         cppyy.bind_object(arr_H, TcplxF),
@@ -768,7 +777,7 @@ def iir2xfer(filt, F_Hz):
     return arr_H[::2] + 1j * arr_H[1::2]
 
 
-def iir2sos(filt, format='s'):
+def iir2sos(filt, format="s"):
     """Returns the a's and b's of an IIR filter.
     The returned a's and b's are grouped in zecond order sections.
     The first returned coeffcient is the overall gain. The following
@@ -785,7 +794,7 @@ def iir2sos(filt, format='s'):
         arg = filt.get()
     nsos = ROOT.iirsoscount(arg)
     nba = ctypes.c_int(0)
-    ba = array('d', range(1 + 4*nsos))
+    ba = array("d", range(1 + 4 * nsos))
     ROOT.iir2z(arg, nba, ba, format)
     return [ba[n] for n in range(nba)]
 
@@ -807,12 +816,12 @@ def iir2zroots(filt):
         arg = filt.get()
     nsos = ROOT.iirsoscount(arg)
     nba = ctypes.c_int(0)
-    ba = array('d', range(1 + 4*nsos))
-    ROOT.iir2z(arg, nba, ba, 's')
+    ba = array("d", range(1 + 4 * nsos))
+    ROOT.iir2z(arg, nba, ba, "s")
     Nz = ctypes.c_int(0)
     Np = ctypes.c_int(0)
-    arr_z = np.empty(4*nsos, np.double)
-    arr_p = np.empty(4*nsos, np.double)
+    arr_z = np.empty(4 * nsos, np.double)
+    arr_p = np.empty(4 * nsos, np.double)
     gain = ROOT.Double(0)
     ROOT.z2z(
         nba,
@@ -822,10 +831,10 @@ def iir2zroots(filt):
         Np,
         cppyy.bind_object(arr_p, TcplxD),
         gain,
-        's'
+        "s",
     )
     Np = Np.value
     Nz = Nz.value
-    poles = arr_p[:2 * Np:2] + 1j * arr_p[1:2 * Np:2]
-    zeros = arr_z[:2 * Nz:2] + 1j * arr_z[1:2 * Nz:2]
+    poles = arr_p[: 2 * Np : 2] + 1j * arr_p[1 : 2 * Np : 2]
+    zeros = arr_z[: 2 * Nz : 2] + 1j * arr_z[1 : 2 * Nz : 2]
     return zeros, poles, gain
