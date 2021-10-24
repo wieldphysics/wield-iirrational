@@ -31,9 +31,9 @@ def IIRrational_data(name, set_num=0, instance_num=0, **kwargs):
 
 
 __all__ = [
-    assert_almost_equal,
-    data2testcase,
-    testcase2data,
-    IIRrational_data,
-    datasets,
+    'assert_almost_equal',
+    'data2testcase',
+    'testcase2data',
+    'IIRrational_data',
+    'datasets',
 ]

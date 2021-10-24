@@ -6,7 +6,6 @@
 # NOTICE: authors should document their contributions in concisely in NOTICE
 # with details inline in source files, comments, and docstrings.
 """
-.. autofunction:: masked_argsort
 """
 
 try:
