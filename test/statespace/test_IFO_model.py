@@ -1,13 +1,12 @@
 """
 """
-from __future__ import division, print_function, unicode_literals
 import numpy as np
 import copy
 import declarative
 
-from IIRrational.utilities.np import logspaced
-from IIRrational.utilities.mpl import mplfigB
-from IIRrational.statespace import dense, StateSpaceDense
+from wavestate.iirrational.utilities.np import logspaced
+from wavestate.iirrational.utilities.mpl import mplfigB
+from wavestate.iirrational.statespace import dense, StateSpaceDense
 
 
 c_m_s = 299792458
@@ -280,7 +279,7 @@ def build_model(theta=0):
             ("sum_into", "Metm+M-d", ["DARM.o0", "FMetm+M-d"]),
         ],
     )
-    return wavestate.bunch.Bunch(locals())
+    return Bunch(locals())
 
 
 def test_IFO_model(tpath_join):

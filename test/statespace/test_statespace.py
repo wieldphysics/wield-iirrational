@@ -5,9 +5,9 @@ import numpy as np
 import scipy
 import scipy.signal
 
-from IIRrational.utilities.np import logspaced
-from IIRrational.utilities.mpl import mplfigB
-from IIRrational.statespace import dense
+from wavestate.iirrational.utilities.np import logspaced
+from wavestate.iirrational.utilities.mpl import mplfigB
+from wavestate.iirrational.statespace import dense
 
 import scipy.signal
 
@@ -46,7 +46,7 @@ def settest(test_trigger, tpath_join, plot, Zc, Zr, Pc, Pr, k):
         oname="zpk.o0",
     )
 
-    # TODO, use IIRrational version since statespace is likely more numerically
+    # TODO, use wavestate.iirrational version since statespace is likely more numerically
     # stable than crappy scipy implementation
     w, xfer2 = scipy.signal.freqs_zpk(Z, P, k, 2 * np.pi * F_Hz)
 

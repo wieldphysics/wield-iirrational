@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate.declarative import depB_property, NOARG
+from wavestate.bunch.depbunch import depB_property, NOARG
 
 from .. import representations
 from ..representations.polynomials import standard

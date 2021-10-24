@@ -7,10 +7,8 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
 import numpy as np
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from ..utilities import args
 
@@ -70,7 +68,7 @@ def plot_augment_data(
     def plot(fitter, label=None, db_ref=None, color=None, **kwargs):
         if label is None:
             label = label_default
-        db = wavestate.bunch.Bunch()
+        db = Bunch()
         db.rep = fitter
 
         if color is None and db_ref is not None:
@@ -206,7 +204,7 @@ def plot_augment_fit(
         else:
             h = fitter.xfer_fit
             f = fitter.F_Hz
-        db = wavestate.bunch.Bunch()
+        db = Bunch()
 
         db.mline = ax_mag.loglog(f, abs(h), label=label, color=color, **kwargs)[0]
 
@@ -308,7 +306,7 @@ def plot_augment_residuals(
 
         r = fitter.residuals_preferred
         f = fitter.F_Hz
-        db = wavestate.bunch.Bunch()
+        db = Bunch()
 
         if markersize is not None:
             kwargs["s"] = markersize

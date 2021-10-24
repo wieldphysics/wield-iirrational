@@ -32,12 +32,10 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-
-
 import warnings
 import numpy as np
 import numpy as numpy
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 try:
     from scipy.optimize import OptimizeWarning
@@ -50,7 +48,7 @@ except ImportError:
 try:
     from scipy.optimize import OptimizeResult
 except ImportError:
-    OptimizeResult = wavestate.bunch.Bunch
+    OptimizeResult = Bunch
 
 
 def neldermead(

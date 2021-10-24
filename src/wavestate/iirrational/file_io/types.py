@@ -7,10 +7,10 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
 import os
 import re
+
+from wavestate.bunch import Bunch
 
 
 ext2type = {
@@ -139,7 +139,7 @@ def determine_type(fname):
     if ftype != "special":
         fname = os.path.abspath(fname)
 
-    return wavestate.bunch.Bunch(
+    return Bunch(
         fname=fname,
         subkey=subkey,
         ftype=ftype,

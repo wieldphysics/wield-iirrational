@@ -7,8 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from .base import (
     ArgumentError,
@@ -35,7 +34,7 @@ def hint_log_level(**kwargs):
     return kw
 
 
-kw_hints = wavestate.bunch.Bunch(
+kw_hints = Bunch(
     logging_module_use=dict(
         APignore=True,
         mapcheck=mapcheck_bool,

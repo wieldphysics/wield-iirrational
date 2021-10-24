@@ -8,9 +8,7 @@
 """
 Some utilities to help with dataset creation and annotation
 """
-
-from wavestate import declarative
-
+from wavestate.bunch import Bunch
 
 import numpy as np
 
@@ -35,7 +33,7 @@ def make_description(
         description = annotate.padding_remove(description)
         if annotation is None and doc is not None:
             annotation = annotate.padding_remove(doc)
-    return wavestate.bunch.Bunch(
+    return Bunch(
         generator=generator,
         instances=instances,
         description=description,
@@ -127,7 +125,7 @@ def generator_autofill(
     else:
         rep_s = None
 
-    return wavestate.bunch.Bunch(
+    return Bunch(
         F_Hz=F_Hz,
         data=data,
         SNR=SNR,

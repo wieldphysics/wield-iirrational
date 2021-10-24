@@ -6,11 +6,11 @@ import pytest
 
 import os.path as path
 
-from IIRrational.testing import IIRrational_data
-from IIRrational import v2
-from IIRrational.v2 import testing
+from wavestate.iirrational.testing import IIRrational_data
+from wavestate.iirrational import v2
+from wavestate.iirrational.v2 import testing
 
-from IIRrational.testing.utilities import (
+from wavestate.iirrational.testing.utilities import (
     sign_validate_and_plot_hint,
 )
 

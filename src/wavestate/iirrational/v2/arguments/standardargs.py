@@ -10,9 +10,7 @@
 
 import numpy as np
 import collections
-
-from wavestate import declarative
-from wavestate.declarative.utilities.future_from_2 import unicode
+from wavestate.bunch import Bunch
 
 from .base import (
     ArgumentError,
@@ -48,7 +46,7 @@ def list_flatten(l):
 
 
 def normalize_roots(val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() == "none":
             val = None
         else:
@@ -102,7 +100,7 @@ def mapcheck_mode(aid, hname, val):
     return val
 
 
-kw_hints_pre = wavestate.bunch.Bunch(
+kw_hints_pre = Bunch(
     pair_completion=dict(
         mapcheck=mapcheck_bool,
         default=True,
@@ -110,7 +108,7 @@ kw_hints_pre = wavestate.bunch.Bunch(
 )
 
 
-kw_hints_data = wavestate.bunch.Bunch(
+kw_hints_data = Bunch(
     data=dict(
         APgroup="fitting",
         # TODO, mapcheck
@@ -189,7 +187,7 @@ kw_hints_data = wavestate.bunch.Bunch(
     ),
 )
 
-kw_hints_fit = wavestate.bunch.Bunch(
+kw_hints_fit = Bunch(
     help=dict(
         APignore=True,
         aliases=["h"],

@@ -16,7 +16,7 @@ import numpy as np
 
 import numbers
 
-from wavestate.declarative import (
+from wavestate.bunch.depbunch import (
     DepBunch,
     depB_property,
     # NOARG,
@@ -369,7 +369,7 @@ def asZPKTF(
             gain=ZPK.gain,
             F_nyquist_Hz=F_nyquist_Hz,
         )
-    # last ditch effort if it is some other IIRrational type
+    # last ditch effort if it is some other wavestate.iirrational type
     return asZPKTF(ZPK.ZPKrep, complete=False)
 
 

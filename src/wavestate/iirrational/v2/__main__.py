@@ -7,13 +7,13 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
 import argparse
 import os
 import sys
 import numpy as np
 import collections
 from wavestate import declarative
+from wavestate.bunch import Bunch, DeepBunch
 
 from .. import file_io
 
@@ -169,7 +169,7 @@ def config_load(aid, args, kwfull, mode):
         kwfull.update(conf_dict)
 
     kwfull.update(args)
-    return wavestate.bunch.Bunch(
+    return Bunch(
         cfiles=cfiles,
         fdicts=fdicts_conf,
         cgroup=cgroup,
@@ -313,7 +313,7 @@ def data_load(aid, args, kwfull, mode, confB):
         # args always takes precedent
         kwfull.update(args)
 
-    return wavestate.bunch.Bunch(
+    return Bunch(
         fdict=fdict_data,
         data_dict=data_dict,
     )
@@ -575,11 +575,11 @@ def IIRrationalV2fit(argv=None, **kwargs):
     if choose in ["shell", "prompt"]:
         choice_shell(
             results=results,
-            data=declarative.DeepBunch(data_dict),
-            config=declarative.DeepBunch(kwconfig),
-            dfile=declarative.DeepBunch(dataB.fdict),
-            cfiles=declarative.DeepBunch(confB.fdicts),
-            version=declarative.DeepBunch(version_dict),
+            data=DeepBunch(data_dict),
+            config=DeepBunch(kwconfig),
+            dfile=DeepBunch(dataB.fdict),
+            cfiles=DeepBunch(confB.fdicts),
+            version=DeepBunch(version_dict),
         )
     elif choose.startswith("auto"):
         remainder = choose[4:]
@@ -604,11 +604,11 @@ def IIRrationalV2fit(argv=None, **kwargs):
             )
             choice_shell(
                 results=results,
-                data=declarative.DeepBunch(data_dict),
-                config=declarative.DeepBunch(kwconfig),
-                dfile=declarative.DeepBunch(dataB.fdict),
-                cfiles=declarative.DeepBunch(confB.fdicts),
-                version=declarative.DeepBunch(version_dict),
+                data=DeepBunch(data_dict),
+                config=DeepBunch(kwconfig),
+                dfile=DeepBunch(dataB.fdict),
+                cfiles=DeepBunch(confB.fdicts),
+                version=DeepBunch(version_dict),
             )
         else:
             print(
@@ -693,10 +693,10 @@ def choice_shell(**kw):
     banner = padding_remove(
         """
     ------------------------------------------
-    IIRrational fit choose investigation shell
+    wavestate.iirrational fit choose investigation shell
     ------------------------------------------
     defined variables:
-        results: result object of the IIRrational data2filter fit
+        results: result object of the wavestate.iirrational data2filter fit
         data:    loaded data dictionary
         config:  loaded config dictionary
         dfile:   original data file, normalized to dictionary form

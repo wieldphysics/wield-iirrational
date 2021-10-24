@@ -7,8 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from .base import (
     ArgumentError,
@@ -23,7 +22,7 @@ from . import standardargs
 from . import adjustments
 from . import ranges
 
-kw_hints = wavestate.bunch.Bunch()
+kw_hints = Bunch()
 kw_hints.update(logging.kw_hints)
 kw_hints.update(standardargs.kw_hints)
 kw_hints.update(adjustments.kw_hints)

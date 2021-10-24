@@ -9,15 +9,15 @@
 """
 
 
-from IIRrational.v2 import (
+from wavestate.iirrational.v2 import (
     data2filter,
     ResultsAid,
 )
 
-# from IIRrational.RDF import RationalDiscFilter
-# from IIRrational.RDF2MRF import RDF2MRF
-# from IIRrational.MRF import MultiReprFilterZ
-from IIRrational.testing import IIRrational_data
+# from wavestate.iirrational.RDF import RationalDiscFilter
+# from wavestate.iirrational.RDF2MRF import RDF2MRF
+# from wavestate.iirrational.MRF import MultiReprFilterZ
+from wavestate.iirrational.testing import IIRrational_data
 
 # monkeypatch in the msurrogate annotations
 ResultsAid._msurrogate_MT = False

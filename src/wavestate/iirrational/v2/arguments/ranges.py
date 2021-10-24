@@ -7,8 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from .base import (
     ArgumentError,
@@ -96,7 +95,7 @@ def mapcheck_total_degree_min(aid, aname, val):
     return val
 
 
-kw_hints = wavestate.bunch.Bunch(
+kw_hints = Bunch(
     relative_degree=dict(
         APgroup="order",
         APpriority=10,

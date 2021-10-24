@@ -10,7 +10,7 @@ Utilities to manipulate ZPK roots S to/from Z, and make transfer functions
 """
 
 import numpy as np
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 
 def analytic_translation(
@@ -65,7 +65,7 @@ def analytic_translation(
     def stability_test(cplx_vect):
         return apply_translation(cplx_vect) / apply_continuation(cplx_vect)
 
-    return wavestate.bunch.Bunch(locals())
+    return Bunch(locals())
 
 
 def analytic_translation_dual(
@@ -116,4 +116,4 @@ def analytic_translation_dual(
     def apply_continuation(cplx_vect):
         return -1j * np.dot(trans_sc, cplx_vect)
 
-    return wavestate.bunch.Bunch(locals())
+    return Bunch(locals())

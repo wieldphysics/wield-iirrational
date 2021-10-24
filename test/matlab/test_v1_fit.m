@@ -1,8 +1,8 @@
 % Author : Lee McCuller
 clear classes
-addpath(char(py.IIRrational.matlabpath()));
+addpath(char(py.wavestate.iirrational.matlabpath()));
 
-iir = IIRrational.surrogate();
+iir = wavestate.iirrational.surrogate();
 dat = iir.testing.IIRrational_data({'simple1'});
 
 %now convert to native

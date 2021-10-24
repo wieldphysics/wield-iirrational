@@ -7,8 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from .base import (
     ArgumentError,
@@ -61,7 +60,7 @@ def mapcheck_choose(aid, aname, val):
         )
 
 
-kw_hints = wavestate.bunch.Bunch(
+kw_hints = Bunch(
     datafile=dict(
         APpositional=True,
         APpriority=-2,
@@ -84,7 +83,7 @@ kw_hints = wavestate.bunch.Bunch(
         chosen and alternative fits, the configurations, and versioning information.
         Possible output extensions are .h5, .hdf, .mat, .pkl, .json, .yaml. Binary
         formats .mat, .h5, .pkl will include the original data, for full reconstruction
-        of the fit. IIRrational may be called on the output file to rerun the fit.
+        of the fit. wavestate.iirrational may be called on the output file to rerun the fit.
         """,
     ),
     overwrite=dict(

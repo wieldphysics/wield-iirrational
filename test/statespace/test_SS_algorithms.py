@@ -5,10 +5,10 @@ import numpy as np
 import scipy
 import scipy.signal
 
-from IIRrational.utilities.np import logspaced
-from IIRrational.utilities.mpl import mplfigB
-from IIRrational.TFmath import statespace
-import IIRrational.statespace.dense as SS
+from wavestate.iirrational.utilities.np import logspaced
+from wavestate.iirrational.utilities.mpl import mplfigB
+from wavestate.iirrational.TFmath import statespace
+import wavestate.iirrational.statespace.dense as SS
 from os import path
 
 # def test_2x2(tpath):

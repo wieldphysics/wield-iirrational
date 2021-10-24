@@ -19,6 +19,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import numpy as np
+from wavestate.bunch import Bunch, DeepBunch
 
 from .colors import color_array
 
@@ -108,7 +109,7 @@ class AutoPlotSaver(declarative.OverridableObject):
 
     rasterize_auto = True
 
-    formats = declarative.DeepBunch()
+    formats = DeepBunch()
     formats.pdf.use = True
     formats.jpg.use = False
     formats.jpg.dpi = 200
@@ -171,7 +172,7 @@ class AutoPlotSaver(declarative.OverridableObject):
 
             formats = fig_or_fbunch.get("formats", None)
             # the "get" method unwraps the deepbunch
-            formats = declarative.DeepBunch(formats)
+            formats = DeepBunch(formats)
             if not formats:
                 formats = self.formats
 
@@ -196,7 +197,7 @@ class AutoPlotSaver(declarative.OverridableObject):
             fbasename = fbase
             # cut off the dot
             fext = fext[1:]
-            single_formats = declarative.DeepBunch()
+            single_formats = DeepBunch()
             # apply any settings stored in this object or the plot itself
             single_formats[fext].update_recursive(self.formats[fext])
             single_formats[fext].update_recursive(formats[fext])
@@ -386,7 +387,7 @@ def mplfigB(
     if height_in is None:
         height_in = size_in_base_H + Nrows * size_in_dW_dH[1]
 
-    axB = wavestate.bunch.Bunch()
+    axB = Bunch()
     axB.fig = plt.figure()
     axB.fig.set_size_inches(width_in, height_in)
     attach_finalizer(axB)

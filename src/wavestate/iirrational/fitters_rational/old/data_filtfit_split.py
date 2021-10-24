@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate.declarative import DepBunch, Bunch
+from wavestate.bunch.depbunch import DepBunch, Bunch
 
 from ..roots_bin import roots_bin_type
 from ..polynomials import poly_group

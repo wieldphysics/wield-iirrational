@@ -7,9 +7,8 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
 import numpy as np
+from wavestate.bunch import Bunch
 
 # TODO, package with lib
 
@@ -39,7 +38,7 @@ class ResultsAidAdv(results_aid.ResultsAid):
 
     def investigate_fit_plot(self, fname=None, xscale="log_zoom", **kwargs):
         """
-        Generates a plot of the fit. Returns a wavestate.bunch.Bunch object which
+        Generates a plot of the fit. Returns a Bunch object which
         stores the axes and figure of the plot.
         """
         axB = plots.plot_fitter_flag(fitter=self.fitter, xscale=xscale, **kwargs)
@@ -61,7 +60,7 @@ class ResultsAidAdv(results_aid.ResultsAid):
         for fit in fbo:
             rmaxbo.append(fit.residuals_max)
             rmedbo.append(fit.residuals_med)
-        return wavestate.bunch.Bunch(
+        return Bunch(
             order=obo,
             res_avg=rbo,
             res_max=rmaxbo,

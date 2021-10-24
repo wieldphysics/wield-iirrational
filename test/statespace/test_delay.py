@@ -5,9 +5,9 @@ import numpy as np
 import scipy
 import scipy.signal
 
-from IIRrational.utilities.np import logspaced
-from IIRrational.utilities.mpl import mplfigB
-from IIRrational.statespace import dense, StateSpaceDense
+from wavestate.iirrational.utilities.np import logspaced
+from wavestate.iirrational.utilities.mpl import mplfigB
+from wavestate.iirrational.statespace import dense, StateSpaceDense
 
 import scipy.signal
 

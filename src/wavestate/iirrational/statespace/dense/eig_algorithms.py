@@ -11,7 +11,7 @@
 import numpy as np
 import scipy
 import scipy.signal
-from IIRrational import TFmath
+from wavestate.iirrational import TFmath
 
 
 def eigspaces_right(A, B=None, tol=1e-9):

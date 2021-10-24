@@ -8,9 +8,9 @@ import os
 import os.path as path
 import contextlib
 
-from IIRrational import v1
-from IIRrational import fitters_rational, fitters_ZPK
-from IIRrational.testing.plots import plot_on_assert
+from wavestate.iirrational import v1
+from wavestate.iirrational import fitters_rational, fitters_ZPK
+from wavestate.iirrational.testing.plots import plot_on_assert
 
 try:
     from IIRrational_test_data import IIRrational_data_dev
@@ -71,7 +71,7 @@ def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
 #    )
 #
 #    import matplotlib.pyplot as plt
-#    from IIRrational import plots
+#    from wavestate.iirrational import plots
 #    axB = plots.plot_fitter_flag(
 #        out,
 #        #don't use jpg as matplotlib can't write it out of the box (needs pillow)
@@ -95,7 +95,7 @@ def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
 #    )
 #
 #    import matplotlib.pyplot as plt
-#    from IIRrational import plots
+#    from wavestate.iirrational import plots
 #    axB = plots.plot_fitter_flag(
 #        out,
 #        #don't use jpg as matplotlib can't write it out of the box (needs pillow)

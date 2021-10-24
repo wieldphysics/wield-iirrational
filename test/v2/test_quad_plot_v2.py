@@ -4,9 +4,9 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from IIRrational import v2
-from IIRrational.v2 import testing
-from IIRrational import plots
+from wavestate.iirrational import v2
+from wavestate.iirrational.v2 import testing
+from wavestate.iirrational import plots
 
 
 try:
@@ -75,7 +75,7 @@ def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
 #    )
 #
 #    import matplotlib.pyplot as plt
-#    from IIRrational import plots
+#    from wavestate.iirrational import plots
 #    axB = plots.plot_fitter_flag(
 #        out,
 #        #don't use jpg as matplotlib can't write it out of the box (needs pillow)
@@ -99,7 +99,7 @@ def test_quad_M0_P2V_10Hz_S(request, browser, plotsections, plot_verbosity):
 #    )
 #
 #    import matplotlib.pyplot as plt
-#    from IIRrational import plots
+#    from wavestate.iirrational import plots
 #    axB = plots.plot_fitter_flag(
 #        out,
 #        #don't use jpg as matplotlib can't write it out of the box (needs pillow)

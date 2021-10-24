@@ -6,14 +6,6 @@
 # NOTICE: authors should document their contributions in concisely in NOTICE
 # with details inline in source files, comments, and docstrings.
 """
-===========================
-Matplotlib Utility Functions
-============================
-
-test code
-
-.. autofunction:: hsv_to_rgb
-
 """
 
 

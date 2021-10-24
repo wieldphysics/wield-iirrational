@@ -7,10 +7,8 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
 import numpy as np
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from ..utilities import ensure_aid
 
@@ -130,7 +128,7 @@ def phase_patch(aid):
             cW = np.cumsum(W ** 2 * f_d)
             cFd = np.cumsum(f_d)
 
-            shift_save = wavestate.bunch.Bunch()
+            shift_save = Bunch()
             # distance_10
             shift = (cR[sep:] - cR[0:-sep]) / (cW[sep:] - cW[0:-sep])
             shift_err = (
@@ -197,14 +195,14 @@ def phase_patch(aid):
                     )
                 check_second_pass = False
 
-            phase_fix_about = wavestate.bunch.Bunch()
+            phase_fix_about = Bunch()
             phase_fix_about.shift_saves = shift_saves
             phase_fix_about.fitter_X = fitter_X.copy()
             phase_fixes.append(phase_fix_about)
 
     def investigate_phase_patch_plot(self, fname=None, xscale="log_zoom", **kwargs):
         """
-        Generates a plot of the mag normalized fit. Returns a wavestate.bunch.Bunch object which
+        Generates a plot of the mag normalized fit. Returns a Bunch object which
         stores the axes and figure of the plot.
         """
         from .. import plots
@@ -225,7 +223,7 @@ def phase_patch(aid):
         Boy does this plot need documentation.
         """
         # TODO, put into a function for the annotater
-        from IIRrational.utilities.mpl import mplfigB
+        from wavestate.iirrational.utilities.mpl import mplfigB
 
         axB = mplfigB(Ncols=2, Nrows=2)
         for shift in shift_saves:

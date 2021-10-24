@@ -7,12 +7,11 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
 import numpy as np
 import scipy
-from wavestate import declarative
 import scipy.linalg
+
+from wavestate.bunch import Bunch
 
 from .data_filtfit_base import DataFiltFitBase
 from .roots_bin import roots_bin_palindromicz, roots_re_pair
@@ -235,7 +234,7 @@ class RationalDiscFilterMag(DataFiltFitBase):
         @self.deco_generator(clear=False)
         def residuals(self):
             debias_reweight = 1 / (0.001 + self.W ** 2)
-            retB = wavestate.bunch.Bunch()
+            retB = Bunch()
             R = self.xfer_fit_magsq / self.data_magsq
             retB.resP = self.W * (R - 1) / 2
             retB.resZ = self.W * (1 / R - 1) / 2
@@ -478,7 +477,7 @@ class RationalDiscFilterMag(DataFiltFitBase):
                         continue
 
                 # print(rp, rz, rcov_n, min_dist**.5)
-                used_zs[min_idx_z] = wavestate.bunch.Bunch(
+                used_zs[min_idx_z] = Bunch(
                     idx_p=idx_p,
                     reff=(rp ** -2 + rz ** -2) ** (-0.5),
                     rp=rp,

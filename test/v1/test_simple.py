@@ -6,8 +6,8 @@ import pytest
 
 import os.path as path
 
-from IIRrational.testing import IIRrational_data
-from IIRrational import v1
+from wavestate.iirrational.testing import IIRrational_data
+from wavestate.iirrational import v1
 
 
 def test_simple1(browser, plotsections, plot_verbosity):
@@ -26,7 +26,7 @@ def test_simple1(browser, plotsections, plot_verbosity):
     )
 
     import matplotlib.pyplot as plt
-    from IIRrational import plots
+    from wavestate.iirrational import plots
 
     axB = plots.plot_fitter_flag(
         out.fitter,

@@ -7,13 +7,12 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
 import numpy as np
 import scipy
-from wavestate import declarative
 import scipy.linalg
 import scipy.special
+
+from wavestate.bunch import Bunch
 
 from .data_filtfit_split import DataFiltFitSplitBase
 from ..svd import SVD_SV
@@ -258,7 +257,7 @@ class RationalDiscFilterRB(DataFiltFitSplitBase):
         @self.deco_generator(clear=False)
         def residuals(self):
             debias_reweight = 1 / (0.001 + self.W ** 2)
-            retB = wavestate.bunch.Bunch()
+            retB = Bunch()
             R = self.xfer_fit / self.data
             retB.resP = self.W * (R - 1)
             retB.resZ = self.W * (1 / R - 1)

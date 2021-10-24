@@ -7,9 +7,8 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
 import numpy as np
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from ... import TFmath
 from ... import representations
@@ -85,7 +84,7 @@ def resrank_program(
         )
         rank_moddelay = np.sum(TFmath.abs_sq(fitter.residuals_NLmap(R, W=fitter.W)))
         rank = min(rank, rank_moddelay)
-    pbunch = wavestate.bunch.Bunch(**kwargs)
+    pbunch = Bunch(**kwargs)
     pbunch.rank = rank
     pbunch.name = name
     pbunch.variant = variant
@@ -155,7 +154,7 @@ def ranking_reduction_trials(
         Pr_new = []
         Zr_new = []
         # work backward on the command sequence removing the idxs
-        trial = wavestate.bunch.Bunch()
+        trial = Bunch()
         trial.prog_redux = []
         trial.ord_ch = 0
         trial.pbunch = pbunch

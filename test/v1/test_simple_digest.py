@@ -6,9 +6,9 @@ import pytest
 
 import os.path as path
 
-from IIRrational.testing import IIRrational_data
-from IIRrational import v1
-from IIRrational.annotate.exporters import npm_markdown_pdf
+from wavestate.iirrational.testing import IIRrational_data
+from wavestate.iirrational import v1
+from wavestate.iirrational.annotate.exporters import npm_markdown_pdf
 
 
 def test_simple_digest(browser, plotsections, plot_verbosity):

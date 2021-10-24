@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import pytest
 
 import numpy as np
-from IIRrational.representations.polynomials import chebychev
+from wavestate.iirrational.representations.polynomials import chebychev
 
 from numpy.polynomial import chebyshev
 

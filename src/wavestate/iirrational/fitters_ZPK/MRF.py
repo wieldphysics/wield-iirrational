@@ -12,8 +12,8 @@
 import numpy as np
 import itertools
 import contextlib
-from wavestate import declarative
-from wavestate.declarative import (
+from wavestate.bunch import Bunch
+from wavestate.bunch.depbunch import (
     NOARG,
     depB_property,
 )
@@ -343,7 +343,7 @@ class MultiReprFilterBase(DataFiltFitBase):
                 den_active.append(coding)
             else:
                 den_ignore.append(coding)
-        return wavestate.bunch.Bunch(
+        return Bunch(
             num_active=num_active,
             num_ignore=num_ignore,
             den_active=den_active,
@@ -484,7 +484,7 @@ class MultiReprFilterBase(DataFiltFitBase):
             locations_map[coding] = ("den_codings", idx)
         # access for the dependency
         self.codings_revision
-        return wavestate.bunch.Bunch(
+        return Bunch(
             p2c=mapping,
             c2loc=locations_map,
             c2p=parameters_map,
@@ -567,7 +567,7 @@ class MultiReprFilterBase(DataFiltFitBase):
     @depB_property
     def residuals(self):
         self.codings_revision
-        retB = wavestate.bunch.Bunch()
+        retB = Bunch()
         R = self.xfer_fit / self.data
         retB.resP = self.W * (R - 1)
         retB.resZ = self.W * (1 / R - 1)
@@ -671,7 +671,7 @@ class MultiReprFilterBase(DataFiltFitBase):
         perr_ar = np.einsum(str("ij,ii,ij->j"), dfjacRel.real, cov, dfjacRel.real)
         perr_p = np.einsum(str("ij,ii,ij->j"), dfjacRel.imag, cov, dfjacRel.imag)
         cplx = perr_r ** 0.5 + 1j * perr_i ** 0.5
-        return wavestate.bunch.Bunch(
+        return Bunch(
             cplx=cplx,
             mag=perr_a ** 0.5,
             mag_rel=perr_ar ** 0.5,
@@ -694,7 +694,7 @@ class MultiReprFilterBase(DataFiltFitBase):
         perr_ar = np.einsum(str("ij,ii,ij->j"), dfjacRel.real, cov, dfjacRel.real)
         perr_p = np.einsum(str("ij,ii,ij->j"), dfjacRel.imag, cov, dfjacRel.imag)
         cplx = perr_r ** 0.5 + 1j * perr_i ** 0.5
-        return wavestate.bunch.Bunch(
+        return Bunch(
             cplx=cplx,
             mag=perr_a ** 0.5,
             mag_rel=perr_ar ** 0.5,
@@ -798,7 +798,7 @@ class MultiReprFilterBase(DataFiltFitBase):
         # NEEDS SAME ORDERING AS PARAMETERS LIST
 
         # use separate bins for num and den so that the interlacing doesn't screw up the order
-        op = wavestate.bunch.Bunch(jac_list_num=[], jac_list_den=[], xfer_running=1)
+        op = Bunch(jac_list_num=[], jac_list_den=[], xfer_running=1)
         op.xfer_running = self.xfer_inactive
         rtype = self.residuals_type
 
@@ -1058,7 +1058,7 @@ class MultiReprFilterBase(DataFiltFitBase):
         )
 
         # don't actually return an OptimizeResult because it kills matlab
-        results = wavestate.bunch.Bunch()
+        results = Bunch()
         results.update(opt_r)
         self.parameters = results.x * p_rescale
         log = aid.hint_arg(log, args, default=self.opt_log_default, arg="log")
@@ -1193,7 +1193,7 @@ class MultiReprFilterBase(DataFiltFitBase):
                 disp=False,
                 return_all=False,
             )
-            results = wavestate.bunch.Bunch()
+            results = Bunch()
             results.update(opt_r)
             self.parameters = results.x * p_rescale
 
@@ -1282,7 +1282,7 @@ class MultiReprFilterBase(DataFiltFitBase):
             options=kwargs,
             **more_args
         )
-        results = wavestate.bunch.Bunch()
+        results = Bunch()
         results.update(opt_r)
         self.parameters = results.x * p_rescale
 

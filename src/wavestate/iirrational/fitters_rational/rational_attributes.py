@@ -7,12 +7,10 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
 import numpy as np
 import warnings
-from wavestate import declarative
-from wavestate.declarative import depB_property, NOARG
+from wavestate.bunch.depbunch import depB_property, NOARG
+from wavestate.bunch import Bunch
 import collections
 
 from .. import TFmath
@@ -296,7 +294,7 @@ class PolyFit(DataFilterBase):
     @depB_property
     def residuals(self):
         debias_reweight = 1 / (0.001 + self.W ** 2)
-        retB = wavestate.bunch.Bunch()
+        retB = Bunch()
         R = self.xfer_fit / self.data
         retB.resP = self.W * (R - 1)
         retB.resZ = self.W * (1 / R - 1)

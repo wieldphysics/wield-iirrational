@@ -5,10 +5,10 @@ from __future__ import division, print_function, unicode_literals
 import pytest
 from os import path
 
-from IIRrational import v2
-from IIRrational.testing.plots import plot_on_assert
+from wavestate.iirrational import v2
+from wavestate.iirrational.testing.plots import plot_on_assert
 
-from IIRrational.testing.utilities import (
+from wavestate.iirrational.testing.utilities import (
     sign_validate_and_plot_hint,
     stability_validate_and_plot_hint,
 )
@@ -29,7 +29,7 @@ skipdeco = pytest.mark.skipif(
 
 @skipdeco
 def test_oplev_iy(request, browser, plotsections, plot_verbosity):
-    from IIRrational.file_io import load_any
+    from wavestate.iirrational.file_io import load_any
 
     fname = matlab_test_data.matfiles["OplevPlant.mat"]
     fdict = load_any(fname=fname, ftype="mat")
@@ -48,7 +48,7 @@ def test_oplev_iy(request, browser, plotsections, plot_verbosity):
 
 @skipdeco
 def test_oplev_iy(request, browser, plotsections, plot_verbosity):
-    from IIRrational.file_io import load_any
+    from wavestate.iirrational.file_io import load_any
 
     fname = matlab_test_data.matfiles["OplevPlant.mat"]
     fdict = load_any(fname=fname, ftype="mat")

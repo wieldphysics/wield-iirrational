@@ -7,11 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
-# import numpy as np
-# import scipy.linalg
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from ..codings_cmn import (
     CodingTypeZ,
@@ -60,8 +56,8 @@ _common = dict(
 )
 
 
-coding_maps = wavestate.bunch.Bunch(
-    nlFBW=wavestate.bunch.Bunch(
+coding_maps = Bunch(
+    nlFBW=Bunch(
         gain=CodingGain,
         delay=CodingDelay,
         num_r=CodingRealnlBW,
@@ -78,7 +74,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    nlFBW_safe=wavestate.bunch.Bunch(
+    nlFBW_safe=Bunch(
         # gain    = CodingGainNLDelay,
         gain=CodingGain,
         delay=CodingDelay,
@@ -96,7 +92,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    nlFA=wavestate.bunch.Bunch(
+    nlFA=Bunch(
         # gain    = CodingGainNLDelay,
         gain=CodingGain,
         delay=CodingDelay,
@@ -114,7 +110,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    nlFA_safe=wavestate.bunch.Bunch(
+    nlFA_safe=Bunch(
         # gain    = CodingGainNLDelay,
         gain=CodingGain,
         delay=CodingDelay,
@@ -132,7 +128,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    FA=wavestate.bunch.Bunch(
+    FA=Bunch(
         gain=CodingGain,
         delay=CodingDelay,
         num_r=CodingRealAmp,
@@ -149,7 +145,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    FBW=wavestate.bunch.Bunch(
+    FBW=Bunch(
         gain=CodingGain,
         delay=CodingDelay,
         num_r=CodingRealBW,
@@ -166,7 +162,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    RI=wavestate.bunch.Bunch(
+    RI=Bunch(
         gain=CodingGain,
         delay=CodingDelay,
         num_r=CodingRealAmp,
@@ -183,7 +179,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    SOS=wavestate.bunch.Bunch(
+    SOS=Bunch(
         gain=CodingGain,
         delay=CodingDelay,
         num_r=CodingSOS,

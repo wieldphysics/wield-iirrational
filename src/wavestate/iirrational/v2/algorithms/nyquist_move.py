@@ -7,10 +7,8 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
 import numpy as np
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from ... import TFmath
 from ... import representations
@@ -33,7 +31,7 @@ def nyquist_move(
     ZPKrep = fitter.ZPKrep
 
     F_nyquist_Hz = ZPKrep.F_nyquist_Hz
-    op = wavestate.bunch.Bunch(gain_flip=1)
+    op = Bunch(gain_flip=1)
 
     # currently a restriction in the algorithm, it can't handle aliasing of poles (need bilinear for that)
     assert nyquist_new > F_nyquist_Hz
@@ -130,7 +128,7 @@ def nyquist_remove(
     aid = ensure_aid(aid)
 
     F_nyquist_Hz = fitter.F_nyquist_Hz
-    op = wavestate.bunch.Bunch(gain_flip=1)
+    op = Bunch(gain_flip=1)
 
     def root_list_map(root_list, rtype):
         new_list = []

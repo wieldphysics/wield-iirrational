@@ -11,7 +11,6 @@
 import collections
 from wavestate import declarative
 import numpy as np
-from wavestate.declarative.utilities.future_from_2 import unicode
 
 from ... import fitters_ZPK
 from ...utilities import args
@@ -23,7 +22,7 @@ class ArgumentError(ValueError):
 
 
 def mapcheck_bool(aid, aname, val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() in ["true", "yes", "1"]:
             val = True
         elif val.lower() in ["false", "no", "0"]:
@@ -64,7 +63,7 @@ def mapcheck_nonnegative_float(aid, aname, val):
 
 
 def mapcheck_nonnegative_float_orNone(aid, aname, val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() in ["none", "null"]:
             val = None
     if val is None:
@@ -73,7 +72,7 @@ def mapcheck_nonnegative_float_orNone(aid, aname, val):
 
 
 def mapcheck_positive_float_orNone(aid, aname, val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() in ["none", "null"]:
             val = None
     if val is None:
@@ -119,7 +118,7 @@ def mapcheck_nonnegative_int(aid, aname, val):
 
 
 def mapcheck_positive_int_orNone(aid, aname, val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() in ["none", "null"]:
             val = None
     if val is None:
@@ -128,7 +127,7 @@ def mapcheck_positive_int_orNone(aid, aname, val):
 
 
 def mapcheck_nonnegative_int_orNone(aid, aname, val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() in ["none", "null"]:
             val = None
     if val is None:
@@ -137,7 +136,7 @@ def mapcheck_nonnegative_int_orNone(aid, aname, val):
 
 
 def mapcheck_int_orNone(aid, aname, val):
-    if isinstance(val, (str, unicode)):
+    if isinstance(val, str):
         if val.lower() in ["none", "null"]:
             val = None
     if val is None:

@@ -4,10 +4,10 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from IIRrational import v2
-from IIRrational.testing.plots import plot_on_assert
+from wavestate.iirrational import v2
+from wavestate.iirrational.testing.plots import plot_on_assert
 
-from IIRrational.testing.utilities import (
+from wavestate.iirrational.testing.utilities import (
     sign_validate_and_plot_hint,
 )
 

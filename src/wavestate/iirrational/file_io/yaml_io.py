@@ -12,7 +12,6 @@ import collections
 import sys
 import re
 import yaml
-from wavestate.declarative.utilities.future_from_2 import unicode
 
 
 def yaml_load(fname):

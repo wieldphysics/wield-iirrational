@@ -46,7 +46,7 @@ def print_version():
     from .. import version
 
     print(
-        "IIRrational version: {} (git:{})".format(version, auto_version.git_shorthash)
+        "wavestate.iirrational version: {} (git:{})".format(version, auto_version.git_shorthash)
     )
 
 

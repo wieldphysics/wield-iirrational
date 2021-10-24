@@ -9,7 +9,7 @@
 """
 
 
-from IIRrational.testing import IIRrational_data
+from wavestate.iirrational.testing import IIRrational_data
 
 IIRrational_data._msurrogate_MT = False
 

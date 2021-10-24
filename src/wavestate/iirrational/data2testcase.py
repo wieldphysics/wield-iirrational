@@ -7,10 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-# import numpy as np
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 from .utilities import args
 import scipy.io
 
@@ -60,4 +57,4 @@ def testcase2data(fname):
     import scipy.io
 
     data = scipy.io.loadmat(fname, squeeze_me=True)
-    return wavestate.bunch.Bunch(data)
+    return Bunch(data)

@@ -4,11 +4,11 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from IIRrational.testing import IIRrational_data
-from IIRrational import testing
+from wavestate.iirrational.testing import IIRrational_data
+from wavestate.iirrational import testing
 
-from IIRrational.fitters_ZPK import ZPKrep2MRF
-from IIRrational.fitters_ZPK import codings_s
+from wavestate.iirrational.fitters_ZPK import ZPKrep2MRF
+from wavestate.iirrational.fitters_ZPK import codings_s
 
 from utilities import check_residuals
 

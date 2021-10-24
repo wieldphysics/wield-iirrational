@@ -7,9 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 # import numpy as np
 # import scipy.linalg
@@ -46,8 +44,8 @@ _common = dict(
     is_unstable=is_unstable_S,
 )
 
-coding_maps = wavestate.bunch.Bunch(
-    RI=wavestate.bunch.Bunch(
+coding_maps = Bunch(
+    RI=Bunch(
         gain_delay=CodingGainDelay,
         num_r=CodingRealBW,
         num_c=CodingRI,
@@ -63,7 +61,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    FBW=wavestate.bunch.Bunch(
+    FBW=Bunch(
         gain_delay=CodingGainDelay,
         num_r=CodingRealBW,
         num_c=CodingFBW,
@@ -79,7 +77,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    nlFBW=wavestate.bunch.Bunch(
+    nlFBW=Bunch(
         gain_delay=CodingGainDelay,
         num_r=CodingRealnlBW,
         num_c=CodingnlFnlBW,
@@ -95,7 +93,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    nlFBW_safe=wavestate.bunch.Bunch(
+    nlFBW_safe=Bunch(
         gain_delay=CodingGainDelay,
         num_r=CodingRealnlBW,
         num_c=CodingnlFnlBW,
@@ -112,7 +110,7 @@ coding_maps = wavestate.bunch.Bunch(
         **_common
     ),
     # TODO, not ready, gotta be able to deal with roots at 0
-    SOS=wavestate.bunch.Bunch(
+    SOS=Bunch(
         gain_delay=CodingGainDelay,
         num_r=CodingSOS,
         num_c=CodingSOS,
@@ -128,7 +126,7 @@ coding_maps = wavestate.bunch.Bunch(
         den_collect_c=1,
         **_common
     ),
-    # SOS_safe = wavestate.bunch.Bunch(
+    # SOS_safe = Bunch(
     #    gain_delay    = CodingGainDelay,
     #    num_r         = CodingSOSMirror,
     #    num_c         = CodingSOSMirror,

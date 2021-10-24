@@ -200,7 +200,7 @@ def fit_disc(aid):
     )
 
     # TODO
-    from IIRrational.v1 import disc_sequence
+    from wavestate.iirrational.v1 import disc_sequence
 
     rat_fitter = disc_sequence.rational_disc_fit(
         F_Hz=aid.fitter.F_Hz,

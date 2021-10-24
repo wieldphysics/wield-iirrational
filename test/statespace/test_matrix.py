@@ -5,9 +5,9 @@ import numpy as np
 import copy
 import declarative
 
-from IIRrational.utilities.np import logspaced
-from IIRrational.utilities.mpl import mplfigB
-from IIRrational.statespace.dense import matrix_algorithms
+from wavestate.iirrational.utilities.np import logspaced
+from wavestate.iirrational.utilities.mpl import mplfigB
+from wavestate.iirrational.statespace.dense import matrix_algorithms
 
 import numpy.testing
 

@@ -8,10 +8,9 @@
 """
 Contains setup functions for test data, these are returned in a QuickBunch dictionary, with some annotation about the number of data sets
 """
-
 import numpy as np
+from wavestate.bunch import Bunch
 
-from wavestate import declarative
 from ..utilities.np import logspaced
 from . import utilities
 
@@ -113,7 +112,7 @@ def meta_generator(
     return dataset_gen
 
 
-datasets = wavestate.bunch.Bunch()
+datasets = Bunch()
 
 datasets.rand10_log1k = utilities.make_description(
     generator=meta_generator(

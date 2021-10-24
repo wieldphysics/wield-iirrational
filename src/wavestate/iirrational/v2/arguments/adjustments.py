@@ -7,8 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
-from wavestate import declarative
+from wavestate.bunch import Bunch
 
 from ... import fitters_ZPK
 from .base import (
@@ -87,7 +86,7 @@ def mapcheck_boostlist(aid, aname, val):
     return (val,)
 
 
-kw_hints = wavestate.bunch.Bunch(
+kw_hints = Bunch(
     order_max=dict(
         APgroup="order",
         mapcheck=mapcheck_positive_int,

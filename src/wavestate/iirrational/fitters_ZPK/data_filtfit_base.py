@@ -10,13 +10,15 @@
 
 
 import numpy as np
+from wavestate.bunch.depbunch import DepBunch, depB_property
 from wavestate import declarative
-from wavestate.declarative import depB_property
+from wavestate.bunch import Bunch
+
 
 from .. import representations
 
 
-class DataFiltFitBase(declarative.DepBunch):
+class DataFiltFitBase(DepBunch):
     def __build__(
         self,
         _args=None,
@@ -73,7 +75,7 @@ class DataFiltFitBase(declarative.DepBunch):
         if self.data is None:
             raise RuntimeError("Can't generate residuals as data was not Specified")
         debias_reweight = 1 / (0.001 + self.W ** 2)
-        retB = wavestate.bunch.Bunch()
+        retB = Bunch()
         retB.resP = self.W * (self.xfer_fit / self.data - 1)
         retB.resZ = self.W * (self.data / self.xfer_fit - 1)
         retB.total = np.sum(
