@@ -840,7 +840,7 @@ def _column_type(strings, has_invisible=True, numparse=True):
 
     """
     types = [_type(s, has_invisible, numparse) for s in strings]
-    return reduce(_more_generic, types, _bool_type)
+    return reduce(_more_genertypes, _bool_type)
 
 
 def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
