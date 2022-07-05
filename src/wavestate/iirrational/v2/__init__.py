@@ -19,10 +19,10 @@ from . import hintsets
 from .statespace import ss2filter, ss2xfer, ss2zpk
 
 __all__ = [
-    data2filter,
-    hintsets,
-    data2testcase,
-    ss2filter,
-    ss2xfer,
-    ss2zpk,
+    "data2filter",
+    "hintsets,"
+    "data2testcase",
+    "ss2filter,"
+    "ss2xfer",
+    "ss2zpk,"
 ]

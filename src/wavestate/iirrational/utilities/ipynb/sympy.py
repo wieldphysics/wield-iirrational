@@ -9,13 +9,11 @@
 """
 
 import sympy
-import phasor.math.dispatch_sympy
 
 print("Sympy version: ", sympy.__version__)
 
 # this makes the notebook sexy
 sympy.init_printing(use_latex="mathjax")
-
 
 from IPython.display import (
     display,

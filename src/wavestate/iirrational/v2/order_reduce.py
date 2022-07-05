@@ -298,6 +298,7 @@ def order_reduce_selective(
                     aid.fitter_orders().maxzp, aid.fitter.residuals_average
                 ),
             )
+            aid.fitter_update(representative=True)
             ever_reduced = True
         else:
             aid.log_progress(6, "order not reduced")

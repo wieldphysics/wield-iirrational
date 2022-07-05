@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 """
-from __future__ import division, print_function, unicode_literals
-
 import numpy as np
 from IIRrational_test_data import IIRrational_data_dev
 from wavestate.iirrational.utilities.mpl import mplfigB

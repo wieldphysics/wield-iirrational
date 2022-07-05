@@ -19,12 +19,14 @@ from ..data2testcase import (
 )
 from . import hintsets
 
+
+
 __all__ = [
-    data2filter,
-    data2testcase,
-    rational_disc_fit,
-    rational_disc_fit_mag,
-    ratdisc_single,
-    FitAid,
-    hintsets,
+    "data2filter",
+    "data2testcase",
+    "rational_disc_fit,"
+    "rational_disc_fit_mag",
+    "ratdisc_single,"
+    "FitAid",
+    "hintsets,"
 ]

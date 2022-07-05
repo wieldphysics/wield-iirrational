@@ -33,11 +33,11 @@ def matlabpath():
 
 
 __all__ = [
-    version,
-    __version__,
-    v1,
-    v2,
-    save,
-    load,
-    matlabpath,
+    "version",
+    "__version__",
+    "v1,"
+    "v2",
+    "save,"
+    "load",
+    "matlabpath,"
 ]

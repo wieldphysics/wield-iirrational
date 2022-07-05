@@ -7,7 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-
+import sys
 import numpy as np
 
 from ..utilities import np as util_np
@@ -31,7 +31,8 @@ from . import autogen_docstr
 
 
 def data2filter(*args, **kw):
-    """ """
+    """
+    """
     kwput = dict()
     kw, ZPKrep = arguments.kw_ZPKrep_build(args, kw)
 
@@ -331,6 +332,7 @@ def data2filter(*args, **kw):
     grab_kwarg_hints(aid, kw, arguments.adjustments.kw_hints, kwput=kwput)
     grab_kwarg_hints(aid, kw, arguments.ranges.kw_hints, kwput=kwput)
 
+    print("POLES: ", poles)
     ZPKrep = representations.ZPKwData(
         F_Hz=F_Hz,
         data=data,
@@ -765,4 +767,6 @@ def _reduce(aid, with_successive=True):
     return baseline_order
 
 
-data2filter.__doc__ = autogen_docstr.__doc__
+# Sphinx complains a lot about this module documentation
+if "sphinx" not in sys.modules:
+    data2filter.__doc__ = autogen_docstr.__doc__

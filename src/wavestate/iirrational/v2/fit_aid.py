@@ -129,7 +129,7 @@ class FitAid(object):
             # TODO, check that the representation is preserved
             return fitter.regenerate(
                 ZPKrep=xrep,
-                residuals_log_im_scale=1,
+                residuals_log_im_scale=first_factor.residuals_log_im_scale,
             )
 
         # TODO, should this assert if residuals_type is wrong?
@@ -137,7 +137,6 @@ class FitAid(object):
             if np.all(fitter.residuals_log_im_scale) != 1:
                 f_new = fitter.copy(
                     residuals_type=self.residuals_type,
-                    residuals_log_im_scale=1,
                 )
                 return f_new
         return None
@@ -251,19 +250,21 @@ class FitAid(object):
         resmaxB = lambda: self._fitter_lowres_max.residuals_max
         resmedB = lambda: self._fitter_lowres_med.residuals_med
 
+        # print(resavgN(), resavgC())
         if hint_name is None:
             hint_name = "default"
 
-        improved = [True]
+        improved = True
 
         def check_hint(
             hints,
             calc,
         ):
+            nonlocal improved
             hintval = self.hint(hints, default=None)
             if hintval is not None and calc > hintval:
                 self.log_debug(10, "Failed {}, {} > {}".format(hints[0], calc, hintval))
-                improved[0] = False
+                improved = False
 
         check_hint(
             [
@@ -330,19 +331,19 @@ class FitAid(object):
         )
 
         self.log_debug(
-            10, "IMPROVED: ", improved[0], "residuals: ", resavgN(), resavgC()
+            10, "IMPROVED: ", improved, "residuals: ", resavgN(), resavgC()
         )
 
         val_func = self.hint("fitter_check_validate", default=None)
         if validate and val_func is not None and fitter_new is not None:
             val_func(self, fitter_new)
 
-        if improved[0] and update:
+        if improved and update:
             self.fitter_update(
                 fitter_new,
                 representative=True,
             )
-        return improved[0]
+        return improved
 
     def fitter_checkup(self):
         ord_chg = self.fitter.order_total - self._fitter_current.order_total
@@ -372,6 +373,7 @@ class FitAid(object):
         else:
             self.fitter = fitter
 
+        # print("fitter storeA", fitter.residuals_average)
         avg1 = fitter.residuals_average
         algorithms.sign_check_flip(fitter)
         avg2 = fitter.residuals_average

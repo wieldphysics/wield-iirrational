@@ -93,7 +93,7 @@ class ResultsAid(object):
                 # currently a bug in declarative that attribute misses cause RuntimeError rather than AttributeError
                 # numpy now duck-type checks this, and the wrong exception is failing. Instead, casting to list
                 list(sorted_fitters),
-                sorted_local_best,
+                np.argwhere(sorted_local_best)[:, 0],
             )
         return self.__fitters_by_order
 
