@@ -11,7 +11,7 @@
 import matplotlib as mpl
 from matplotlib import gridspec
 import matplotlib.pyplot as plt
-from wavestate import declarative
+from wavestate import bunch
 
 from .autoniceplot import (
     asavefig,
@@ -38,7 +38,7 @@ def attach_finalizer(ax):
 
 
 def generate_ax(ax_group=None):
-    ax = declarative.DeepBunch()
+    ax = bunch.DeepBunch()
     attach_finalizer(ax)
     if ax_group is not None:
         ax_group.finalizers.append(ax.finalize)

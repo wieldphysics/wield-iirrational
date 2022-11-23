@@ -18,7 +18,7 @@ from wavestate.bunch import Bunch, DeepBunch
 from .. import file_io
 
 from .. import version as IIRversion
-from .. import auto_version as IIRversion_auto
+#from .. import auto_version as IIRversion_auto
 from ..utilities.strings import padding_remove
 
 from . import arguments
@@ -559,10 +559,10 @@ def IIRrationalV2fit(argv=None, **kwargs):
     version_dict = dict(
         data2filter="v2",
         version=IIRversion,
-        git_branch=IIRversion_auto.git_branch,
-        git_shorthash=IIRversion_auto.git_shorthash,
-        git_longhash=IIRversion_auto.git_longhash,
-        git_last_tag=IIRversion_auto.git_last_tag,
+        #git_branch=IIRversion_auto.git_branch,
+        #git_shorthash=IIRversion_auto.git_shorthash,
+        #git_longhash=IIRversion_auto.git_longhash,
+        #git_last_tag=IIRversion_auto.git_last_tag,
     )
 
     if plot_order is not None:
