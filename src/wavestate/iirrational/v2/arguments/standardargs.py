@@ -83,8 +83,11 @@ def mapcheck_ZPK(aid, hname, val):
 def mapcheck_mode(aid, hname, val):
     modes = [
         "full",
+        "fullAAA",
         "full2x",
         "fit",
+        "AAA",
+        "onlyAAA",
         "reduce",
         "rational",
         "rational2x",

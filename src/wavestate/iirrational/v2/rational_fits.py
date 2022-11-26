@@ -118,10 +118,16 @@ def fit_cheby_base(
     else:
         diff_reldeg = 0
 
+    factors_order = aid.fitter_orders().factors_maxzp
+    print("RELDEG: ", factor_orders.reldeg, aid.fitter_orders().factors_reldeg)
+    print("FACTORS ORDER", factors_order)
+    if order is not None:
+        order -= factors_order
+        order = max(order, 4)
     rat_fitter = cheby_sequence.rational_cheby_fit(
         aid=aid,
-        order_max=order_max,
-        order_min=order_min,
+        order_max=order_max - factors_order,
+        order_min=max(order_min - factors_order, 4),
         order=order,
         relative_degree=diff_reldeg,
         ZPKrep=aid.fitter.ZPKrep,

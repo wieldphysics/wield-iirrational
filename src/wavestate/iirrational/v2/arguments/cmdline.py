@@ -40,6 +40,45 @@ def mapcheck_choose(aid, aname, val):
      - integer. To force a choice of order. It will always use the best fit
        under this order.
     """
+    modes = ["shell", "prompt", "interactive", "auto10", "baseline", "baseline10", "best"]
+    try:
+        if isinstance(val, str):
+            val = val.lower()
+            if val in modes:
+                return val
+            elif val.startswith("baseline"):
+                remainder = val[8:]
+                if int(remainder) < 0:
+                    raise ValueError()
+                return val
+            
+        # this runs the valueerror test that it can be parsed
+        if int(val) < 0:
+            raise ValueError()
+        return val
+    except ValueError:
+        raise ArgumentError(
+            (
+                "Argument {}={} must be an +integer or one of {}".format(
+                    aname, val, modes
+                )
+            )
+        )
+
+
+def mapcheck_print_(aid, aname, val):
+    """
+    How to decide the optimal order. Special parameters are:
+     - "prompt", "shell", "interactive" (the default) To enter a command prompt that plots and requests
+       a choice
+     - "auto10" the default choice to use the shell if the baseline order is
+       above 10 unless there is no choice. (10 may be changed)
+     - "baseline" to use the baseline fit before the ChiSq starts rising.
+     - "baseline10" to use the baseline "best fit" unless it is over order 10
+                    (10 can be configured to other integers)
+     - integer. To force a choice of order. It will always use the best fit
+       under this order.
+    """
     modes = ["shell", "prompt", "interactive", "auto10", "baseline", "baseline10"]
     try:
         if isinstance(val, str):
@@ -58,6 +97,7 @@ def mapcheck_choose(aid, aname, val):
                 )
             )
         )
+
 
 
 kw_hints = Bunch(
@@ -99,6 +139,9 @@ kw_hints = Bunch(
         APchoices=[
             "full",
             "full2x",
+            "fullAAA",
+            "onlyAAA",
+            "AAA",
             "fit",
             "reduce",
             "rational",
@@ -230,6 +273,14 @@ kw_hints = Bunch(
         APpriority=2,
         about="""
         disable the output hints of --zeros and --poles to run a second time and refine.
+        """,
+    ),
+    refine_file=dict(
+        APflags=["--refine_file"],
+        default=None,
+        APpriority=4,
+        about="""
+        indicate a file to write the hints of --zeros and --poles into.
         """,
     ),
     information=dict(

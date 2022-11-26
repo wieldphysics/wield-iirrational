@@ -11,31 +11,27 @@
 
 from ... import TFmath
 
-from ..utilities import ensure_aid
+from ...utilities import ensure_aid
 
 from . import algorithms
 
 
-def skip_list_listing(skip, group):
+def skip_list_listing(group, non_mindelay=True):
     zr_z = []
     zr_i = []
     for idx_z, z in enumerate(group):
-        if z.real < 0:
+        if z.real < 0 and not non_mindelay:
             continue
         zr_z.append(z)
         zr_i.append(idx_z)
-    for idx in reversed(sorted(TFmath.nearest_idx(skip, zr_z))):
-        del zr_z[idx]
-        del zr_i[idx]
     # print(zr_i, zr_z)
     return zip(zr_i, zr_z)
 
 
 def ranking_delay_flip(
     aid,
-    marginalize_delay=True,
-    skip_r=[],
-    skip_c=[],
+    marginalize_delay=False,
+    non_mindelay=True,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -44,13 +40,13 @@ def ranking_delay_flip(
     Zr = aid.fitter.zeros.r
     Zc = aid.fitter.zeros.c
 
-    for idx_z, z in skip_list_listing(skip_r, Zr):
+    for idx_z, z in skip_list_listing(Zr, non_mindelay=False):
         z_flip = -z.conjugate()
         pb = algorithms.resrank_program(
             aid.fitter,
             rank_zp_idx_list,
             "flip_r",
-            ["ZrDel", idx_z, "ZrAdd", z_flip],
+            ["ZrDelIdx", idx_z, "ZrAdd", z_flip],
             variant="OrdFl",
             marginalize_delay=marginalize_delay,
             idx=("r", idx_z),
@@ -58,13 +54,13 @@ def ranking_delay_flip(
         rank = pb.rank
         best_worst_list.append([rank, "r", idx_z, z, pb])
 
-    for idx_z, z in skip_list_listing(skip_c, Zc):
+    for idx_z, z in skip_list_listing(Zc, non_mindelay):
         z_flip = -z.conjugate()
         pb = algorithms.resrank_program(
             aid.fitter,
             rank_zp_idx_list,
             "flip_c",
-            ["ZcDel", idx_z, "ZcAdd", z_flip],
+            ["ZcDelIdx", idx_z, "ZcAdd", z_flip],
             variant="OrdFl",
             marginalize_delay=marginalize_delay,
             idx=("c", idx_z),
@@ -78,46 +74,53 @@ def ranking_delay_flip(
     best_worst_list.sort()
     best_worst_list.reverse()
 
-    aid.log(best_worst_list)
-    improved = False
+    N = 0
     while best_worst_list:
+        if N > 3:
+            break
         bw = best_worst_list.pop()
         rank = bw[0]
         rank_zp_idx_list = bw[4:]
         trials = algorithms.ranking_reduction_trials(
             aid,
             rank_zp_idx_list,
-            num_total_max=None,
-            num_type_max=None,
             greedy=True,
+            num_total_max=4,
         )
         trial = trials[0]
-        if trial.improved:
-            improved = True
+        did_reduce = aid.fitter_check(
+            trial.fitter,
+            hint_name="ordrestore",
+            variant=trial.ord_str,
+        )
+        if did_reduce:
             aid.fitter_update(trial.fitter)
+            aid.log_progress(
+                5,
+                ("zero flipped, bw {}, maxzp {}, residuals={:.2e}, reldeg={}").format(
+                    bw, aid.fitter_orders().maxzp, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+                ),
+            )
             break
-        else:
-            if bw[1] == "c":
-                skip_c.append(bw[3])
-            else:
-                skip_r.append(bw[3])
+        N += 1
 
-    return improved, skip_r, skip_c
+    return did_reduce
 
 
-def order_reduce_flip(aid):
-    # TODO, make num_trials a hint value
-    skip_r = []
-    skip_c = []
-    improved = True
-
+def order_reduce_flip(aid, non_mindelay=True):
+    aid.log_progress(
+        5,
+        ("zero flipping, maxzp {}, residuals={:.2e}, reldeg={}").format(
+            aid.fitter_orders().maxzp, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+        ),
+    )
     while True:
         ret = ranking_delay_flip(
             aid,
-            marginalize_delay=True,
-            skip_r=skip_r,
-            skip_c=skip_c,
+            marginalize_delay=False,
+            non_mindelay=non_mindelay,
         )
         if ret is None:
             break
-        improved, skip_r, skip_c = ret
+        if not ret:
+            break

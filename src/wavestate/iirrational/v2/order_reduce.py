@@ -292,13 +292,13 @@ def order_reduce_selective(
             variant="OrdDn",
         )
         if did_reduce:
+            aid.fitter_update(representative=True)
             aid.log_progress(
                 5,
-                ("order reduced to {}, residuals={:.2e}").format(
-                    aid.fitter_orders().maxzp, aid.fitter.residuals_average
+                ("order reduced to {}, residuals={:.2e}, reldeg={}").format(
+                    aid.fitter_orders().maxzp, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
                 ),
             )
-            aid.fitter_update(representative=True)
             ever_reduced = True
         else:
             aid.log_progress(6, "order not reduced")

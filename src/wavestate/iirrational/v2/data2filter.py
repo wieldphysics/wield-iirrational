@@ -28,6 +28,8 @@ from . import results_aid_adv
 from . import rational_fits
 from . import SNR_adjustments
 from . import autogen_docstr
+from . import AAA_fits
+from .algorithms import order_reduce_flip
 
 
 def data2filter(*args, **kw):
@@ -409,6 +411,8 @@ def data2filter(*args, **kw):
         return kwput
     elif mode == "full":
         baseline_order = fit_full(aid, emphasis)
+    elif mode == "fullAAA":
+        baseline_order = fit_fullAAA(aid, emphasis)
     elif mode == "full2x":
         baseline_order = fit_full2x(aid, emphasis)
     elif mode == "chebydebug":
@@ -433,6 +437,10 @@ def data2filter(*args, **kw):
         baseline_order = 100
     elif mode == "rational":
         baseline_order = fit_rational(aid, emphasis)
+    elif mode == "AAA":
+        baseline_order = fit_AAA(aid, emphasis)
+    elif mode == "onlyAAA":
+        baseline_order = fit_AAAonly(aid, emphasis)
     elif mode == "rational2x":
         baseline_order = fit_rational2x(aid, emphasis)
     elif mode == "reduce":
@@ -584,6 +592,119 @@ def _fit_rational(aid, emphasis, _phase_patch=True, order_hint=None):
     return
 
 
+def fit_fullAAA(aid, emphasis):
+    SNR_adjustments.SNR_fix(aid)
+
+    _fit_AAA(aid, emphasis)
+
+    return _reduce(aid)
+
+
+def fit_AAA(aid, emphasis, _phase_patch=True):
+    SNR_adjustments.SNR_fix(aid)
+
+    _fit_AAA(aid, emphasis, _phase_patch=_phase_patch)
+
+    with aid.log_heading("Q-ranked order reduction"):
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.7,
+        )
+        aid.log_progress(4, "order reduced annealing")
+        algorithms.optimize_anneal(aid)
+        aid.fitter_checkup()
+    return aid.fitter_orders().maxzp
+
+
+def fit_AAAonly(aid, emphasis, _phase_patch=True):
+    SNR_adjustments.SNR_fix(aid)
+
+    _fit_AAA(aid, emphasis, _phase_patch=_phase_patch)
+
+    return aid.fitter_orders().maxzp
+
+
+def _fit_AAA(aid, emphasis, _phase_patch=True, order_hint=None):
+    def fit_call():
+        AAA_fits.fit_AAA(aid, order_hint=order_hint)
+        aid.log_progress(
+            3,
+            "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.2,
+            optimize=False,
+        )
+
+        aid.log_progress(
+            3,
+            "Fastdrop Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        #perform the rational fit after AAA to get the relative degree
+        with aid.factorization():
+            rational_fits.fit_cheby(aid, order_hint=order_hint)
+
+            aid.log_progress(
+                3,
+                "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                    len(aid.fitter.zeros),
+                    len(aid.fitter.poles),
+                    aid.fitter.order_relative,
+                ),
+            )
+
+            order_reduce.order_reduce(
+                aid=aid,
+                Q_rank_cutoff=0.6,
+                optimize=False,
+            )
+        aid.log_progress(
+            3,
+            "Fastdrop Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        phase_patch.root_stabilize(aid)
+
+        if _phase_patch:
+            aid.log_progress(4, "mag fitting and phase patching")
+            aid.invalidate_fitters()
+            phase_patch.phase_patch(aid)
+            aid.fitter_update(representative=True)
+
+    with aid.log_heading("rational fitting"):
+        if aid.hint("suggest"):
+            # use the existing filter only as a suggestion
+            fit_call()
+        else:
+            # apply the rational fit to the factorized form and stabilize only
+            # the new cheby fit roots, not the original filter
+            with aid.factorization():
+                fit_call()
+
+    aid.fitter.optimize(aid=aid)
+    aid.fitter_update(representative=True)
+
+    algorithms.optimize_anneal(aid)
+    aid.fitter_checkup()
+    return
+
+
+
 def fit_rational(aid, emphasis, _phase_patch=True):
     SNR_adjustments.SNR_fix(aid)
 
@@ -726,6 +847,11 @@ def _reduce(aid, with_successive=True):
 
     algorithms.optimize_anneal(aid)
     aid.fitter_checkup()
+
+    order_reduce_flip.order_reduce_flip(
+        aid=aid,
+        non_mindelay=True,
+    )
 
     with aid.log_heading("selective order reduction"):
         order_reduce.order_reduce_selective(

@@ -152,20 +152,30 @@ class FitAid(object):
             for factor in self._fitter_factors[1:]:
                 total_z += len(factor.zeros)
                 total_p += len(factor.poles)
+            factors_z = total_z
+            factors_p = total_p
             if fitter != "factors":
                 total_z += len(fitter.zeros)
                 total_p += len(fitter.poles)
         else:
             if fitter != "factors":
+                factors_z = len(fitter.zeros_overlay)
+                factors_p = len(fitter.poles_overlay)
                 total_z = len(fitter.zeros) + len(fitter.zeros_overlay)
                 total_p = len(fitter.poles) + len(fitter.poles_overlay)
             else:
+                factors_z = 0
+                factors_p = 0
                 total_z = 0
                 total_p = 0
         return Bunch(
             z=total_z,
             p=total_p,
+            factors_z=factors_z,
+            factors_p=factors_p,
             maxzp=max(total_z, total_p),
+            factors_maxzp=max(factors_z, factors_p),
+            factors_reldeg=factors_z - factors_p,
             total=total_z + total_p,
             reldeg=total_z - total_p,
         )

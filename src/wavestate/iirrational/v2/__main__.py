@@ -471,6 +471,29 @@ def IIRrationalV2fit(argv=None, **kwargs):
 
         argv = shlex.split(argv)
 
+
+    ap = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter,
+        add_help=False,
+    )
+    ap.add_argument('--cmdline_file', dest='cmdline_file', default=None)
+    args, unknown_args = ap.parse_known_args(argv)
+    if args.cmdline_file is not None:
+        print("COMMAND_LINE FILE: ", args.cmdline_file)
+        print(unknown_args)
+        argv = unknown_args
+        try:
+            with open(args.cmdline_file) as F:
+                cmdline_add = F.read()
+                print("FILE: ", cmdline_add)
+                import shlex
+                argv2 = shlex.split(cmdline_add)
+                print("argv2", argv2)
+                argv = argv + argv2
+        except FileNotFoundError:
+            print("WARNING: file not found ", args.cmdline_file)
+            pass
+
     aid = fit_aid.FitAid()
 
     kw_hints = dict(arguments.kw_hints)
@@ -530,6 +553,7 @@ def IIRrationalV2fit(argv=None, **kwargs):
     information = arguments.grab_kwargs(aid, kwfull, cmdline.kw_hints, "information")
     LIGO_foton = arguments.grab_kwargs(aid, kwfull, cmdline.kw_hints, "LIGO_foton")
     refine = arguments.grab_kwargs(aid, kwfull, cmdline.kw_hints, "refine")
+    refine_file = arguments.grab_kwargs(aid, kwfull, cmdline.kw_hints, "refine_file")
     plot_fit = arguments.grab_kwargs(aid, args, cmdline.kw_hints, "plot_fit")
     plot_order = arguments.grab_kwargs(aid, args, cmdline.kw_hints, "plot_order")
 
@@ -616,10 +640,12 @@ def IIRrationalV2fit(argv=None, **kwargs):
                     "Baseline order is {} < --choose=auto{}, and {} fit(s) are lower order, using baseline"
                 ).format(results.order, order, num_lower)
             )
+    elif choose == 'best':
+        results.choose(1000)
     elif choose.startswith("baseline"):
         remainder = choose[8:]
         if not remainder:
-            order = 10
+            order = None
         else:
             try:
                 order = int(remainder)
@@ -629,7 +655,7 @@ def IIRrationalV2fit(argv=None, **kwargs):
                     file=sys.stderr,
                 )
                 order = 10
-        if results.order > order:
+        if order is not None and results.order > order:
             results.choose(order)
     else:
         try:
@@ -657,6 +683,10 @@ def IIRrationalV2fit(argv=None, **kwargs):
         )
         print(results.as_refine_str())
         print("%%%")
+
+    if refine_file:
+        with open(refine_file, 'w') as F:
+            F.write(results.as_refine_str())
 
     if plot_fit is not None:
         try:
