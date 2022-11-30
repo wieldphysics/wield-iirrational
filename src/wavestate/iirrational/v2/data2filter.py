@@ -334,7 +334,6 @@ def data2filter(*args, **kw):
     grab_kwarg_hints(aid, kw, arguments.adjustments.kw_hints, kwput=kwput)
     grab_kwarg_hints(aid, kw, arguments.ranges.kw_hints, kwput=kwput)
 
-    print("POLES: ", poles)
     ZPKrep = representations.ZPKwData(
         F_Hz=F_Hz,
         data=data,
@@ -441,6 +440,8 @@ def data2filter(*args, **kw):
         baseline_order = fit_AAA(aid, emphasis)
     elif mode == "onlyAAA":
         baseline_order = fit_AAAonly(aid, emphasis)
+    elif mode == "onlyAAAreduce":
+        baseline_order = fit_AAAonly_reduce(aid, emphasis)
     elif mode == "rational2x":
         baseline_order = fit_rational2x(aid, emphasis)
     elif mode == "reduce":
@@ -454,9 +455,12 @@ def data2filter(*args, **kw):
         with aid.fitter.with_codings_only([aid.fitter.gain_coding]):
             aid.fitter.optimize()
         aid.fitter_update(representative=True)
+    else:
+        raise RuntimeError("Wrong Option for mode")
 
     resaid = results_aid_adv.ResultsAidAdv(aid, kw=kwput)
     resaid.choose(baseline_order)
+    print("BASELINE: ", baseline_order)
     assert resaid.fitter is not None
     ptbl = resaid.investigate_order_console(print_function=None)
     with aid.log_heading("investigations"):
@@ -596,6 +600,8 @@ def fit_fullAAA(aid, emphasis):
     SNR_adjustments.SNR_fix(aid)
 
     _fit_AAA(aid, emphasis)
+    _reduce(aid, with_successive=False)
+    _fit_rational(aid, emphasis, _phase_patch=True)
 
     return _reduce(aid)
 
@@ -603,30 +609,143 @@ def fit_fullAAA(aid, emphasis):
 def fit_AAA(aid, emphasis, _phase_patch=True):
     SNR_adjustments.SNR_fix(aid)
 
-    _fit_AAA(aid, emphasis, _phase_patch=_phase_patch)
+    _fit_AAA_successive(aid, emphasis, _phase_patch=_phase_patch)
 
     with aid.log_heading("Q-ranked order reduction"):
         order_reduce.order_reduce(
             aid=aid,
-            Q_rank_cutoff=0.7,
+            Q_rank_cutoff=0.3,
         )
         aid.log_progress(4, "order reduced annealing")
         algorithms.optimize_anneal(aid)
         aid.fitter_checkup()
+    return _reduce(aid)
+
+
+def fit_AAAonly(aid, emphasis):
+    SNR_adjustments.SNR_fix(aid)
+
+    _fit_onlyAAA(aid, emphasis)
+
+    aid.log_progress(
+        3,
+        "Final Order: (Z={0}, P={1}, Z-P={2}), maxzp {3}".format(
+            len(aid.fitter.zeros),
+            len(aid.fitter.poles),
+            aid.fitter.order_relative,
+            aid.fitter_orders().maxzp
+        ),
+    )
     return aid.fitter_orders().maxzp
 
 
-def fit_AAAonly(aid, emphasis, _phase_patch=True):
+def fit_AAAonly_reduce(aid, emphasis):
     SNR_adjustments.SNR_fix(aid)
 
-    _fit_AAA(aid, emphasis, _phase_patch=_phase_patch)
+    _fit_onlyAAA(aid, emphasis)
 
+    return _reduce(aid)
+
+
+def _fit_onlyAAA(aid, emphasis, order_hint=None):
+    def fit_call():
+
+        #do a rational fit first to get reldeg to work
+        rational_fits.fit_cheby_base(aid, order=2, order_max=4, order_min=2)
+        aid.log_progress(
+            3,
+            "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.4,
+            optimize=False,
+        )
+
+        with aid.factorization():
+            AAA_fits.fit_AAA(aid, order_hint=order_hint)
+
+        aid.log_progress(
+            3,
+            "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.2,
+            optimize=False,
+        )
+
+        aid.log_progress(
+            3,
+            "Fastdrop Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+    with aid.factorization():
+        fit_call()
+    aid.fitter_update(representative=True, validate=True)
+
+    aid.fitter.optimize(aid=aid)
+    aid.fitter_update(representative=True)
+
+    algorithms.optimize_anneal(aid)
+    aid.fitter_checkup()
+    aid.fitter_update(representative=True, validate=True)
+
+    aid.log_progress(
+        3,
+        "Final Order: (Z={0}, P={1}, Z-P={2})".format(
+            len(aid.fitter.zeros),
+            len(aid.fitter.poles),
+            aid.fitter.order_relative,
+        ),
+    )
     return aid.fitter_orders().maxzp
 
 
 def _fit_AAA(aid, emphasis, _phase_patch=True, order_hint=None):
     def fit_call():
-        AAA_fits.fit_AAA(aid, order_hint=order_hint)
+
+        rational_fits.fit_cheby_base(aid, order=2, order_max=4, order_min=2)
+        aid.log_progress(
+            3,
+            "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.4,
+            optimize=False,
+            reduce_c=False,
+            reduce_r=False,
+        )
+
+        aid.log_progress(
+            3,
+            "Initial OrderB: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+        with aid.factorization():
+            AAA_fits.fit_AAA(aid, order_hint=order_hint)
         aid.log_progress(
             3,
             "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
@@ -651,24 +770,15 @@ def _fit_AAA(aid, emphasis, _phase_patch=True, order_hint=None):
             ),
         )
 
-        #perform the rational fit after AAA to get the relative degree
         with aid.factorization():
-            rational_fits.fit_cheby(aid, order_hint=order_hint)
+            rational_fits.fit_cheby_base(aid, order=2, order_max=4, order_min=2)
 
-            aid.log_progress(
-                3,
-                "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
-                    len(aid.fitter.zeros),
-                    len(aid.fitter.poles),
-                    aid.fitter.order_relative,
-                ),
-            )
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.2,
+            optimize=False,
+        )
 
-            order_reduce.order_reduce(
-                aid=aid,
-                Q_rank_cutoff=0.6,
-                optimize=False,
-            )
         aid.log_progress(
             3,
             "Fastdrop Order: (Z={0}, P={1}, Z-P={2})".format(
@@ -678,13 +788,13 @@ def _fit_AAA(aid, emphasis, _phase_patch=True, order_hint=None):
             ),
         )
 
-        phase_patch.root_stabilize(aid)
+        #phase_patch.root_stabilize(aid)
 
-        if _phase_patch:
-            aid.log_progress(4, "mag fitting and phase patching")
-            aid.invalidate_fitters()
-            phase_patch.phase_patch(aid)
-            aid.fitter_update(representative=True)
+        #if _phase_patch:
+        #    aid.log_progress(4, "mag fitting and phase patching")
+        #    aid.invalidate_fitters()
+        #    phase_patch.phase_patch(aid)
+        #    aid.fitter_update(representative=True)
 
     with aid.log_heading("rational fitting"):
         if aid.hint("suggest"):
@@ -695,14 +805,117 @@ def _fit_AAA(aid, emphasis, _phase_patch=True, order_hint=None):
             # the new cheby fit roots, not the original filter
             with aid.factorization():
                 fit_call()
+    aid.fitter_update(representative=True, validate=True)
 
     aid.fitter.optimize(aid=aid)
     aid.fitter_update(representative=True)
 
     algorithms.optimize_anneal(aid)
     aid.fitter_checkup()
-    return
+    return aid.fitter_orders().maxzp
 
+
+def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
+    def fit_initial():
+        rational_fits.fit_cheby_base(aid, order=2, order_max=4, order_min=2)
+        aid.log_progress(
+            3,
+            "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.4,
+            optimize=False,
+        )
+
+    def fit_call():
+        resavg1 = aid.fitter.residuals_average
+        with aid.factorization(data_mod=False):
+            AAA_fits.fit_AAA_base(aid, 20, 20, 20)
+
+        algorithms.optimize_anneal(aid)
+        aid.fitter_checkup()
+
+        with aid.factorization(data_mod=False):
+            rational_fits.fit_cheby_base(aid, order=2, order_max=2, order_min=2)
+
+        aid.log_progress(
+            3,
+            "Initial Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.2,
+            optimize=False,
+        )
+
+        aid.log_progress(
+            3,
+            "Fastdrop Order: (Z={0}, P={1}, Z-P={2})".format(
+                len(aid.fitter.zeros),
+                len(aid.fitter.poles),
+                aid.fitter.order_relative,
+            ),
+        )
+
+        _reduce(aid, with_flip=False, with_successive=False)
+        _reduce(aid, with_flip=True, with_successive=False)
+
+        aid.fitter.optimize(aid=aid)
+        aid.fitter_update(representative=True)
+
+        algorithms.optimize_anneal(aid)
+        aid.fitter_checkup()
+
+        resavg2 = aid.fitter.residuals_average
+
+        if resavg2/resavg1 < .90:
+            if aid.fitter_orders().maxzp > 60:
+                return
+
+            with aid.factorization(data_mod=False):
+                fit_call()
+        return
+
+    with aid.log_heading("rational fitting"):
+        if aid.hint("suggest"):
+            # use the existing filter only as a suggestion
+            fit_initial()
+            fit_call()
+        else:
+            # apply the rational fit to the factorized form and stabilize only
+            # the new cheby fit roots, not the original filter
+            with aid.factorization():
+                fit_initial()
+                fit_call()
+
+    if _phase_patch:
+        phase_patch.root_stabilize(aid)
+
+        if _phase_patch:
+            aid.log_progress(4, "mag fitting and phase patching")
+            aid.invalidate_fitters()
+            phase_patch.phase_patch(aid)
+            aid.fitter_update(representative=True)
+
+    aid.fitter_update(representative=True, validate=True)
+
+    aid.fitter.optimize(aid=aid)
+    aid.fitter_update(representative=True)
+
+    algorithms.optimize_anneal(aid)
+    aid.fitter_checkup()
+    return aid.fitter_orders().maxzp
 
 
 def fit_rational(aid, emphasis, _phase_patch=True):
@@ -726,7 +939,7 @@ def fit_rational2x(aid, emphasis, _phase_patch=True):
     SNR_adjustments.SNR_fix(aid)
 
     _fit_rational(aid, emphasis, _phase_patch=False, order_hint="order_first")
-    _reduce(aid, with_successive=False)
+    _reduce(aid, with_flip=True, with_successive=False)
     _fit_rational(aid, emphasis, _phase_patch=_phase_patch)
 
     with aid.log_heading("Q-ranked order reduction"):
@@ -830,7 +1043,7 @@ def fit_copy(aid, emphasis):
     return baseline_order
 
 
-def _reduce(aid, with_successive=True):
+def _reduce(aid, with_flip=True, with_successive=True):
     with aid.log_heading("Q-ranked order reduction"):
         rzp_list = order_reduce.order_reduce(
             aid=aid,
@@ -848,10 +1061,11 @@ def _reduce(aid, with_successive=True):
     algorithms.optimize_anneal(aid)
     aid.fitter_checkup()
 
-    order_reduce_flip.order_reduce_flip(
-        aid=aid,
-        non_mindelay=True,
-    )
+    if with_flip:
+        order_reduce_flip.order_reduce_flip(
+            aid=aid,
+            non_mindelay=True,
+        )
 
     with aid.log_heading("selective order reduction"):
         order_reduce.order_reduce_selective(

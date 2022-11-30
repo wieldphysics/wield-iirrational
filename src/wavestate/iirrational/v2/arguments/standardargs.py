@@ -88,6 +88,7 @@ def mapcheck_mode(aid, hname, val):
         "fit",
         "AAA",
         "onlyAAA",
+        "onlyAAAreduce",
         "reduce",
         "rational",
         "rational2x",

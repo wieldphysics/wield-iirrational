@@ -7,6 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
+import numpy as np
 
 
 from .. import representations
@@ -167,11 +168,17 @@ def encode(fitter, r_list, st_t, us_t, collect, is_unstable):
         r_list_st[-collect:] = []
         coding.update_roots(*roots)
         codings.append(coding)
+        rts = coding.roots()
+        rts = np.asarray(rts)
+        assert(not rts.size or np.all(np.isfinite(rts)))
     while r_list_us:
         coding = us_t(fitter)
         roots = r_list_us[-collect:]
         r_list_us[-collect:] = []
         coding.update_roots(*roots)
+        rts = coding.roots()
+        rts = np.asarray(rts)
+        assert(not rts.size or np.all(np.isfinite(rts)))
         codings.append(coding)
     return codings
 
@@ -206,16 +213,31 @@ def MRF2MRF(
 
     if z_r is None:
         z_r = zeros.r
+    else:
+        z_r = np.asarray(z_r)
+
     if p_r is None:
         p_r = poles.r
+    else:
+        p_r = np.asarray(p_r)
+
     if z_c is None:
         z_c = zeros.c
+    else:
+        z_c = np.asarray(z_c)
+
     if p_c is None:
         p_c = poles.c
+    else:
+        p_c = np.asarray(p_c)
 
     if gain is None:
         gain = ZPKrep.gain
 
+    assert(not z_r.size or np.all(np.isfinite(z_r)))
+    assert(not z_c.size or np.all(np.isfinite(z_c)))
+    assert(not p_r.size or np.all(np.isfinite(p_r)))
+    assert(not p_c.size or np.all(np.isfinite(p_c)))
     zeros = representations.asMRRB(r=z_r, c=z_c)
     poles = representations.asMRRB(r=p_r, c=p_c)
     coding_map, num_codings, den_codings = ZP2codings(

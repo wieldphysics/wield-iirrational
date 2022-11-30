@@ -245,8 +245,8 @@ class CodingSOSnl(CodingType):
                 if r2 is None:
                     r2 = r1.conjugate()
                 if r1p > self.min_BW_Hz:
-                    ret = True
                     r1p = r1p - self.min_BW_Hz
+                    ret = True
                 else:
                     ret = False
                     r1p = 0
@@ -296,7 +296,10 @@ class CodingSOSnl(CodingType):
                     r1 = (-c1 + sqrt_disc) / 2
                 else:
                     r1 = (-c1 - sqrt_disc) / 2
-                r2 = c2 / r1
+                if c2 == 0 and r1 == 0:
+                    r2 = 0
+                else:
+                    r2 = c2 / r1
                 if not self.unstable:
                     return [r1 - self.min_BW_Hz, r2 - self.min_BW_Hz]
                 else:
@@ -331,7 +334,12 @@ class CodingSOSnl(CodingType):
                     r1 = (-c1 + sqrt_disc) / 2
                 else:
                     r1 = (-c1 - sqrt_disc) / 2
-                r2 = c2 / r1
+
+                if c2 == 0 and r1 == 0:
+                    r2 = 0
+                else:
+                    r2 = c2 / r1
+
                 if not self.unstable:
                     return [r1 - self.min_BW_Hz, r2 - self.min_BW_Hz]
                 else:

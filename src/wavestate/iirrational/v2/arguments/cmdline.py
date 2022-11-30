@@ -141,6 +141,7 @@ kw_hints = Bunch(
             "full2x",
             "fullAAA",
             "onlyAAA",
+            "onlyAAAreduce",
             "AAA",
             "fit",
             "reduce",

@@ -42,6 +42,7 @@ def root_stabilize(aid):
 
     aid.fitter_update(
         aid.fitter.regenerate(
+            ZPKrep=aid.fitter.ZPKrep,
             coding_map=fitters_ZPK.codings_s.coding_maps.SOSsafe,
             z_c=z_c,
             z_r=z_r,
@@ -325,6 +326,7 @@ def phase_patch(aid):
 
     # TODO add restrictions on the order increase-decrease
     fitter_new = aid.fitter.regenerate(
+        ZPKrep=aid.fitter.ZPKrep,
         z_c=list(fitter_mag.zeros.c) + extra_z_c,
         p_c=list(fitter_mag.poles.c) + extra_p_c,
         z_r=list(fitter_mag.zeros.r) + extra_z_r,

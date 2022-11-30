@@ -49,7 +49,10 @@ class ResultsAid(object):
         extra = self._fitter_extra
         fitterRI = extra.get("fitterRI", None)
         if fitterRI is None:
-            fitterRI = self.fitter.regenerate(coding_map=fitters_ZPK.coding_maps.RI)
+            fitterRI = self.fitter.regenerate(
+                ZPKrep=self.fitter.ZPKrep,
+                coding_map=fitters_ZPK.coding_maps.RI
+            )
             extra["fitterRI"] = fitterRI
         return fitterRI
 

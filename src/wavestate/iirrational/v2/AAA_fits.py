@@ -58,6 +58,7 @@ def fit_AAA_base(
     order,
     order_max,
     order_min,
+    account_size=True,
 ):
     if order == 0:
         return
@@ -93,14 +94,15 @@ def fit_AAA_base(
         print(order, order_max)
         order_max = min(order, order_max)
 
-    factors_order = aid.fitter_orders().factors_maxzp
-    print("FACTORS ORDER", factors_order)
-    order_max = order_max - factors_order
-    order_max = max(order_max, 6)
+    if account_size:
+        factors_order = aid.fitter_orders().factors_maxzp
+        # print("FACTORS ORDER", factors_order)
+        order_max = order_max - factors_order
+        order_max = max(order_max, 6)
 
     aaa = tfAAA(
         aid.fitter.F_Hz,
-        aid.fitter.data,
+        aid.fitter.data_no_overlay,
         exact=False,
         res_tol=None,
         s_tol=None,
@@ -114,13 +116,26 @@ def fit_AAA_base(
         supports=(),
         minreal_cutoff=None,
     )
-    zeros = aaa.zeros / (2 * np.pi)
-    poles = aaa.poles / (2 * np.pi)
+    zeros = aaa.zeros# / (2 * np.pi)
+    poles = aaa.poles# / (2 * np.pi)
+    select = poles.real > 0
+    poles[select] = -poles[select].conjugate()
+    gain = aaa.gain# * (2 * np.pi)**(len(zeros) - len(poles))
+    gain = (-1)**np.sum(select) * gain
     fitter = aid.fitter.regenerate(
+        ZPKrep=aid.fitter.ZPKrep,
         zeros=zeros,
         poles=poles,
-        gain=aaa.gain * (2 * np.pi)**(len(zeros) - len(poles)),
+        gain=gain
     )
+
+    from .. import plots
+    axB = plots.plot_fitter_flag(fitter=aid.fitter, xscale='log')
+    axB.save("AAA_pre_{}.pdf".format(aid.N_update))
+    axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
+    axB.save("AAA_{}.pdf".format(aid.N_update))
+
+    # print("AAAlist: ", poles, zeros)
 
     aid.fitter_update(
         fitter,

@@ -152,6 +152,23 @@ coding_maps = Bunch(
         den_collect_c=1,
         **_common
     ),
+    SOSnlpoles=Bunch(
+        gain=CodingGain,
+        delay=CodingDelayNL,
+        num_r=CodingSOSnl,
+        num_c=CodingSOSnl,
+        den_r=CodingSOS,
+        den_c=CodingSOS,
+        num_r_u=CodingSOSnl,
+        num_c_u=CodingSOSnl,
+        den_r_u=CodingSOS,
+        den_c_u=CodingSOS,
+        num_collect_r=2,
+        den_collect_r=2,
+        num_collect_c=1,
+        den_collect_c=1,
+        **_common
+    ),
     SOSsafe=Bunch(
         gain=CodingGain,
         delay=CodingDelayNL,

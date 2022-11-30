@@ -55,13 +55,13 @@ def order_reduce(
     Pr = aid.fitter.poles.r
     Zr = aid.fitter.zeros.r
 
+    removed_rzp_list = []
     # print(len(Zc), len(Pc))
     if reduce_c:
         rpB = TFmath.nearest_pairs(Zc, Pc)
         Zc = list(rpB.l1_remain)
         Pc = list(rpB.l2_remain)
 
-        removed_rzp_list = []
         for z, p in rpB.r12_list:
             Q_rank = Q_rank_calc(p, z)
             # print(z, p, Q_rank)
@@ -76,7 +76,6 @@ def order_reduce(
         Zr = list(rpB.l1_remain)
         Pr = list(rpB.l2_remain)
 
-        removed_rzp_list = []
         for z, p in rpB.r12_list:
             Q_rank = Q_rank_calc(p, z)
             # print(z, p, Q_rank)
@@ -86,13 +85,14 @@ def order_reduce(
             Zr.append(z)
             Pr.append(p)
 
-    # print(len(aid.fitter.zeros), len(aid.fitter.poles))
     fitter_new = aid.fitter.regenerate(
+        ZPKrep=aid.fitter.ZPKrep,
         z_c=Zc,
         p_c=Pc,
         z_r=Zr,
         p_r=Pr,
     )
+    assert(fitter_new.order_relative == aid.fitter.order_relative)
     if optimize:
         with fitter_new.with_codings_only([fitter_new.gain_coding]):
             fitter_new.optimize()

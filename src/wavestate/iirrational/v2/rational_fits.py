@@ -16,35 +16,6 @@ from .algorithms import (
 )
 
 
-# def fit_cheby_emphasis(aid):
-#    return fit_cheby_base(
-#        aid,
-#        order = aid.hint(
-#            'emphasis_rational_cheby_fit_order',
-#            'emphasis_rational_fit_order',
-#            'emphasis_order_initial',
-#            'rational_cheby_fit_order',
-#            'rational_fit_order',
-#            'order_initial',
-#        ),
-#        order_max = aid.hint(
-#            'emphasis_rational_cheby_fit_order_max',
-#            'emphasis_rational_fit_order_max',
-#            'emphasis_order_max',
-#            'rational_cheby_fit_order_max',
-#            'rational_fit_order_max',
-#            'order_max',
-#        ),
-#        order_min = aid.hint(
-#            'emphasis_rational_cheby_fit_order_min',
-#            'emphasis_rational_fit_order_min',
-#            'emphasis_order_min',
-#            'rational_cheby_fit_order_min',
-#            'rational_fit_order_min',
-#            'order_min',
-#        ),
-#    )
-
 
 def fit_cheby(aid, order_hint=None):
     if order_hint is None:
@@ -119,62 +90,24 @@ def fit_cheby_base(
         diff_reldeg = 0
 
     factors_order = aid.fitter_orders().factors_maxzp
-    print("RELDEG: ", factor_orders.reldeg, aid.fitter_orders().factors_reldeg)
-    print("FACTORS ORDER", factors_order)
+    print("RELDEG: ", factor_orders.reldeg, aid.fitter_orders().factors_reldeg, diff_reldeg)
+    # print("FACTORS ORDER", factors_order)
     if order is not None:
         order -= factors_order
         order = max(order, 4)
+
     rat_fitter = cheby_sequence.rational_cheby_fit(
         aid=aid,
         order_max=order_max - factors_order,
-        order_min=max(order_min - factors_order, 4),
+        order_min=max(order_min - factors_order, 2),
         order=order,
         relative_degree=diff_reldeg,
         ZPKrep=aid.fitter.ZPKrep,
     )
 
-    if False:
-        # TODO, add this early drop at some point
-        Zc = rat_fitter.ZPKrep.zeros.c
-        select = Zc.imag - 2 * abs(Zc.real) > 1.4 * rat_fitter.F_max_Hz
-        Zc_use = Zc[~select]
-        Zc_discard = Zc[select]
-        aid.log_info(
-            1,
-            "discarding {n} zeros: {Z}".format(
-                n=np.count_nonzero(select), Z=Zc_discard
-            ),
-        )
-
-        Pc = rat_fitter.ZPKrep.poles.c
-        select = Pc.imag - 2 * abs(Pc.real) > 1.4 * rat_fitter.F_max_Hz
-        Pc_use = Pc[~select]
-        Pc_discard = Pc[select]
-        aid.log_info(
-            1,
-            "discarding {n} poles: {P}".format(
-                n=np.count_nonzero(select), P=Pc_discard
-            ),
-        )
-        fitter = aid.fitter.regenerate(
-            ZPKrep=rat_fitter.ZPKrep,
-            z_c=Zc_use,
-            p_c=Pc_use,
-        )
-    else:
-        fitter = aid.fitter.regenerate(
-            ZPKrep=rat_fitter.ZPKrep,
-        )
-
-    # should NOT be necessary
-    #
-    # with fitter.with_codings_only([fitter.gain_coding]):
-    #    fitter.optimize_NM(residuals_type = 'log')
-
-    # TODO
-    # validate = aid.hint('rational_fitter_validate')
-    # if validate is not None:
-    #    validate(rat_fitter, fitter)
+    fitter = aid.fitter.regenerate(
+        ZPKrep=rat_fitter.ZPKrep,
+    )
 
     aid.fitter_update(
         fitter,

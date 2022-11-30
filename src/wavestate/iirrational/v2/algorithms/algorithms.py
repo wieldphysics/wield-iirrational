@@ -50,7 +50,7 @@ def sign_check_flip(fitter, max_N=None):
     rat = data / xfer
     rat_ang = np.exp(1j * np.angle(rat))
     ang_avg_fit = np.sum(rat_ang[select] * W[select] ** 2) / np.sum(W[select] ** 2)
-    assert ang_avg_fit.real > 0
+    # assert ang_avg_fit.real > 0
     return
 
 

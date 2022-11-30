@@ -40,6 +40,7 @@ class FitAid(object):
         self._fitter_lowres_avg = None
         self._fitter_lowres_max = None
         self._fitter_lowres_med = None
+        self.N_update = 0
 
         self.mtime_start = time.time()
 
@@ -103,7 +104,7 @@ class FitAid(object):
     def residuals_type_alt(self):
         return self.hint("residuals_type_alt", "dualA")
 
-    def _check_residuals(self, fitter):
+    def _resolve_factorizations(self, fitter):
         """
         Get a fitter with representative residuals for comparison and storage.
         This applies all current factorizations.
@@ -118,19 +119,31 @@ class FitAid(object):
             gain = first_factor.gain
             for factor in self._fitter_factors[1:]:
                 zeros = zeros * factor.zeros
-                poles = zeros * factor.poles
-                gain = factor.gain
+                poles = poles * factor.poles
+                gain = gain * factor.gain
             xrep = representations.ZPKwData(
                 ZPKrep=first_factor.ZPKrep,
                 zeros=fitter.zeros * zeros,
                 poles=fitter.poles * poles,
-                gain=fitter.gain * gain,
+                gain=fitter.gain,
+                delay_s=fitter.delay_s,
             )
             # TODO, check that the representation is preserved
-            return fitter.regenerate(
+
+            print("residsB", fitter.residuals_average, len(fitter.poles) + len(fitter.poles_overlay))
+            # from .. import plots
+            # axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
+            # axB.save("RESIDSB_{}.pdf".format(self.N_update))
+            f2 = first_factor.regenerate(
                 ZPKrep=xrep,
                 residuals_log_im_scale=first_factor.residuals_log_im_scale,
+                # needed to preserve the exact root locations
+                coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
             )
+            print("residsB2", f2.residuals_average, len(f2.poles) + len(f2.poles_overlay))
+            # axB = plots.plot_fitter_flag(fitter=f2, xscale='log')
+            # axB.save("RESIDSB2_{}.pdf".format(self.N_update))
+            return f2
 
         # TODO, should this assert if residuals_type is wrong?
         if fitter.residuals_type == self.residuals_type:
@@ -145,29 +158,30 @@ class FitAid(object):
     def fitter_orders(self, fitter=None):
         if fitter is None:
             fitter = self.fitter
-        if self._fitter_factors:
-            first_factor = self._fitter_factors[0]
-            total_z = len(first_factor.zeros) + len(first_factor.zeros_overlay)
-            total_p = len(first_factor.poles) + len(first_factor.poles_overlay)
-            for factor in self._fitter_factors[1:]:
-                total_z += len(factor.zeros)
-                total_p += len(factor.poles)
-            factors_z = total_z
-            factors_p = total_p
-            if fitter != "factors":
-                total_z += len(fitter.zeros)
-                total_p += len(fitter.poles)
+        #if self._fitter_factors:
+        #    first_factor = self._fitter_factors[0]
+        #    total_z = len(first_factor.zeros) + len(first_factor.zeros_overlay)
+        #    total_p = len(first_factor.poles) + len(first_factor.poles_overlay)
+        #    for factor in self._fitter_factors[1:]:
+        #        total_z += len(factor.zeros)
+        #        total_p += len(factor.poles)
+        #    factors_z = total_z
+        #    factors_p = total_p
+        #    if fitter != "factors":
+        #        total_z += len(fitter.zeros)
+        #        total_p += len(fitter.poles)
+        #else:
+        if fitter != "factors":
+            factors_z = len(fitter.zeros_overlay)
+            factors_p = len(fitter.poles_overlay)
+            total_z = len(fitter.zeros) + len(fitter.zeros_overlay)
+            total_p = len(fitter.poles) + len(fitter.poles_overlay)
         else:
-            if fitter != "factors":
-                factors_z = len(fitter.zeros_overlay)
-                factors_p = len(fitter.poles_overlay)
-                total_z = len(fitter.zeros) + len(fitter.zeros_overlay)
-                total_p = len(fitter.poles) + len(fitter.poles_overlay)
-            else:
-                factors_z = 0
-                factors_p = 0
-                total_z = 0
-                total_p = 0
+            factors_z = len(self.fitter.zeros_overlay)
+            factors_p = len(self.fitter.poles_overlay)
+            total_z = len(self.fitter.zeros_overlay)
+            total_p = len(self.fitter.poles_overlay)
+
         return Bunch(
             z=total_z,
             p=total_p,
@@ -369,19 +383,32 @@ class FitAid(object):
             variant=variant,
         )
         if not improved:
-            self.fitter = self._fitter_current.copy()
+            # Not sure I like this logic
+
+            self.log_warn(3, "Fitter_checkup improvement fail")
+            if self._fitter_current_factorized is not None:
+                self.fitter = self._fitter_current_factorized.copy()
         return improved
 
+    _fitter_current_factorized = None
     def fitter_update(
         self,
         fitter=None,
         representative=False,
         validate=True,
     ):
+        self.N_update += 1
         if fitter is None:
             fitter = self.fitter
         else:
             self.fitter = fitter
+
+        if self._fitter_x is not None:
+            assert(len(self._fitter_x.poles_overlay) > 0)
+            assert(len(self.fitter.poles_overlay) > 0)
+
+        if self._fitter_factors and len(self._fitter_factors[-1].poles.fullplane) > 0:
+            assert(len(fitter.poles_overlay) > 0)
 
         # print("fitter storeA", fitter.residuals_average)
         avg1 = fitter.residuals_average
@@ -396,8 +423,9 @@ class FitAid(object):
         # this function will apply the de-factorizations, to create an
         # unfactored fit
         try:
-            fitter_use = self._check_residuals(fitter)
+            fitter_use = self._resolve_factorizations(fitter)
         except FitterUnacceptable:
+            print("Unacceptable?!")
             return
 
         if fitter_use is not None:
@@ -425,6 +453,7 @@ class FitAid(object):
             new_res_max = fitter_use.residuals_max
             new_res_med = fitter_use.residuals_med
 
+            self._fitter_current_factorized = fitter.copy()
             if self._fitter_current is not None:
                 old_res = self._fitter_lowres_avg.residuals_average
                 old_res_max = self._fitter_lowres_max.residuals_max
@@ -459,6 +488,7 @@ class FitAid(object):
         self._fitter_factors.append(fitter_factor)
 
         if data_mod:
+            assert(False)
             xrep = representations.ZPKwData(
                 ZPKrep=fitter_factor.ZPKrep,
                 data=self.fitter.data / fitter_factor.xfer_fit,
@@ -471,27 +501,61 @@ class FitAid(object):
             )
             self.fitter = self.fitter.regenerate(ZPKrep=xrep)
         else:
+            poles_overlay = fitter_factor.poles * fitter_factor.poles_overlay
+            zeros_overlay = fitter_factor.zeros * fitter_factor.zeros_overlay
             xrep = representations.ZPKwData(
                 ZPKrep=fitter_factor.ZPKrep,
-                gain=1,
+                data=self.fitter.data,
+                gain=fitter_factor.gain,
                 poles=(),
                 zeros=(),
-                poles_overlay=fitter_factor.poles * fitter_factor.poles_overlay,
-                zeros_overlay=fitter_factor.zeros * fitter_factor.zeros_overlay,
+                poles_overlay=poles_overlay,
+                zeros_overlay=zeros_overlay,
                 delay_s=self.fitter.delay_s - fitter_factor.delay_s,
             )
             self.fitter = self.fitter.regenerate(ZPKrep=xrep)
+            if len(self.fitter.poles_overlay) > 0:
+                self._fitter_x = self.fitter
+            else:
+                self._fitter_x = None
         return
 
+    _fitter_x = None
+
     def factorization_pop(self):
+        if self._fitter_factors and len(self._fitter_factors[-1].poles.fullplane) > 0:
+            assert(len(self.fitter.poles_overlay) > 0)
+
         factorization = self._fitter_factors.pop()
-        xrep = representations.ZPKwData(
+
+        print("resids", self.fitter.residuals_average, len(self.fitter.poles) + len(self.fitter.poles_overlay))
+
+        # from .. import plots
+        # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale='log')
+        # axB.save("RESIDS_{}.pdf".format(self.N_update))
+        self.fitter = self.fitter.regenerate(
             ZPKrep=factorization.ZPKrep,
             zeros=self.fitter.zeros * factorization.zeros,
             poles=self.fitter.poles * factorization.poles,
-            gain=self.fitter.gain * factorization.gain,
+            gain=self.fitter.gain,
         )
-        self.fitter = self.fitter.regenerate(ZPKrep=xrep)
+        print("resids2?", self.fitter.residuals_average)
+        # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale='log')
+        # axB.save("RESIDS2_{}.pdf".format(self.N_update))
+
+        if self._fitter_factors and len(self._fitter_factors[-1].poles.fullplane) > 0:
+            assert(len(self.fitter.poles_overlay) > 0)
+
+        self._fitter_current_factorized = None
+
+        self._fitter_x = factorization
+        if len(factorization.poles_overlay) > 0:
+            self._fitter_x = factorization
+        else:
+            self._fitter_x = None
+        if self._fitter_x is not None:
+            assert(len(self._fitter_x.poles_overlay) > 0)
+            assert(len(self.fitter.poles_overlay) > 0)
         # TODO, check that the representation is preserved
 
     @contextlib.contextmanager

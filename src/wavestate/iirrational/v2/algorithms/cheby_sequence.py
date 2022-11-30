@@ -48,12 +48,13 @@ def rational_cheby_fit(
     N_final = int(min(len(ZPKrep.F_Hz) // 10, order_max))
 
     if order is not None:
-        return cheby_single(
+        ret = cheby_single(
             ZPKrep,
             relative_degree=relative_degree,
             order=order,
             aid=aid,
         )
+        return ret
 
     # otherwise, scan through
     N_current = N_first

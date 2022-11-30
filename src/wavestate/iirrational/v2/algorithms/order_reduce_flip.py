@@ -90,15 +90,18 @@ def ranking_delay_flip(
         trial = trials[0]
         did_reduce = aid.fitter_check(
             trial.fitter,
-            hint_name="ordrestore",
-            variant=trial.ord_str,
+            hint_name="flip",
+            variant="OrdC"
         )
         if did_reduce:
-            aid.fitter_update(trial.fitter)
+            aid.fitter_update(
+                trial.fitter,
+                representative=True,
+            )
             aid.log_progress(
                 5,
-                ("zero flipped, bw {}, maxzp {}, residuals={:.2e}, reldeg={}").format(
-                    bw, aid.fitter_orders().maxzp, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+                ("zero flipped, maxzp {}, residuals={:.2e}, reldeg={}").format(
+                    aid.fitter_orders().maxzp, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
                 ),
             )
             break
@@ -110,10 +113,22 @@ def ranking_delay_flip(
 def order_reduce_flip(aid, non_mindelay=True):
     aid.log_progress(
         5,
-        ("zero flipping, maxzp {}, residuals={:.2e}, reldeg={}").format(
-            aid.fitter_orders().maxzp, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+        ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
+            aid.fitter_orders().maxzp, aid._fitter_current.residuals_average, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
         ),
     )
+    aid.fitter_update(
+        representative=True,
+    )
+    aid.log_progress(
+        5,
+        ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
+            aid.fitter_orders().maxzp, aid._fitter_current.residuals_average, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+        ),
+    )
+    # import pdb; pdb.set_trace()
+
+    check_sign = aid.fitter.check_sign
     while True:
         ret = ranking_delay_flip(
             aid,
@@ -124,3 +139,42 @@ def order_reduce_flip(aid, non_mindelay=True):
             break
         if not ret:
             break
+    aid.fitter.check_sign = check_sign
+    return
+
+def order_reduce_flip(aid, non_mindelay=True):
+    aid.log_progress(
+        5,
+        ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
+            aid.fitter_orders().maxzp, aid._fitter_current.residuals_average, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+        ),
+    )
+
+    from ... import fitters_ZPK
+    fitter_new = aid.fitter.regenerate(
+        ZPKrep=aid.fitter.ZPKrep,
+        coding_map=fitters_ZPK.codings_s.coding_maps.SOSnlpoles,
+        check_sign=False,
+    )
+    with fitter_new.with_codings_only([fitter_new.gain_coding]):
+        fitter_new.optimize()
+    fitter_new.optimize()
+    algorithms.sign_check_flip(fitter_new)
+    aid.fitter_update(fitter_new)
+
+    fitter_new = aid.fitter.regenerate(
+        ZPKrep=fitter_new.ZPKrep,
+        # coding_map=fitters_ZPK.codings_s.coding_maps.SOSnlpoles,
+        # check_sign=True,
+    )
+    aid.fitter_update(
+        fitter_new,
+        representative=True,
+    )
+    aid.log_progress(
+        5,
+        ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
+            aid.fitter_orders().maxzp, aid._fitter_current.residuals_average, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
+        ),
+    )
+    return

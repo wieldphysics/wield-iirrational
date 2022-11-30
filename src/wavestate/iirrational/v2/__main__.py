@@ -20,6 +20,7 @@ from .. import file_io
 from .. import version as IIRversion
 #from .. import auto_version as IIRversion_auto
 from ..utilities.strings import padding_remove
+from .. import fitters_ZPK
 
 from . import arguments
 from .arguments import pyargparse
@@ -578,7 +579,11 @@ def IIRrationalV2fit(argv=None, **kwargs):
     print("Arguments: ")
     dump_fdict_keys(kwuse, depth=0)
 
-    results = data2filter(**kwuse)
+    results = data2filter(
+        # coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
+        # coding_map=fitters_ZPK.codings_s.coding_maps.SOSnl,
+        **kwuse
+    )
 
     version_dict = dict(
         data2filter="v2",
@@ -655,6 +660,7 @@ def IIRrationalV2fit(argv=None, **kwargs):
                     file=sys.stderr,
                 )
                 order = 10
+        print("CHOOSING:", order)
         if order is not None and results.order > order:
             results.choose(order)
     else:

@@ -46,6 +46,7 @@ class MultiReprFilterBase(DataFiltFitBase):
         poles_overlay=None,
         zeros_overlay=None,
         residuals_type=None,
+        check_sign=None,
         codings_ignore=None,
         residuals_log_im_scale=None,
         distance_limit_auto=None,
@@ -83,6 +84,8 @@ class MultiReprFilterBase(DataFiltFitBase):
                 zeros_overlay = parent.zeros_overlay
             if residuals_type is None:
                 residuals_type = parent.residuals_type
+            if check_sign is None:
+                check_sign = parent.check_sign
             if codings_ignore is None:
                 arg_codings_ignore = parent.codings_ignore
             if residuals_log_im_scale is None:
@@ -116,6 +119,8 @@ class MultiReprFilterBase(DataFiltFitBase):
                 zeros_overlay = ()
             if residuals_type is None:
                 residuals_type = "log"
+            if check_sign is None:
+                check_sign = False
             if codings_ignore is None:
                 arg_codings_ignore = set()
             if residuals_log_im_scale is None:
@@ -155,6 +160,7 @@ class MultiReprFilterBase(DataFiltFitBase):
         self.poles_overlay = poles_overlay
         self.zeros_overlay = zeros_overlay
         self.residuals_type = residuals_type
+        self.check_sign = check_sign
         self.residuals_log_im_scale = residuals_log_im_scale
         # assign after the setter is built
         self.codings_ignore = arg_codings_ignore
@@ -252,6 +258,10 @@ class MultiReprFilterBase(DataFiltFitBase):
         xfer_p, lnG_p = self.poles_overlay.val_lnG(self.Xex_grid)
         xfer, lnG = self.zeros_overlay.val_lnG(self.Xex_grid, h=1 / xfer_p, lnG=-lnG_p)
         return xfer * np.exp(lnG)
+
+    @depB_property
+    def data_no_overlay(self):
+        return self.data / self._extra_xfer_fit
 
     @depB_property
     def data_effective(self):
@@ -785,7 +795,10 @@ class MultiReprFilterBase(DataFiltFitBase):
                 log_re = W * np.log(R_abs)
                 # TODO, test if there is a way to scale the residuals_log using the real part
                 # log_resq = np.sum(log_re**2)
-                log_im = W * R.imag / R_abs
+                log_im = W * (R.imag / R_abs)
+                if self.check_sign:
+                    select = R.real < 0
+                    log_im[select] = 2 - log_im[select]
             return log_re + 1j * log_im * self.residuals_log_im_scale
         return
 
@@ -827,6 +840,11 @@ class MultiReprFilterBase(DataFiltFitBase):
                         * ((pjac.imag * Y.real + pjac.real * Y.imag) - XY.imag * jac_re)
                         / XY_abs
                     )
+
+                    if self.check_sign:
+                        select = xfer.real < 0
+                        jac_im[select] = -jac_im[select]
+
                     if num:
                         return jac_re + 1j * jac_im
                     else:
