@@ -181,41 +181,50 @@ def filter2fotonZPK(
             else:
                 return []
 
-    pole_list = []
-    zero_list = []
-    for idx, (z1, z2, p1, p2) in enumerate(zzpp_pairs):
-        zero_list.extend(
-            root_strs(
-                z1,
-                z2,
-                idx + 1,
+    def print_single(zzpp_pairs, gain):
+        pole_list = []
+        zero_list = []
+        for idx, (z1, z2, p1, p2) in enumerate(zzpp_pairs):
+            zero_list.extend(
+                root_strs(
+                    z1,
+                    z2,
+                    idx + 1,
+                )
             )
-        )
-        pole_list.extend(
-            root_strs(
-                p1,
-                p2,
-                idx + 1,
+            pole_list.extend(
+                root_strs(
+                    p1,
+                    p2,
+                    idx + 1,
+                )
             )
+
+        ZPK_template = 'ZPK([{zeros}],[{poles}], {gain}, "{plane}")'
+        if len(zero_list) == 0:
+            zstr = ""
+        else:
+            zstr = "\n  " + "\n  ".join(zero_list) + "\n"
+
+        if len(pole_list) == 0:
+            pstr = ""
+        else:
+            pstr = "\n  " + "\n  ".join(pole_list) + "\n"
+
+        return ZPK_template.format(
+            zeros=zstr,
+            poles=pstr,
+            gain=gain,
+            plane=plane,
         )
 
-    ZPK_template = 'ZPK([{zeros}],[{poles}], {gain}, "{plane}")'
-    if len(zero_list) == 0:
-        zstr = ""
-    else:
-        zstr = "\n  " + "\n  ".join(zero_list) + "\n"
-
-    if len(pole_list) == 0:
-        pstr = ""
-    else:
-        pstr = "\n  " + "\n  ".join(pole_list) + "\n"
-
-    return ZPK_template.format(
-        zeros=zstr,
-        poles=pstr,
-        gain=k,
-        plane=plane,
-    )
+    ZPKs = print_single(zzpp_pairs[:10], k)
+    while True:
+        zzpp_pairs = zzpp_pairs[10:]
+        if not zzpp_pairs:
+            break
+        ZPKs = ZPKs + '\n' + print_single(zzpp_pairs[:10], 1)
+    return ZPKs
 
 
 '''

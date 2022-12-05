@@ -131,7 +131,7 @@ class FitAid(object):
             )
             # TODO, check that the representation is preserved
 
-            print("residsB", fitter.residuals_average, len(fitter.poles) + len(fitter.poles_overlay))
+            # print("residsB", fitter.residuals_average, len(fitter.poles) + len(fitter.poles_overlay))
             # from .. import plots
             # axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
             # axB.save("RESIDSB_{}.pdf".format(self.N_update))
@@ -141,7 +141,7 @@ class FitAid(object):
                 # needed to preserve the exact root locations
                 coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
             )
-            print("residsB2", f2.residuals_average, len(f2.poles) + len(f2.poles_overlay))
+            # print("residsB2", f2.residuals_average, len(f2.poles) + len(f2.poles_overlay))
             # axB = plots.plot_fitter_flag(fitter=f2, xscale='log')
             # axB.save("RESIDSB2_{}.pdf".format(self.N_update))
             return f2
@@ -556,8 +556,8 @@ class FitAid(object):
 
         factorization = self._fitter_factors.pop()
 
-        print("resids", self.fitter.residuals_average, len(self.fitter.poles) + len(self.fitter.poles_overlay))
-        print("residsC", self._fitter_current.residuals_average)
+        # print("resids", self.fitter.residuals_average, len(self.fitter.poles) + len(self.fitter.poles_overlay))
+        # print("residsC", self._fitter_current.residuals_average)
 
         # from .. import plots
         # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale='log')
@@ -578,8 +578,9 @@ class FitAid(object):
                 gain=fcf.gain,
             )
 
-        print("resids2?", self.fitter.residuals_average)
-        print("resids2C", self._fitter_current.residuals_average)
+        # print("resids2?", self.fitter.residuals_average)
+        # print("resids2C", self._fitter_current.residuals_average)
+
         # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale='log')
         # axB.save("RESIDS2_{}.pdf".format(self.N_update))
 
