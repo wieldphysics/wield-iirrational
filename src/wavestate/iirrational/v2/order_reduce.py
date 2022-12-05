@@ -102,6 +102,8 @@ def order_reduce(
     else:
         algorithms.sign_check_flip(fitter_new)
         aid.fitter_update(fitter_new, representative=False)
+    
+    aid.fitter_checkpoint()
     return removed_rzp_list
 
 
@@ -151,6 +153,7 @@ def order_reduce_successive(
     num_total_max=4,
     num_type_max=2,
     marginalize_delay=True,
+    representative=True,
 ):
     deg_min = aid.hint("total_degree_min")
     if deg_min is None:
@@ -211,8 +214,10 @@ def order_reduce_successive(
         # print("HMM", aid.fitter.residuals_average, trial.fitter.residuals_average)
         aid.fitter_update(
             trial.fitter,
-            representative=True,
+            representative=representative,
         )
+        if not representative:
+            aid.fitter_checkpoint()
         aid.log_progress(
             5,
             ("order reduced to {}, residuals={:.2e}").format(
@@ -227,6 +232,7 @@ def order_reduce_selective(
     num_total_max=4,
     num_type_max=2,
     marginalize_delay=True,
+    representative=True,
 ):
     # TODO, make num_trials a hint value
     ever_reduced = False
@@ -292,7 +298,8 @@ def order_reduce_selective(
             variant="OrdDn",
         )
         if did_reduce:
-            aid.fitter_update(representative=True)
+            aid.fitter_update(representative=representative)
+            aid.fitter_checkpoint()
             aid.log_progress(
                 5,
                 ("order reduced to {}, residuals={:.2e}, reldeg={}").format(

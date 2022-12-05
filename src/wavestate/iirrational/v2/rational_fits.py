@@ -111,7 +111,7 @@ def fit_cheby_base(
 
     aid.fitter_update(
         fitter,
-        representative=True,
+        representative=False,
     )
 
 
@@ -168,7 +168,7 @@ def fit_disc(aid):
 
     aid.fitter_update(
         fitter,
-        representative=True,
+        representative=False,
     )
 
     aid.log(

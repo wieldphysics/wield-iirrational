@@ -480,8 +480,8 @@ def IIRrationalV2fit(argv=None, **kwargs):
     ap.add_argument('--cmdline_file', dest='cmdline_file', default=None)
     args, unknown_args = ap.parse_known_args(argv)
     if args.cmdline_file is not None:
-        print("COMMAND_LINE FILE: ", args.cmdline_file)
-        print(unknown_args)
+        # print("COMMAND_LINE FILE: ", args.cmdline_file)
+        # print(unknown_args)
         argv = unknown_args
         try:
             with open(args.cmdline_file) as F:
@@ -588,10 +588,10 @@ def IIRrationalV2fit(argv=None, **kwargs):
     version_dict = dict(
         data2filter="v2",
         version=IIRversion,
-        #git_branch=IIRversion_auto.git_branch,
-        #git_shorthash=IIRversion_auto.git_shorthash,
-        #git_longhash=IIRversion_auto.git_longhash,
-        #git_last_tag=IIRversion_auto.git_last_tag,
+        # git_branch=IIRversion_auto.git_branch,
+        # git_shorthash=IIRversion_auto.git_shorthash,
+        # git_longhash=IIRversion_auto.git_longhash,
+        # git_last_tag=IIRversion_auto.git_last_tag,
     )
 
     if plot_order is not None:

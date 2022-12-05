@@ -41,6 +41,14 @@ kw_hints = Bunch(
         about="Use the python logging module instead of print",
         aliases=["use_logging_module"],
     ),
+    tee_logfile=dict(
+        APgroup="logging",
+        APpriority=10,
+        default=None,
+        about="""
+        Filename to tee log output into, along with stdout/stderr. Will be overwritten.
+        """,
+    ),
     log_level=hint_log_level(
         APshort="-l",
         APpriority=20,

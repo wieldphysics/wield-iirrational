@@ -32,6 +32,7 @@ def ranking_delay_flip(
     aid,
     marginalize_delay=False,
     non_mindelay=True,
+    representative=False,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -96,8 +97,10 @@ def ranking_delay_flip(
         if did_reduce:
             aid.fitter_update(
                 trial.fitter,
-                representative=True,
+                representative=representative,
             )
+            if not representative:
+                aid.fitter_checkpoint()
             aid.log_progress(
                 5,
                 ("zero flipped, maxzp {}, residuals={:.2e}, reldeg={}").format(
@@ -110,16 +113,7 @@ def ranking_delay_flip(
     return did_reduce
 
 
-def order_reduce_flip(aid, non_mindelay=True):
-    aid.log_progress(
-        5,
-        ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
-            aid.fitter_orders().maxzp, aid._fitter_current.residuals_average, aid.fitter.residuals_average, aid.fitter_orders().reldeg,
-        ),
-    )
-    aid.fitter_update(
-        representative=True,
-    )
+def order_reduce_flip(aid, non_mindelay=True, representative=True):
     aid.log_progress(
         5,
         ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
@@ -134,6 +128,7 @@ def order_reduce_flip(aid, non_mindelay=True):
             aid,
             marginalize_delay=False,
             non_mindelay=non_mindelay,
+            representative=representative,
         )
         if ret is None:
             break
@@ -142,7 +137,7 @@ def order_reduce_flip(aid, non_mindelay=True):
     aid.fitter.check_sign = check_sign
     return
 
-def order_reduce_flip(aid, non_mindelay=True):
+def order_reduce_flip2(aid, non_mindelay=True, representative=True):
     aid.log_progress(
         5,
         ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
@@ -169,8 +164,8 @@ def order_reduce_flip(aid, non_mindelay=True):
     )
     aid.fitter_update(
         fitter_new,
-        representative=True,
     )
+    aid.fitter_checkpoint()
     aid.log_progress(
         5,
         ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(

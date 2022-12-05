@@ -340,7 +340,7 @@ def cplx_iIjJ(val):
     return complex(val)
 
 
-def cplx_iIjJ_list(val):
+def cplx_iIjJ_list_inner(val):
     vals = val.split()
     vals2 = []
     for v in vals:
@@ -348,7 +348,22 @@ def cplx_iIjJ_list(val):
     vals3 = []
     for v in vals2:
         vals3.extend(v.split(";"))
-    return [cplx_iIjJ(v) for v in vals3 if v is not ""]
+    return [cplx_iIjJ(v) for v in vals3 if v != ""]
+
+
+def cplx_iIjJ_list(val):
+    vals = val.split(":")
+    val = vals[0]
+    vals = vals[1:]
+    val = cplx_iIjJ_list_inner(val)
+    if vals:
+        val_c = vals[0]
+        vals = vals[1:]
+        assert(not vals)
+        val_c = cplx_iIjJ_list_inner(val_c)
+        val.extend(val_c)
+        val.extend(np.asarray(val_c).conjugate())
+    return val
 
 
 def transfer_kw(kwA, kwB, kwdict, pop=False):

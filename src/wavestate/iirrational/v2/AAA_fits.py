@@ -129,18 +129,18 @@ def fit_AAA_base(
         gain=gain
     )
 
-    from .. import plots
-    axB = plots.plot_fitter_flag(fitter=aid.fitter, xscale='log')
-    axB.save("AAA_pre_{}.pdf".format(aid.N_update))
-    axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
-    axB.save("AAA_{}.pdf".format(aid.N_update))
+    # TODO, add debug_AAA hint
+    # from .. import plots
+    # axB = plots.plot_fitter_flag(fitter=aid.fitter, xscale='log')
+    # axB.save("AAA_pre_{}.pdf".format(aid.N_update))
+    # axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
+    # axB.save("AAA_{}.pdf".format(aid.N_update))
 
     # print("AAAlist: ", poles, zeros)
 
     aid.fitter_update(
         fitter,
-        representative=True,
+        representative=False,
     )
-
     return
 

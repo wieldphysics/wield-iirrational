@@ -388,6 +388,47 @@ class ResultsAid(object):
             append(ps, p2)
         return "--zeros={} --poles={}".format(",".join(zs), ",".join(ps))
 
+    def as_refine_str(self, sigfigs=5):
+        zs_r = []
+        ps_r = []
+        zs_c = []
+        ps_c = []
+
+        def append(rs, r):
+            if r is not None:
+                if r.imag != 0:
+                    if r.imag > 0:
+                        rs.append(
+                            "{real:.{sf}f}+{imag:.{sf}f}j".format(
+                                real=r.real, imag=r.imag, sf=sigfigs
+                            )
+                        )
+                    else:
+                        rs.append(
+                            "{real:.{sf}f}-{imag:.{sf}f}j".format(
+                                real=r.real, imag=-r.imag, sf=sigfigs
+                            )
+                        )
+                else:
+                    rs.append("{real:.{sf}f}".format(real=r.real, sf=sigfigs))
+
+        for r in sorted(self.fitter.zeros.r, key=lambda r: -r.real):
+            append(zs_r, r)
+        for r in sorted(self.fitter.poles.r, key=lambda r: -r.real):
+            append(ps_r, r)
+
+        for r in sorted(self.fitter.zeros.c, key=lambda r: (-np.sign(r.real), r.imag)):
+            append(zs_c, r)
+        for r in sorted(self.fitter.poles.c, key=lambda r: (-np.sign(r.real), r.imag)):
+            append(ps_c, r)
+
+        return "--zeros={}:{} --poles={}:{}".format(
+            ",".join(zs_r),
+            ",".join(zs_c),
+            ",".join(ps_r),
+            ",".join(ps_c)
+        )
+
     def as_foton_str_ZPKsf(
         self,
         annotate_pairs=False,

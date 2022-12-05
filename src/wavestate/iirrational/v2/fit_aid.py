@@ -40,6 +40,7 @@ class FitAid(object):
         self._fitter_lowres_avg = None
         self._fitter_lowres_max = None
         self._fitter_lowres_med = None
+        self._fitter_current_factorized = [None]
         self.N_update = 0
 
         self.mtime_start = time.time()
@@ -268,13 +269,15 @@ class FitAid(object):
         resmaxN = lambda: fitter_new.residuals_max
         resmedN = lambda: fitter_new.residuals_med
         resavgC = lambda: self._fitter_current.residuals_average
+        resavgC2 = lambda: self._fitter_current_factorized[-1].residuals_average if self._fitter_current_factorized[-1] is not None else -1
         resmaxC = lambda: self._fitter_current.residuals_max
         resmedC = lambda: self._fitter_current.residuals_med
         resavgB = lambda: self._fitter_lowres_avg.residuals_average
         resmaxB = lambda: self._fitter_lowres_max.residuals_max
         resmedB = lambda: self._fitter_lowres_med.residuals_med
 
-        # print(resavgN(), resavgC())
+        self.log_debug(9, "Residuals N:{0:.2f}, C:{1:.2f}, C2:{1:.2f}".format(resavgN(), resavgC(), resavgC2()))
+
         if hint_name is None:
             hint_name = "default"
 
@@ -369,14 +372,15 @@ class FitAid(object):
             )
         return improved
 
-    def fitter_checkup(self):
+    def fitter_checkup(self, variant=None):
         ord_chg = self.fitter.order_total - self._fitter_current.order_total
-        if ord_chg < 0:
-            variant = "OrdDn"
-        elif ord_chg > 0:
-            variant = "OrdUp"
-        else:
-            variant = "OrdC"
+        if variant is None:
+            if ord_chg < 0:
+                variant = "OrdDn"
+            elif ord_chg > 0:
+                variant = "OrdUp"
+            else:
+                variant = "OrdC"
         algorithms.sign_check_flip(self.fitter)
         improved = self.fitter_check(
             self.fitter,
@@ -386,11 +390,34 @@ class FitAid(object):
             # Not sure I like this logic
 
             self.log_warn(3, "Fitter_checkup improvement fail")
-            if self._fitter_current_factorized is not None:
-                self.fitter = self._fitter_current_factorized.copy()
+            if self._fitter_current_factorized[-1] is not None:
+                self.fitter = self._fitter_current_factorized[-1].copy()
+        else:
+            self.log_warn(3, "Fitter_checkup improvement succeed")
         return improved
 
-    _fitter_current_factorized = None
+    def fitter_checkpoint(self, variant=None):
+        """
+        Just like fitter_checkup but doesn't revert the filter. It will make it representative if it is an improvement
+        """
+        ord_chg = self.fitter.order_total - self._fitter_current.order_total
+        if variant is None:
+            if ord_chg < 0:
+                variant = "OrdDn"
+            elif ord_chg > 0:
+                variant = "OrdUp"
+            else:
+                variant = "OrdC"
+        algorithms.sign_check_flip(self.fitter)
+        improved = self.fitter_check(
+            self.fitter,
+            variant=variant,
+        )
+        if improved:
+            self.log_warn(3, "Fitter_checkpoint improvement succeed")
+            self.fitter_update(representative=True)
+        return improved
+
     def fitter_update(
         self,
         fitter=None,
@@ -453,7 +480,7 @@ class FitAid(object):
             new_res_max = fitter_use.residuals_max
             new_res_med = fitter_use.residuals_med
 
-            self._fitter_current_factorized = fitter.copy()
+            self._fitter_current_factorized[-1] = fitter.copy()
             if self._fitter_current is not None:
                 old_res = self._fitter_lowres_avg.residuals_average
                 old_res_max = self._fitter_lowres_max.residuals_max
@@ -514,6 +541,7 @@ class FitAid(object):
                 delay_s=self.fitter.delay_s - fitter_factor.delay_s,
             )
             self.fitter = self.fitter.regenerate(ZPKrep=xrep)
+            self._fitter_current_factorized.append(None)
             if len(self.fitter.poles_overlay) > 0:
                 self._fitter_x = self.fitter
             else:
@@ -529,6 +557,7 @@ class FitAid(object):
         factorization = self._fitter_factors.pop()
 
         print("resids", self.fitter.residuals_average, len(self.fitter.poles) + len(self.fitter.poles_overlay))
+        print("residsC", self._fitter_current.residuals_average)
 
         # from .. import plots
         # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale='log')
@@ -539,14 +568,23 @@ class FitAid(object):
             poles=self.fitter.poles * factorization.poles,
             gain=self.fitter.gain,
         )
+
+        fcf = self._fitter_current_factorized.pop()
+        if fcf is not None:
+            self._fitter_current_factorized[-1] = fcf.regenerate(
+                ZPKrep=factorization.ZPKrep,
+                zeros=fcf.zeros * factorization.zeros,
+                poles=fcf.poles * factorization.poles,
+                gain=fcf.gain,
+            )
+
         print("resids2?", self.fitter.residuals_average)
+        print("resids2C", self._fitter_current.residuals_average)
         # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale='log')
         # axB.save("RESIDS2_{}.pdf".format(self.N_update))
 
         if self._fitter_factors and len(self._fitter_factors[-1].poles.fullplane) > 0:
             assert(len(self.fitter.poles_overlay) > 0)
-
-        self._fitter_current_factorized = None
 
         self._fitter_x = factorization
         if len(factorization.poles_overlay) > 0:
@@ -710,6 +748,20 @@ class FitAid(object):
                 def pfunc(*args, **kwargs):
                     kwargs.pop("file", None)
                     logging.log(log_mod_level + 9 - level, *args, **kwargs)
+
+            logfile = self.hint("tee_logfile", default=None)
+            if logfile is not None:
+                def pfuncwrap(pfunc):
+                    def pfunc2(*args, file=None, **kwargs):
+                        """
+                        wrapper to print as-is as well as to tee into the logfile
+                        the file argument is eaten and relayed into the existing pfunc
+                        """
+                        pfunc(*args, file=file, **kwargs)
+                        with open(logfile, 'a') as F:
+                            print(*args, file=F, **kwargs)
+                    return pfunc2
+                pfunc = pfuncwrap(pfunc)
 
             if header_len > self.log_header_printed:
                 pfunc(

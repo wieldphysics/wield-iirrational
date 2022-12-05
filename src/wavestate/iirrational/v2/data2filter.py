@@ -46,7 +46,15 @@ def data2filter(*args, **kw):
     # errors are reported
     grab_kwarg_hints(aid, kw, arguments.logging.kw_hints, kwput=kwput)
 
+    tee_logfile = aid.hint('tee_logfile')
+    print("TEE_LOGFILE", tee_logfile)
+    if tee_logfile is not None:
+        # open it with 'w' just to clear it
+        with open(tee_logfile, 'w') as F:
+            pass
+
     helparg = grab_kwargs(aid, kw, arguments.kw_hints, "help")
+
 
     if helparg:
         raise NotImplementedError("Can't provide help functionality yet")
@@ -513,9 +521,10 @@ def _fit_rational(aid, emphasis, _phase_patch=True, order_hint=None):
                     aid.fitter.order_relative,
                 ),
             )
-            phase_patch.root_stabilize(aid)
 
             if _phase_patch:
+                phase_patch.root_stabilize(aid)
+
                 aid.log_progress(4, "mag fitting and phase patching")
                 aid.invalidate_fitters()
                 phase_patch.phase_patch(aid)
@@ -558,7 +567,8 @@ def _fit_rational(aid, emphasis, _phase_patch=True, order_hint=None):
                 aid.fitter_update(representative=False)
 
                 algorithms.optimize_anneal(aid)
-                aid.fitter_checkup()
+                #aid.fitter_checkup()
+                aid.fitter_checkpoint()
                 aid.log_progress(4, "rational fitting (more)")
                 aid.fitter_update(representative=False)
 
@@ -592,21 +602,22 @@ def _fit_rational(aid, emphasis, _phase_patch=True, order_hint=None):
     aid.fitter_update(representative=True)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
     return
 
 
 def fit_fullAAA(aid, emphasis):
     SNR_adjustments.SNR_fix(aid)
 
-    _fit_AAA(aid, emphasis)
-    _reduce(aid, with_successive=False)
+    aid.fitter_update(representative=True, validate=True)
     _fit_rational(aid, emphasis, _phase_patch=True)
-
+    _reduce(aid, with_flip=False, with_successive=False, representative=True,)
+    _fit_AAA_successive(aid, emphasis, _phase_patch=False)
     return _reduce(aid)
 
 
-def fit_AAA(aid, emphasis, _phase_patch=True):
+def fit_AAA(aid, emphasis, _phase_patch=False):
     SNR_adjustments.SNR_fix(aid)
 
     _fit_AAA_successive(aid, emphasis, _phase_patch=_phase_patch)
@@ -618,7 +629,8 @@ def fit_AAA(aid, emphasis, _phase_patch=True):
         )
         aid.log_progress(4, "order reduced annealing")
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        #aid.fitter_checkup()
+        aid.fitter_checkpoint()
     return _reduce(aid)
 
 
@@ -701,7 +713,8 @@ def _fit_onlyAAA(aid, emphasis, order_hint=None):
     aid.fitter_update(representative=True)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
     aid.fitter_update(representative=True, validate=True)
 
     aid.log_progress(
@@ -811,7 +824,8 @@ def _fit_AAA(aid, emphasis, _phase_patch=True, order_hint=None):
     aid.fitter_update(representative=True)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
     return aid.fitter_orders().maxzp
 
 
@@ -832,14 +846,19 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
             Q_rank_cutoff=0.4,
             optimize=False,
         )
+        algorithms.optimize_anneal(aid)
+        #aid.fitter_update(representative=True)
+        aid.fitter_checkpoint()
 
-    def fit_call():
+    def fit_callAAA():
         resavg1 = aid.fitter.residuals_average
+        aid.log_progress("AAA sequence, residuals {0:.2f}".format(resavg1))
+
         with aid.factorization(data_mod=False):
             AAA_fits.fit_AAA_base(aid, 20, 20, 20)
 
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        aid.fitter_checkpoint()
 
         with aid.factorization(data_mod=False):
             rational_fits.fit_cheby_base(aid, order=2, order_max=2, order_min=2)
@@ -859,6 +878,7 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
             optimize=False,
         )
 
+        algorithms.optimize_anneal(aid)
         aid.log_progress(
             3,
             "Fastdrop Order: (Z={0}, P={1}, Z-P={2})".format(
@@ -868,53 +888,66 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
             ),
         )
 
-        _reduce(aid, with_flip=False, with_successive=False)
-        _reduce(aid, with_flip=True, with_successive=False)
+        _reduce(aid, with_flip=False, with_successive=False, representative=False,)
+        _reduce(aid, with_flip=True, with_successive=False, representative=False,)
 
         aid.fitter.optimize(aid=aid)
-        aid.fitter_update(representative=True)
-
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        aid.fitter_checkpoint()
 
         resavg2 = aid.fitter.residuals_average
+        aid.log_progress("AAA sequence 2, residuals {0:.2f} from {1:.1f}".format(resavg2, resavg1), )
 
-        if resavg2/resavg1 < .90:
-            if aid.fitter_orders().maxzp > 60:
+        aid.fitter_checkpoint()
+        # this will revert the filter if it is not improved
+        improved = aid.fitter_checkup()
+
+        if resavg2/resavg1 < 1:
+            if aid.fitter_orders().maxzp > aid.hint(
+                "rational_AAA_fit_order_max",
+                "rational_fit_order_max",
+                "order_max",
+            ):
                 return
 
-            with aid.factorization(data_mod=False):
-                fit_call()
+            with aid.factorization():
+                fit_callAAA()
         return
+
 
     with aid.log_heading("rational fitting"):
         if aid.hint("suggest"):
             # use the existing filter only as a suggestion
             fit_initial()
-            fit_call()
+            fit_callAAA()
         else:
             # apply the rational fit to the factorized form and stabilize only
             # the new cheby fit roots, not the original filter
             with aid.factorization():
                 fit_initial()
-                fit_call()
+                fit_callAAA()
+
+            aid.fitter_checkpoint()
 
     if _phase_patch:
+        assert(False)
         phase_patch.root_stabilize(aid)
 
-        if _phase_patch:
-            aid.log_progress(4, "mag fitting and phase patching")
-            aid.invalidate_fitters()
-            phase_patch.phase_patch(aid)
-            aid.fitter_update(representative=True)
+        aid.log_progress(4, "mag fitting and phase patching")
+        aid.invalidate_fitters()
+        phase_patch.phase_patch(aid)
+        aid.fitter_update(representative=True)
 
+    aid.log_progress("AAA DONE WITH SEQUENCE".format())
+    aid.fitter_checkup()
     aid.fitter_update(representative=True, validate=True)
 
     aid.fitter.optimize(aid=aid)
-    aid.fitter_update(representative=True)
+    aid.fitter_update(representative=False)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
     return aid.fitter_orders().maxzp
 
 
@@ -930,7 +963,8 @@ def fit_rational(aid, emphasis, _phase_patch=True):
         )
         aid.log_progress(4, "order reduced annealing")
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        #aid.fitter_checkup()
+        aid.fitter_checkpoint()
 
     return aid.fitter_orders().maxzp
 
@@ -949,7 +983,8 @@ def fit_rational2x(aid, emphasis, _phase_patch=True):
         )
         aid.log_progress(4, "order reduced annealing")
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        #aid.fitter_checkup()
+        aid.fitter_checkpoint()
 
     return aid.fitter_orders().maxzp
 
@@ -960,18 +995,19 @@ def fit_reduce(aid, emphasis):
     if emphasis is not None:
         aid.fitter.W = aid.fitter.W * emphasis
         aid.invalidate_fitters()
-
         aid.fitter.optimize(aid=aid)
         aid.fitter_update(representative=True)
 
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        #aid.fitter_checkup()
+        aid.fitter_checkpoint()
 
     aid.fitter.optimize(aid=aid)
     aid.fitter_update(representative=True)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
 
     return _reduce(aid)
 
@@ -991,7 +1027,8 @@ def fit_only(aid, emphasis):
         aid.fitter_update(representative=True)
 
         algorithms.optimize_anneal(aid)
-        aid.fitter_checkup()
+        #aid.fitter_checkup()
+        aid.fitter_checkpoint()
     else:
         with aid.fitter.with_codings_only([aid.fitter.gain_coding]):
             aid.fitter.optimize()
@@ -1001,7 +1038,8 @@ def fit_only(aid, emphasis):
     aid.fitter_update(representative=True)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
 
     if aid.hint("delay_s_max") is not None:
         aid.log_progress(4, "activating delay fitting")
@@ -1016,7 +1054,8 @@ def fit_only(aid, emphasis):
         aid.fitter_checkup()
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
 
     if aid.hint("delay_s_max") is not None:
         aid.log_alert(2, "Baseline fit delay: ", aid.fitter.delay_s)
@@ -1043,7 +1082,12 @@ def fit_copy(aid, emphasis):
     return baseline_order
 
 
-def _reduce(aid, with_flip=True, with_successive=True):
+def _reduce(
+        aid,
+        with_flip=True,
+        with_successive=True,
+        representative=True,
+):
     with aid.log_heading("Q-ranked order reduction"):
         rzp_list = order_reduce.order_reduce(
             aid=aid,
@@ -1059,12 +1103,14 @@ def _reduce(aid, with_flip=True, with_successive=True):
             order_reduce.order_restore(aid, rzp_list)
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
 
     if with_flip:
         order_reduce_flip.order_reduce_flip(
             aid=aid,
             non_mindelay=True,
+            representative=representative,
         )
 
     with aid.log_heading("selective order reduction"):
@@ -1072,6 +1118,7 @@ def _reduce(aid, with_flip=True, with_successive=True):
             aid=aid,
             num_total_max=8,
             num_type_max=2,
+            representative=representative,
         )
 
     if aid.hint("delay_s_max") is not None:
@@ -1082,7 +1129,8 @@ def _reduce(aid, with_flip=True, with_successive=True):
         aid.fitter_checkup()
 
     algorithms.optimize_anneal(aid)
-    aid.fitter_checkup()
+    #aid.fitter_checkup()
+    aid.fitter_checkpoint()
 
     if aid.hint("delay_s_max") is not None:
         aid.log_alert(2, "Baseline fit delay: ", aid.fitter.delay_s)
@@ -1103,6 +1151,7 @@ def _reduce(aid, with_flip=True, with_successive=True):
                 aid=aid,
                 num_total_max=6,
                 num_type_max=2,
+                representative=representative,
             )
     return baseline_order
 
