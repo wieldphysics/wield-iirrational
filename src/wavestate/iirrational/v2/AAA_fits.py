@@ -128,6 +128,7 @@ def fit_AAA_base(
         poles=poles,
         gain=gain
     )
+    print(np.all(fitter.poles.fullplane.real < 0))
 
     # TODO, add debug_AAA hint
     # from .. import plots

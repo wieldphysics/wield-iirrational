@@ -479,6 +479,7 @@ def data2filter(*args, **kw):
 def fit_full(aid, emphasis):
     SNR_adjustments.SNR_fix(aid)
 
+    aid.fitter_update(representative=True, validate=True)
     _fit_rational(aid, emphasis)
 
     return _reduce(aid)
@@ -522,8 +523,8 @@ def _fit_rational(aid, emphasis, _phase_patch=True, order_hint=None):
                 ),
             )
 
+            phase_patch.root_stabilize(aid)
             if _phase_patch:
-                phase_patch.root_stabilize(aid)
 
                 aid.log_progress(4, "mag fitting and phase patching")
                 aid.invalidate_fitters()
@@ -613,6 +614,9 @@ def fit_fullAAA(aid, emphasis):
     aid.fitter_update(representative=True, validate=True)
     _fit_rational(aid, emphasis, _phase_patch=True)
     _reduce(aid, with_flip=False, with_successive=False, representative=True,)
+    aid.fitter_update(
+        representative=True,
+    )
     _fit_AAA_successive(aid, emphasis, _phase_patch=False)
     return _reduce(aid)
 
@@ -857,6 +861,12 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
         with aid.factorization(data_mod=False):
             AAA_fits.fit_AAA_base(aid, 20, 20, 20)
 
+        order_reduce.order_reduce(
+            aid=aid,
+            Q_rank_cutoff=0.2,
+            optimize=False,
+        )
+
         algorithms.optimize_anneal(aid)
         aid.fitter_checkpoint()
 
@@ -1002,10 +1012,12 @@ def fit_reduce(aid, emphasis):
         #aid.fitter_checkup()
         aid.fitter_checkpoint()
 
+    with aid.fitter.with_codings_only([aid.fitter.gain_coding]):
+        aid.fitter.optimize()
+        aid.fitter_update(representative=True)
     aid.fitter.optimize(aid=aid)
     aid.fitter_update(representative=True)
 
-    algorithms.optimize_anneal(aid)
     #aid.fitter_checkup()
     aid.fitter_checkpoint()
 
@@ -1088,6 +1100,8 @@ def _reduce(
         with_successive=True,
         representative=True,
 ):
+    baseline_order = aid.fitter_orders().maxzp
+
     with aid.log_heading("Q-ranked order reduction"):
         rzp_list = order_reduce.order_reduce(
             aid=aid,
@@ -1113,6 +1127,7 @@ def _reduce(
             representative=representative,
         )
 
+    baseline_order = aid.fitter_orders().maxzp
     with aid.log_heading("selective order reduction"):
         order_reduce.order_reduce_selective(
             aid=aid,
@@ -1135,6 +1150,7 @@ def _reduce(
     if aid.hint("delay_s_max") is not None:
         aid.log_alert(2, "Baseline fit delay: ", aid.fitter.delay_s)
     baseline_order = aid.fitter_orders().maxzp
+
     aid.log_alert(
         2,
         ("Baseline fit residuals: {:.2e}, at order {}").format(
