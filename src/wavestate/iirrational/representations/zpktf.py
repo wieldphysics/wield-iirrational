@@ -195,45 +195,45 @@ class ZPKTF(DepBunch):
         if isinstance(other, numbers.Real):
             Z3, P3, K3 = ZPKscalarprod(self, other)
             F_nyquist_Hz = self.F_nyquist_Hz
-        elif isinstance(other, tuple):
+        elif isinstance(other, (tuple, ZPKTF)):
             F_nyquist_Hz = common_nyquist(self, other)
             Z3, P3, K3 = ZPKprod(self, other)
         else:
             return NotImplemented
-        return self.__class__(Z3, P3, K3, F_nyquist_Hz=F_nyquist_Hz)
+        return self.__class__(zeros=Z3, poles=P3, gain=K3, F_nyquist_Hz=F_nyquist_Hz)
 
     def __rmul__(self, other):
         if isinstance(other, numbers.Real):
             Z3, P3, K3 = ZPKscalarprod(self, other)
             F_nyquist_Hz = self.F_nyquist_Hz
-        elif isinstance(other, tuple):
+        elif isinstance(other, (tuple, ZPKTF)):
             F_nyquist_Hz = common_nyquist(other, self)
             Z3, P3, K3 = ZPKprod(other, self)
         else:
             return NotImplemented
-        return self.__class__(Z3, P3, K3, F_nyquist_Hz=F_nyquist_Hz)
+        return self.__class__(zeros=Z3, poles=P3, gain=K3, F_nyquist_Hz=F_nyquist_Hz)
 
     def __truediv__(self, other):
         if isinstance(other, numbers.Real):
             Z3, P3, K3 = ZPKscalardiv(self, other)
             F_nyquist_Hz = self.F_nyquist_Hz
-        elif isinstance(other, tuple):
+        elif isinstance(other, (tuple, ZPKTF)):
             F_nyquist_Hz = common_nyquist(self, other)
             Z3, P3, K3 = ZPKdiv(self, other)
         else:
             return NotImplemented
-        return self.__class__(Z3, P3, K3, F_nyquist_Hz=F_nyquist_Hz)
+        return self.__class__(zeros=Z3, poles=P3, gain=K3, F_nyquist_Hz=F_nyquist_Hz)
 
     def __rtruediv__(self, other):
         if isinstance(other, numbers.Real):
             Z3, P3, K3 = ZPKdivscalar(other, self)
             F_nyquist_Hz = self.F_nyquist_Hz
-        elif isinstance(other, tuple):
+        elif isinstance(other, (tuple, ZPKTF)):
             F_nyquist_Hz = common_nyquist(other, self)
             Z3, P3, K3 = ZPKdiv(other, self)
         else:
             return NotImplemented
-        return self.__class__(Z3, P3, K3, F_nyquist_Hz=F_nyquist_Hz)
+        return self.__class__(zeros=Z3, poles=P3, gain=K3, F_nyquist_Hz=F_nyquist_Hz)
 
     # TODO, version check here?
     __div__ = __truediv__
