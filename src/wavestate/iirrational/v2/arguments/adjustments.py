@@ -511,3 +511,35 @@ kw_hints = Bunch(
         """,
     ),
 )
+
+#additional hints that use a form that can't be directly assigned into dict kw.
+kw_hints['resavg_RthreshOrdDn.AAA'] = dict(
+    APignore=True,
+    APgroup="advanced",
+    default=1,
+    mapcheck=mapcheck_positive_float,
+    about="""
+        The threshold relative change in the average residuals to accept a fit
+        of lower order. This is used during the AAA successive order increase.
+        """,
+)
+kw_hints['resavg_RthreshOrdUp.AAA'] = dict(
+    APignore=True,
+    APgroup="advanced",
+    default=1,
+    mapcheck=mapcheck_positive_float,
+    about="""
+        The threshold relative change in the average residuals to accept a fit
+        of higher order. This is used during the AAA successive order increase.
+        """,
+)
+kw_hints['resavg_RthreshOrdC.AAA'] = dict(
+    APignore=True,
+    APgroup="advanced",
+    default=1.00,
+    mapcheck=mapcheck_positive_float,
+    about="""
+        The threshold relative change in the average residuals to accept a fit
+        of equal order. Used during the AAA successive fitting
+        """,
+)

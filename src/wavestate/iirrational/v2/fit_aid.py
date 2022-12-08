@@ -372,7 +372,7 @@ class FitAid(object):
             )
         return improved
 
-    def fitter_checkup(self, variant=None):
+    def fitter_checkup(self, variant=None, hint_name=None):
         ord_chg = self.fitter.order_total - self._fitter_current.order_total
         if variant is None:
             if ord_chg < 0:
@@ -385,6 +385,7 @@ class FitAid(object):
         improved = self.fitter_check(
             self.fitter,
             variant=variant,
+            hint_name=hint_name,
         )
         if not improved:
             # Not sure I like this logic
@@ -396,7 +397,7 @@ class FitAid(object):
             self.log_warn(3, "Fitter_checkup improvement succeed")
         return improved
 
-    def fitter_checkpoint(self, variant=None):
+    def fitter_checkpoint(self, variant=None, hint_name=None):
         """
         Just like fitter_checkup but doesn't revert the filter. It will make it representative if it is an improvement
         """
@@ -412,7 +413,9 @@ class FitAid(object):
         improved = self.fitter_check(
             self.fitter,
             variant=variant,
+            hint_name=hint_name,
         )
+
         if improved:
             self.log_warn(3, "Fitter_checkpoint improvement succeed")
             self.fitter_update(representative=True)
@@ -456,7 +459,7 @@ class FitAid(object):
             return
 
         if fitter_use is not None:
-            fitter_use.optimize(aid=self)
+            #fitter_use.optimize(aid=self)
             fitter_copy = [fitter_use]
         else:
             fitter_use = fitter
@@ -474,6 +477,9 @@ class FitAid(object):
             fitter_meta.log_idx = self.log_number
             fitter_meta.checkpoint_idx = len(self._checkpoints) - 1
             fitter_meta.valid = True
+
+            assert(np.all(fitter.poles.fullplane.real < 0))
+            assert(np.all(fitter_meta.fitter.poles.fullplane.real < 0))
             self._fitters.append(fitter_meta)
 
             new_res = fitter_use.residuals_average

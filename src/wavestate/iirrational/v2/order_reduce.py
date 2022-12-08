@@ -45,6 +45,7 @@ def order_reduce(
     optimize=True,
     reduce_c=True,
     reduce_r=False,
+    hint_name=None,
 ):
     # TODO, can run a high Q_rank_cutoff and the progressively add pairs back in!
     #
@@ -92,6 +93,8 @@ def order_reduce(
         z_r=Zr,
         p_r=Pr,
     )
+    import numpy as np
+    assert(np.all(fitter_new.poles.fullplane.real < 0))
     assert(fitter_new.order_relative == aid.fitter.order_relative)
     if optimize:
         with fitter_new.with_codings_only([fitter_new.gain_coding]):
@@ -103,13 +106,15 @@ def order_reduce(
         algorithms.sign_check_flip(fitter_new)
         aid.fitter_update(fitter_new, representative=False)
     
-    aid.fitter_checkpoint()
+    assert(np.all(aid.fitter.poles.fullplane.real < 0))
+    aid.fitter_checkpoint(hint_name=hint_name)
     return removed_rzp_list
 
 
 def order_restore(
     aid,
     removed_rzp_list,
+    hint_name=None,
 ):
     rank_zp_idx_list = []
 
@@ -132,6 +137,7 @@ def order_restore(
             greedy=True,
             return_remaining=True,
             num_total_max=10,
+            hint_name=hint_name,
         )
         if not trials:
             return False
@@ -154,6 +160,7 @@ def order_reduce_successive(
     num_type_max=2,
     marginalize_delay=True,
     representative=True,
+    hint_name=None,
 ):
     deg_min = aid.hint("total_degree_min")
     if deg_min is None:
@@ -166,6 +173,9 @@ def order_reduce_successive(
             greedy = True
         else:
             greedy = False
+
+        #TODO
+        greedy = False
         rank_zp_idx_list = []
 
         rank_zp_idx_list.extend(
@@ -206,6 +216,7 @@ def order_reduce_successive(
             num_type_max=num_type_max,
             ranking_factor_max=100,
             greedy=greedy,
+            hint_name=hint_name,
         )
         if not trials:
             return False
@@ -217,7 +228,7 @@ def order_reduce_successive(
             representative=representative,
         )
         if not representative:
-            aid.fitter_checkpoint()
+            aid.fitter_checkpoint(hint_name=hint_name)
         aid.log_progress(
             5,
             ("order reduced to {}, residuals={:.2e}").format(
@@ -233,6 +244,7 @@ def order_reduce_selective(
     num_type_max=2,
     marginalize_delay=True,
     representative=True,
+    hint_name=None,
 ):
     # TODO, make num_trials a hint value
     ever_reduced = False
@@ -245,6 +257,9 @@ def order_reduce_selective(
             greedy = True
         else:
             greedy = False
+
+        #TODO
+        greedy = False
 
         rank_zp_idx_list = []
 
@@ -286,6 +301,7 @@ def order_reduce_selective(
             num_type_max=num_type_max,
             ranking_factor_max=100,
             greedy=greedy,
+            hint_name=hint_name,
         )
         if not trials:
             return False
@@ -294,12 +310,12 @@ def order_reduce_selective(
         # print("HMM", aid.fitter.residuals_average, trial.fitter.residuals_average)
         did_reduce = aid.fitter_check(
             trial.fitter,
-            hint_name="ordred",
+            hint_name=hint_name,
             variant="OrdDn",
         )
         if did_reduce:
             aid.fitter_update(representative=representative)
-            aid.fitter_checkpoint()
+            aid.fitter_checkpoint(hint_name=hint_name)
             aid.log_progress(
                 5,
                 ("order reduced to {}, residuals={:.2e}, reldeg={}").format(

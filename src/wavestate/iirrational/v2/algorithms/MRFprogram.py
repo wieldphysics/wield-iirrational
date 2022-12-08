@@ -103,6 +103,7 @@ def ranking_reduction_trials(
     greedy=False,
     return_remaining=False,
     reset_delay=True,
+    hint_name=None,
 ):
     aid = ensure_aid(aid)
     if not rank_zp_idx_list:
@@ -256,8 +257,8 @@ def ranking_reduction_trials(
             trial.improved = False
             return trial
 
-        if pbunch.variant is not None:
-            ord_str = pbunch.variant
+        if trial.pbunch.variant is not None:
+            ord_str = trial.pbunch.variant
         else:
             ord_str = trial.ord_str
 
@@ -266,6 +267,7 @@ def ranking_reduction_trials(
             variant=ord_str,
             update=False,
             validate=False,
+            hint_name=hint_name,
         )
         trial.improved = improved
         return trial

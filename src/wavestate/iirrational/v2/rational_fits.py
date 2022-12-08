@@ -109,6 +109,8 @@ def fit_cheby_base(
         ZPKrep=rat_fitter.ZPKrep,
     )
 
+    assert(np.all(aid.fitter.poles.fullplane.real < 0))
+
     aid.fitter_update(
         fitter,
         representative=False,

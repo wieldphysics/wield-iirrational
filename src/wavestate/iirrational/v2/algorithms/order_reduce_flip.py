@@ -33,6 +33,7 @@ def ranking_delay_flip(
     marginalize_delay=False,
     non_mindelay=True,
     representative=False,
+    hint_name=None,
 ):
     aid = ensure_aid(aid)
     rank_zp_idx_list = []
@@ -87,12 +88,13 @@ def ranking_delay_flip(
             rank_zp_idx_list,
             greedy=True,
             num_total_max=4,
+            hint_name=hint_name,
         )
         trial = trials[0]
         did_reduce = aid.fitter_check(
             trial.fitter,
-            hint_name="flip",
-            variant="OrdC"
+            variant="OrdC",
+            hint_name=hint_name,
         )
         if did_reduce:
             aid.fitter_update(
@@ -113,7 +115,14 @@ def ranking_delay_flip(
     return did_reduce
 
 
-def order_reduce_flip(aid, non_mindelay=True, representative=True):
+def order_reduce_flip(
+        aid,
+        non_mindelay=True,
+        representative=True,
+        hint_name=None,
+):
+    #HACK, needs to happen or flip get stuck in a loop
+    hint_name = None
     aid.log_progress(
         5,
         ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(
@@ -123,12 +132,13 @@ def order_reduce_flip(aid, non_mindelay=True, representative=True):
     # import pdb; pdb.set_trace()
 
     check_sign = aid.fitter.check_sign
-    while True:
+    for i in range(30):
         ret = ranking_delay_flip(
             aid,
             marginalize_delay=False,
             non_mindelay=non_mindelay,
             representative=representative,
+            hint_name=hint_name,
         )
         if ret is None:
             break
@@ -137,7 +147,13 @@ def order_reduce_flip(aid, non_mindelay=True, representative=True):
     aid.fitter.check_sign = check_sign
     return
 
-def order_reduce_flip2(aid, non_mindelay=True, representative=True):
+
+def order_reduce_flip2(
+        aid,
+        non_mindelay=True,
+        representative=True,
+        hint_name=None,
+):
     aid.log_progress(
         5,
         ("zero flipping, maxzp {}, residuals={:.2e}, {:.2e}, reldeg={}").format(

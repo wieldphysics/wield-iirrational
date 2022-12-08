@@ -118,17 +118,33 @@ def fit_AAA_base(
     )
     zeros = aaa.zeros# / (2 * np.pi)
     poles = aaa.poles# / (2 * np.pi)
+    gain = aaa.gain# * (2 * np.pi)**(len(zeros) - len(poles))
+
+    from .. import fitters_ZPK
+    fitter_bad = aid.fitter.regenerate(
+        ZPKrep=aid.fitter.ZPKrep,
+        coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
+        poles=poles,
+        zeros=zeros,
+        gain=gain,
+        check_sign=False,
+    )
+    with fitter_bad.with_codings_only([fitter_bad.gain_coding]):
+        fitter_bad.optimize()
+    fitter_bad.optimize()
+
+    poles = fitter_bad.poles.fullplane
     select = poles.real > 0
     poles[select] = -poles[select].conjugate()
-    gain = aaa.gain# * (2 * np.pi)**(len(zeros) - len(poles))
     gain = (-1)**np.sum(select) * gain
+
     fitter = aid.fitter.regenerate(
         ZPKrep=aid.fitter.ZPKrep,
-        zeros=zeros,
+        zeros=fitter_bad.zeros,
         poles=poles,
-        gain=gain
+        gain=fitter_bad.gain,
     )
-    print(np.all(fitter.poles.fullplane.real < 0))
+    assert(np.all(fitter.poles.fullplane.real < 0))
 
     # TODO, add debug_AAA hint
     # from .. import plots
@@ -137,7 +153,7 @@ def fit_AAA_base(
     # axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
     # axB.save("AAA_{}.pdf".format(aid.N_update))
 
-    # print("AAAlist: ", poles, zeros)
+    #print("AAAlist: ", poles, zeros)
 
     aid.fitter_update(
         fitter,
