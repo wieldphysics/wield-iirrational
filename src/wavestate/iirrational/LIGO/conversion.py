@@ -41,7 +41,7 @@ def filter2sortedZPK(filt):
 
 def filter2fotonZPK(
     filt,
-    annotate_pairs=True,
+    annotate_pairs=False,
     scale_gain=True,
     plane=None,
     zpk_output=False,
