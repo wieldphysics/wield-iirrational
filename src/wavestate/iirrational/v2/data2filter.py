@@ -887,7 +887,7 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
 
         order_reduce.order_reduce(
             aid=aid,
-            Q_rank_cutoff=0.2,
+            Q_rank_cutoff=0.1,
             optimize=False,
         )
 
@@ -912,7 +912,7 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
         improved = aid.fitter_checkup(hint_name='AAA')
 
         resavg2 = aid.fitter.residuals_average
-        aid.log_progress("AAA sequence 2, residuals {0:.2f} from {1:.1f}".format(resavg2, resavg1), )
+        aid.log_progress(3, "AAA sequence 2, residuals {0:.2f} from {1:.1f}".format(resavg2, resavg1), )
 
         if resavg2/resavg1 < 1:
             if aid.fitter_orders().maxzp > aid.hint(

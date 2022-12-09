@@ -292,6 +292,8 @@ class FitAid(object):
             if hintval is not None and calc > hintval:
                 self.log_debug(10, "Failed {}, {} > {}".format(hints[0], calc, hintval))
                 improved = False
+            else:
+                self.log_debug(12, "Succeed {}, {} < {}".format(hints[0], calc, hintval))
 
         check_hint(
             [
@@ -417,7 +419,7 @@ class FitAid(object):
         )
 
         if improved:
-            self.log_warn(3, "Fitter_checkpoint improvement succeed")
+            self.log_warn(3, "Fitter_checkpoint improvement succeed, {}".format(hint_name))
             self.fitter_update(representative=True)
         return improved
 
@@ -483,6 +485,10 @@ class FitAid(object):
             self._fitters.append(fitter_meta)
 
             new_res = fitter_use.residuals_average
+            self.log_progress(
+                3,
+                "New representative, Res: {:.2f}, from: {:.2f}".format(new_res, self.fitter.residuals_average),
+            )
             new_res_max = fitter_use.residuals_max
             new_res_med = fitter_use.residuals_med
 

@@ -116,9 +116,28 @@ def fit_AAA_base(
         supports=(),
         minreal_cutoff=None,
     )
-    zeros = aaa.zeros# / (2 * np.pi)
-    poles = aaa.poles# / (2 * np.pi)
-    gain = aaa.gain# * (2 * np.pi)**(len(zeros) - len(poles))
+
+    order = aaa.order
+    order_orig = order
+    while order > 1:
+        aaa.choose(order)
+        zeros = aaa.zeros
+        poles = aaa.poles
+        gain = aaa.gain
+        select = poles.real > 0
+        num_unstable = np.sum(select)
+        
+        aid.log_progress(4, "AAA order {}, num unstable: {}, residuals {:.2f}".format(order, num_unstable, aaa.fit_dict['res_rms']**2))
+        if num_unstable == 0:
+            break
+        order -= 1
+    if order == 0:
+        aaa.choose(order_orig)
+        aid.log_progress(4, "AAA always unstable, using order {}".format(aaa.order))
+
+    zeros = aaa.zeros
+    poles = aaa.poles
+    gain = aaa.gain
 
     from .. import fitters_ZPK
     fitter_bad = aid.fitter.regenerate(
@@ -150,7 +169,7 @@ def fit_AAA_base(
     # from .. import plots
     # axB = plots.plot_fitter_flag(fitter=aid.fitter, xscale='log')
     # axB.save("AAA_pre_{}.pdf".format(aid.N_update))
-    # axB = plots.plot_fitter_flag(fitter=fitter, xscale='log')
+    # axB = plots.plot_fitter_flag(fitter=fitter_bad, xscale='log')
     # axB.save("AAA_{}.pdf".format(aid.N_update))
 
     #print("AAAlist: ", poles, zeros)

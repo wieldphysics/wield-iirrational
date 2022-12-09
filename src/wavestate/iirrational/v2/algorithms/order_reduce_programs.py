@@ -62,6 +62,13 @@ def ranking_reduction_cc(
         if Pc[idx_p].real * Zc[idx_z].real < 0:
             pairs.add((idx_z, idx_p))
 
+    if True:
+        lPZ = TFmath.nearest_idx(Pc, Zc.conjugate())
+        # include ones which are pairing unstable with stable
+        for idx_p, idx_z in enumerate(lPZ):
+            if Pc[idx_p].real * Zc[idx_z].real > 0:
+                pairs.add((idx_z, idx_p))
+
     for idx_z, idx_p in pairs:
         if idx_z is None or idx_p is None:
             continue
@@ -147,6 +154,28 @@ def ranking_reduction_r(
     return rank_zp_idx_list
 
 
+def ranking_reduction_r_flip(
+    aid,
+    marginalize_delay=True,
+):
+    aid = ensure_aid(aid)
+    rank_zp_idx_list = []
+
+    Zr = aid.fitter.zeros.r
+
+    for idx_z, z in enumerate(Zr):
+        z_flip = -z.conjugate()
+        algorithms.resrank_program(
+            aid.fitter,
+            rank_zp_idx_list,
+            "r",
+            ["ZrDelIdx", idx_z, "ZrAdd", z_flip],
+            marginalize_delay=marginalize_delay,
+        )
+
+    return rank_zp_idx_list
+
+
 def ranking_reduction_rr(
     aid,
     marginalize_delay=True,
@@ -173,6 +202,13 @@ def ranking_reduction_rr(
     for idx_p, idx_z in enumerate(lPZ):
         if Pr[idx_p] * Zr[idx_z] < 0:
             pairs.add((idx_z, idx_p))
+
+    if True:
+        lPZ = TFmath.nearest_idx(Pr, Zr)
+        # include ones which are pairing stable with stable
+        for idx_p, idx_z in enumerate(lPZ):
+            if Pr[idx_p] * Zr[idx_z] > 0:
+                pairs.add((idx_z, idx_p))
 
     for idx_z, idx_p in pairs:
         if idx_z is None or idx_p is None:

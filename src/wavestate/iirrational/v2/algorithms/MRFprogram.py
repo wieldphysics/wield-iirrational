@@ -246,11 +246,12 @@ def ranking_reduction_trials(
 
         try:
             # anneal by moving the original codings first
-            if trial.codings_new:
-                with fitter.with_codings_only(trial.codings_mod):
-                    fitter.optimize()
+            #if trial.codings_new:
+            #    with fitter.with_codings_only(trial.codings_mod):
+            #        fitter.optimize()
             if reset_delay:
                 aid.fitter.delay_s = aid.hint("delay_s")
+            #fitter.optimize_NM()
             fitter.optimize()
         except Exception as e:
             aid.log_debug(9, "Optimize Exception", e)

@@ -208,6 +208,11 @@ def order_reduce_successive(
                 aid, marginalize_delay=marginalize_delay
             )
         )
+        rank_zp_idx_list.extend(
+            order_reduce_programs.ranking_reduction_r_flip(
+                aid, marginalize_delay=marginalize_delay
+            )
+        )
         rank_zp_idx_list.sort(key=lambda pb: pb.rank)
         trials = algorithms.ranking_reduction_trials(
             aid,
@@ -227,14 +232,14 @@ def order_reduce_successive(
             trial.fitter,
             representative=representative,
         )
-        if not representative:
-            aid.fitter_checkpoint(hint_name=hint_name)
         aid.log_progress(
             5,
             ("order reduced to {}, residuals={:.2e}").format(
                 aid.fitter_orders().maxzp, aid.fitter.residuals_average
             ),
         )
+        if not representative:
+            aid.fitter_checkpoint(hint_name=hint_name)
     return
 
 
