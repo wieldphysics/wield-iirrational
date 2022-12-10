@@ -148,6 +148,13 @@ def fit_AAA_base(
         gain=gain,
         check_sign=False,
     )
+    # TODO, add debug_AAA hint
+    # from .. import plots
+    # axB = plots.plot_fitter_flag_residuals(fitter=aid.fitter, xscale='log')
+    # axB.save("AAA_pre_{}.pdf".format(aid.N_update))
+    # axB = plots.plot_fitter_flag_residuals(fitter=fitter_bad, xscale='log')
+    # axB.save("AAA_{}.pdf".format(aid.N_update))
+
     with fitter_bad.with_codings_only([fitter_bad.gain_coding]):
         fitter_bad.optimize()
     fitter_bad.optimize()
@@ -164,13 +171,6 @@ def fit_AAA_base(
         gain=fitter_bad.gain,
     )
     assert(np.all(fitter.poles.fullplane.real < 0))
-
-    # TODO, add debug_AAA hint
-    # from .. import plots
-    # axB = plots.plot_fitter_flag(fitter=aid.fitter, xscale='log')
-    # axB.save("AAA_pre_{}.pdf".format(aid.N_update))
-    # axB = plots.plot_fitter_flag(fitter=fitter_bad, xscale='log')
-    # axB.save("AAA_{}.pdf".format(aid.N_update))
 
     #print("AAAlist: ", poles, zeros)
 

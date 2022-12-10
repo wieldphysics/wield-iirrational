@@ -371,15 +371,33 @@ def plot_fitter_flag_residuals(
         axB.finalizers.append(axB.top.finalize)
 
     if gs_res:
-        axB_bottom = self.plot_residuals(
+        #axB_bottom = self.plot_residuals(
+        #    fitter=fitter,
+        #    ax_bunch=None,
+        #    gs_base=gs_res,
+        #    plot_now=False,
+        #    fig=fig,
+        #    xscale=xscale,
+        #)
+        axB_bottom = self.plot_fit(
             fitter=fitter,
             ax_bunch=None,
             gs_base=gs_res,
+            with_error=with_error,
+            with_data_error=with_data_error,
+            plot_past_data=False,
+            plot_to_nyquist=True,
             plot_now=False,
+            residuals=True,
             fig=fig,
             xscale=xscale,
         )
         axB.bottom = axB_bottom
+        axB_bottom.mag.axhline(1.1, ls='--', color='black', lw=1)
+        axB_bottom.mag.axhline(1.01, ls='--', color='black', lw=1)
+        axB_bottom.mag.axhline(1/1.1, ls='--', color='black', lw=1)
+        axB_bottom.mag.axhline(1/1.01, ls='--', color='black', lw=1)
+        axB_bottom.plot_data(fitter)
         axB_bottom.plot_fit(fitter, db_ref=db_fit)
         left, right = axB.bottom.ax_bottom.get_xlim()
         if fitter.F_nyquist_Hz is not None:

@@ -61,6 +61,7 @@ def plot_augment_data(
     markersize=3,
     marker=".",
     linestyle="",
+    residuals=False,
     **kwargs
 ):
     label_default = args.argscan(label, self.label_data, "data")
@@ -82,12 +83,19 @@ def plot_augment_data(
             kwargs["linestyle"] = linestyle
 
         f = fitter.F_Hz
-        h = fitter.data
+        if not residuals:
+            h = fitter.data
+        else:
+            h = fitter.data / fitter.xfer_fit
         if with_error:
             W = 0.001 + fitter.W
             select = f > 0
-            db.min_data_err_lim = np.min(abs(h)) * max(1 / 3, np.min(1 / (1 + 1 / W)))
-            db.max_data_err_lim = np.max(abs(h)) * min(3, np.max((1 + 1 / W)))
+            if not residuals:
+                db.min_data_err_lim = np.min(abs(h)) * max(1 / 3, np.min(1 / (1 + 1 / W)))
+                db.max_data_err_lim = np.max(abs(h)) * min(3, np.max((1 + 1 / W)))
+            else:
+                db.min_data_err_lim = np.min(abs(h)) / 1.01
+                db.max_data_err_lim = np.max(abs(h)) * 1.01
             if ax_mag:
                 # ax_mag.fill_between(
                 #    fitter.F_Hz[select],
@@ -140,21 +148,25 @@ def plot_augment_data(
                 # )
         else:
             if ax_mag:
-                db.mline = ax_mag.loglog(
-                    fitter.F_Hz, abs(fitter.data), label=label, **kwargs
+                db.mline = ax_mag.plot(
+                    fitter.F_Hz, abs(h), label=label, **kwargs
                 )[0]
 
                 if color is None:
                     color = db.mline.get_color()
 
             if ax_phase:
-                _f, _h = angle_cutter(fitter.F_Hz, fitter.data, deg=True)
+                _f, _h = angle_cutter(fitter.F_Hz, h, deg=True)
                 db.pline = ax_phase.semilogx(
                     _f, _h, label=label, color=color, **kwargs
                 )[0]
 
-            db.min_data_err_lim = np.min(abs(h)) / 1.2
-            db.max_data_err_lim = np.max(abs(h)) * 1.2
+            if not residuals:
+                db.min_data_err_lim = np.min(abs(h)) / 1.2
+                db.max_data_err_lim = np.max(abs(h)) * 1.2
+            else:
+                db.min_data_err_lim = np.min(abs(h)) / 1.01
+                db.max_data_err_lim = np.max(abs(h)) * 1.01
 
         midpt = (np.max(fitter.F_Hz) - np.min(fitter.F_Hz)) / 2
         if np.count_nonzero(fitter.F_Hz < midpt) < 0.65 * len(fitter.F_Hz):
@@ -166,6 +178,10 @@ def plot_augment_data(
         db.minF_Hz = min(f)
         select = f > 0
         db.minF_HzNZ = min(f[select])
+        if not residuals:
+            ax_mag.set_yscale('log_zoom')
+        else:
+            ax_mag.set_yscale('log_zoom')
 
         data_list.append(db)
         return db
@@ -180,6 +196,7 @@ def plot_augment_fit(
     fit_list,
     with_error=False,
     F_Hz=None,
+    residuals=False,
     label=args.UNSPEC,
 ):
     label_default = args.argscan(
@@ -204,9 +221,11 @@ def plot_augment_fit(
         else:
             h = fitter.xfer_fit
             f = fitter.F_Hz
+        if residuals:
+            h[:] = 1
         db = Bunch()
 
-        db.mline = ax_mag.loglog(f, abs(h), label=label, color=color, **kwargs)[0]
+        db.mline = ax_mag.plot(f, abs(h), label=label, color=color, **kwargs)[0]
 
         if color is None:
             color = db.mline.get_color()
@@ -251,15 +270,24 @@ def plot_augment_fit(
                     color=db.pline[0].get_color(),
                     alpha=0.3,
                 )
-                db.min_fit_err_lim = np.min(abs(h)) * max(
-                    1 / 3, np.min(1 / (1 + fitter.xfer_fit_error.mag_rel2)[select])
-                )
-                db.max_fit_err_lim = np.max(abs(h)) * min(
-                    3, np.min((1 + fitter.xfer_fit_error.mag_rel2)[select])
-                )
+
+                if not residuals:
+                    db.min_fit_err_lim = np.min(abs(h)) * max(
+                        1 / 3, np.min(1 / (1 + fitter.xfer_fit_error.mag_rel2)[select])
+                    )
+                    db.max_fit_err_lim = np.max(abs(h)) * min(
+                        3, np.min((1 + fitter.xfer_fit_error.mag_rel2)[select])
+                    )
+                else:
+                    db.min_fit_err_lim = np.min(abs(h)) / 1.01
+                    db.max_fit_err_lim = np.max(abs(h)) * 1.01
         else:
-            db.min_fit_err_lim = np.min(abs(h)) / 1.2
-            db.max_fit_err_lim = np.max(abs(h)) * 1.2
+            if not residuals:
+                db.min_fit_err_lim = np.min(abs(h)) / 1.2
+                db.max_fit_err_lim = np.max(abs(h)) * 1.2
+            else:
+                db.min_fit_err_lim = np.min(abs(h)) / 1.01
+                db.max_fit_err_lim = np.max(abs(h)) * 1.01
         db.median_fit_lim = np.median(abs(h))
 
         midpt = (np.max(fitter.F_Hz) - np.min(fitter.F_Hz)) / 2

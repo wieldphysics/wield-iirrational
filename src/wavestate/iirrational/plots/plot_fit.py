@@ -39,6 +39,7 @@ def plot_fit(
     plot_now=True,
     label_data=args.UNSPEC,
     label_fit=args.UNSPEC,
+    residuals=False,
 ):
     use_phase = True
     label_data = args.argscan(label_data, self.label_data, "data")
@@ -83,6 +84,7 @@ def plot_fit(
             data_list=data_list,
             with_error=with_error,
             label=label_data,
+            residuals=residuals,
         )
         if plot_now:
             axB.plot_data(fitter)
@@ -145,6 +147,7 @@ def plot_fit(
             label=label_fit,
             F_Hz=f,
             fit_list=fit_list,
+            residuals=residuals,
         )
     else:
         axB.plot_fit = plot_augment.plot_augment_fit(
@@ -154,6 +157,7 @@ def plot_fit(
             with_error=with_error,
             label=label_fit,
             fit_list=fit_list,
+            residuals=residuals,
         )
     if plot_now:
         axB.plot_fit(fitter)

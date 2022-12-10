@@ -41,7 +41,8 @@ class ResultsAidAdv(results_aid.ResultsAid):
         Generates a plot of the fit. Returns a Bunch object which
         stores the axes and figure of the plot.
         """
-        axB = plots.plot_fitter_flag(fitter=self.fitter, xscale=xscale, **kwargs)
+        # axB = plots.plot_fitter_flag(fitter=self.fitter, xscale=xscale, **kwargs)
+        axB = plots.plot_fitter_flag_residuals(fitter=self.fitter, xscale=xscale, **kwargs)
         if fname is not None:
             axB.save(fname)
         return axB

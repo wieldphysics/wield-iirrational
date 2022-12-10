@@ -700,6 +700,7 @@ def IIRrationalV2fit(argv=None, **kwargs):
             results.investigate_fit_plot(fname=plot_fit)
         except Exception as E:
             print("Error: plotting exception {}".format(E), file=sys.stderr)
+            raise
 
     # TODO, need to ensure that this output form meets the common exchange
     # requirements for writing to the many filetypes
