@@ -226,7 +226,7 @@ class MultiReprFilterBase(DataFiltFitBase):
     @depB_property
     def max_BW_Hz(self, val=NOARG):
         if val is NOARG or val is None:
-            val = 2 * self.F_max_Hz
+            val = 3 * self.F_max_Hz
         return val
 
     @depB_property(autodeps=False)
@@ -262,6 +262,10 @@ class MultiReprFilterBase(DataFiltFitBase):
     @depB_property
     def data_no_overlay(self):
         return self.data / self._extra_xfer_fit
+
+    @depB_property
+    def xfer_fit_no_overlay(self):
+        return self.xfer_fit / self._extra_xfer_fit
 
     @depB_property
     def data_effective(self):
@@ -605,6 +609,11 @@ class MultiReprFilterBase(DataFiltFitBase):
             return np.sum(TFmath.abs_sq(self.residuals_preferred)) / (
                 len(self.data) - len(self.parameters)
             )
+
+
+    @depB_property
+    def residuals_sq(self):
+        return TFmath.abs_sq(self.residuals_preferred)
 
     @depB_property
     def residuals_max(self):

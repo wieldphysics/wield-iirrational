@@ -100,6 +100,13 @@ def fit_AAA_base(
         order_max = order_max - factors_order
         order_max = max(order_max, 6)
 
+    supports = np.linspace(aid.fitter.F_Hz[0], aid.fitter.F_Hz[-1], 5)
+    rsum = np.cumsum(aid.fitter.residuals_sq)
+    rsum = rsum / rsum[-1]
+    sratios = np.linspace(0, 1, 8)[:-1]
+    idx = np.searchsorted(rsum, sratios)
+    supports = aid.fitter.F_Hz[idx]
+
     aaa = tfAAA(
         aid.fitter.F_Hz,
         aid.fitter.data_no_overlay,
@@ -113,27 +120,31 @@ def fit_AAA_base(
         nrel=10,
         rtype="log",
         lf_eager=True,
-        supports=(),
+        supports=supports,
         minreal_cutoff=None,
+        all_real=False
     )
 
-    order = aaa.order
-    order_orig = order
-    while order > 1:
-        aaa.choose(order)
-        zeros = aaa.zeros
-        poles = aaa.poles
-        gain = aaa.gain
-        select = poles.real > 0
-        num_unstable = np.sum(select)
-        
-        aid.log_progress(4, "AAA order {}, num unstable: {}, residuals {:.2f}".format(order, num_unstable, aaa.fit_dict['res_rms']**2))
-        if num_unstable == 0:
-            break
-        order -= 1
-    if order == 0:
-        aaa.choose(order_orig)
-        aid.log_progress(4, "AAA always unstable, using order {}".format(aaa.order))
+
+    from wavestate.control import SISO
+
+    #order = aaa.order
+    #order_orig = order
+    #while order > 1:
+    #    aaa.choose(order)
+    #    zeros = aaa.zeros
+    #    poles = aaa.poles
+    #    gain = aaa.gain
+    #    select = poles.real > 0
+    #    num_unstable = np.sum(select)
+    #    
+    #    aid.log_progress(4, "AAA order {}, num unstable: {} of {}, residuals {:.2f}".format(order, num_unstable, len(poles), aaa.fit_dict['res_rms']**2))
+    #    if num_unstable == 0:
+    #        break
+    #    order -= 1
+    #if order == 0:
+    #    aaa.choose(order_orig)
+    #    aid.log_progress(4, "AAA always unstable, using order {}".format(aaa.order))
 
     zeros = aaa.zeros
     poles = aaa.poles
@@ -143,11 +154,29 @@ def fit_AAA_base(
     fitter_bad = aid.fitter.regenerate(
         ZPKrep=aid.fitter.ZPKrep,
         coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
-        poles=poles,
-        zeros=zeros,
+        poles=np.asarray(poles),
+        zeros=np.asarray(zeros),
         gain=gain,
-        check_sign=False,
+        check_sign=True,
     )
+
+
+    #from wavestate.utilities.mpl import mplfigB
+    #axB = mplfigB(Nrows=2)
+    #
+    #h = fitter_bad.data_no_overlay
+    #axB.ax0.loglog(fitter_bad.F_Hz, abs(h), marker='.', ls='')
+    #axB.ax1.semilogx(fitter_bad.F_Hz, np.angle(h, deg=True), marker='.', ls='')
+
+    #h = aaa(fitter_bad.F_Hz)
+    #axB.ax0.loglog(fitter_bad.F_Hz, abs(h))
+    #axB.ax1.semilogx(fitter_bad.F_Hz, np.angle(h, deg=True))
+
+
+    #h = fitter_bad.xfer_fit_no_overlay
+    #axB.ax0.loglog(fitter_bad.F_Hz, abs(h))
+    #axB.ax1.semilogx(fitter_bad.F_Hz, np.angle(h, deg=True))
+
     # TODO, add debug_AAA hint
     # from .. import plots
     # axB = plots.plot_fitter_flag_residuals(fitter=aid.fitter, xscale='log')
@@ -170,7 +199,21 @@ def fit_AAA_base(
         poles=poles,
         gain=fitter_bad.gain,
     )
+    fitter.optimize()
     assert(np.all(fitter.poles.fullplane.real < 0))
+
+    #h = fitter_bad.xfer_fit_no_overlay
+    #axB.ax0.loglog(fitter_bad.F_Hz, abs(h))
+    #axB.ax1.semilogx(fitter_bad.F_Hz, np.angle(h, deg=True))
+
+    #h = fitter.xfer_fit_no_overlay
+    #axB.ax0.loglog(fitter.F_Hz, abs(h))
+    #axB.ax1.semilogx(fitter.F_Hz, np.angle(h, deg=True))
+
+    #for z in aaa.supports:
+    #    axB.ax0.axvline(z, lw=0.5, ls='--', color='black')
+
+    #axB.save("AAA_tests_{}.pdf".format(aid.N_update))
 
     #print("AAAlist: ", poles, zeros)
 

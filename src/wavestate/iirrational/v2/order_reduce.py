@@ -94,7 +94,9 @@ def order_reduce(
         p_r=Pr,
     )
     import numpy as np
-    assert(np.all(fitter_new.poles.fullplane.real < 0))
+    # These asserts should possibly be run only if ensure_stable is in play
+    # shouldn't be so necessary after previous debugging
+    # assert(np.all(fitter_new.poles.fullplane.real < 0))
     assert(fitter_new.order_relative == aid.fitter.order_relative)
     if optimize:
         with fitter_new.with_codings_only([fitter_new.gain_coding]):
@@ -106,7 +108,9 @@ def order_reduce(
         algorithms.sign_check_flip(fitter_new)
         aid.fitter_update(fitter_new, representative=False)
     
-    assert(np.all(aid.fitter.poles.fullplane.real < 0))
+    # These asserts should possibly be run only if ensure_stable is in play
+    # shouldn't be so necessary after previous debugging
+    # assert(np.all(aid.fitter.poles.fullplane.real < 0))
     aid.fitter_checkpoint(hint_name=hint_name)
     return removed_rzp_list
 
@@ -165,6 +169,7 @@ def order_reduce_successive(
     deg_min = aid.hint("total_degree_min")
     if deg_min is None:
         return
+    last_flip_order = aid.fitter_orders().maxzp + 1
     while aid.fitter_orders().maxzp > deg_min:
         greedy_order = aid.hint("greedy_order")
         if greedy_order is None:
@@ -209,11 +214,12 @@ def order_reduce_successive(
             )
         )
         # this one can infinite loop!
-        #rank_zp_idx_list.extend(
-        #    order_reduce_programs.ranking_reduction_r_flip(
-        #        aid, marginalize_delay=marginalize_delay
-        #    )
-        #)
+        if aid.fitter_orders().maxzp < last_flip_order:
+            rank_zp_idx_list.extend(
+                order_reduce_programs.ranking_reduction_r_flip(
+                    aid, marginalize_delay=marginalize_delay
+                )
+            )
         rank_zp_idx_list.sort(key=lambda pb: pb.rank)
         trials = algorithms.ranking_reduction_trials(
             aid,
@@ -233,6 +239,12 @@ def order_reduce_successive(
             trial.fitter,
             representative=representative,
         )
+
+        # needs to be after the update to use the new maxzp
+        is_flip = trial.pbunch.get('flip', False)
+        if is_flip:
+            last_flip_order = aid.fitter_orders().maxzp
+
         aid.log_progress(
             5,
             ("order reduced to {}, residuals={:.2e}").format(

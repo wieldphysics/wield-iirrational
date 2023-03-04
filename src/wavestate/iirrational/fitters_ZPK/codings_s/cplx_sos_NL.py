@@ -213,10 +213,19 @@ class CodingSOSnl(CodingType):
                     self.unstable = False
                     r1p = -r1.real
                 if r1p > self.min_BW_Hz:
-                    self.p_nl_c1 = (r1p - self.min_BW_Hz) ** 0.5
-                    return True
+                    c1 = r1p - self.min_BW_Hz
+                    if c1 >= self.max_BW_Hz:
+                        c1 = self.max_BW_Hz
+                        ret = False
+                    else:
+                        c1 = c1 / (1 - c1 / self.max_BW_Hz)
+                        ret = True
+                    self.p_nl_c1 = c1**0.5
+                    self.p_nl_c2 = 0
+                    return ret
                 else:
                     self.p_nl_c1 = 0
+                    self.p_nl_c2 = 0
                     return False
         else:
             self.single_root = False
@@ -238,10 +247,11 @@ class CodingSOSnl(CodingType):
                     ret = False
                     r1p = 0
                 # TODO check conjugates
-                self.p_nl_c2 = (r1p ** 2 + r1.imag ** 2) ** 0.5
-                self.p_nl_c1 = (2 * r1p) ** 0.5
+
+                c2 = r1p**2 + r1.imag**2
+                c1 = 2 * r1p
             else:
-                self.check_dist_limit(0, thresh=1)
+                self.check_dist_limit(F_Hz=0, thresh=1)
                 if r2 is None:
                     r2 = r1.conjugate()
                 if r1p > self.min_BW_Hz:
@@ -269,8 +279,23 @@ class CodingSOSnl(CodingType):
                 else:
                     ret = False
                     r2p = 0
-                self.p_nl_c2 = (r1p * r2p) ** 0.5
-                self.p_nl_c1 = (r1p + r2p) ** 0.5
+
+                c2 = r1p * r2p
+                c1 = r1p + r2p
+
+            if c2 >= self.max_BW_HzSq:
+                ret = False
+                c2 = self.max_BW_HzSq
+            else:
+                c2 = c2 / (1 - c2 / self.max_BW_HzSq)
+            self.p_nl_c2 = c2**0.5
+
+            if c1 >= self.max_BW_Hz:
+                ret = False
+                c1 = self.max_BW_Hz
+            else:
+                c1 = c1 / (1 - c1 / self.max_BW_Hz)
+            self.p_nl_c1 = c1**0.5
             return ret
         return
 

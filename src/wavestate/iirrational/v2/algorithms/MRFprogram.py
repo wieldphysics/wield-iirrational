@@ -89,6 +89,7 @@ def resrank_program(
     pbunch.name = name
     pbunch.variant = variant
     pbunch.program = program
+    pbunch.flip = True
     rank_zp_idx_list.append(pbunch)
     return pbunch
 

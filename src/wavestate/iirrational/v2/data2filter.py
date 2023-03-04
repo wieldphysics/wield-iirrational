@@ -902,7 +902,9 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
         )
 
         _reduce(aid, with_flip=False, with_successive=False, representative=False, hint_name='AAA')
-        _reduce(aid, with_flip=True, with_successive=True, representative=False, hint_name='AAA')
+        # use a checkup and revert before the flip!
+        aid.fitter_checkup(hint_name='AAA')
+        _reduce(aid, with_flip=False, with_successive=True, representative=False, hint_name='AAA')
 
         aid.fitter.optimize(aid=aid)
         algorithms.optimize_anneal(aid)
@@ -939,7 +941,8 @@ def _fit_AAA_successive(aid, emphasis, _phase_patch=False, order_hint=None):
                 fit_initial()
                 fit_callAAA()
 
-            aid.fitter_checkpoint(hint_name='AAA')
+            aid.fitter_checkup(hint_name='AAA')
+            #aid.fitter_checkpoint(hint_name='AAA')
 
     if _phase_patch:
         assert(False)

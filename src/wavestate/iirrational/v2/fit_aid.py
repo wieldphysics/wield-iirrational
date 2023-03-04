@@ -139,7 +139,7 @@ class FitAid(object):
                 ZPKrep=xrep,
                 residuals_log_im_scale=first_factor.residuals_log_im_scale,
                 # needed to preserve the exact root locations
-                coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
+                #coding_map=fitters_ZPK.codings_s.coding_maps.SOS,
             )
             # print("residsB2", f2.residuals_average, len(f2.poles) + len(f2.poles_overlay))
             # axB = plots.plot_fitter_flag(fitter=f2, xscale='log')
@@ -460,33 +460,35 @@ class FitAid(object):
             print("Unacceptable?!")
             return
 
-        if fitter_use is not None:
-            #fitter_use.optimize(aid=self)
-            fitter_copy = [fitter_use]
-        else:
-            fitter_use = fitter
-            fitter_copy = []
-
-        def copy1():
-            if not fitter_copy:
-                fitter_copy.append(fitter.copy())
-            return fitter_copy[0]
-
         # print("ZPK", fitter_use.ZPKsf)
         if representative:
+            if fitter_use is not None:
+                fitter_use.optimize(aid=self)
+                fitter_copy = [fitter_use]
+            else:
+                fitter_use = fitter
+                fitter_copy = []
+
+            def copy1():
+                if not fitter_copy:
+                    fitter_copy.append(fitter.copy())
+                return fitter_copy[0]
+
             fitter_meta = Bunch()
             fitter_meta.fitter = copy1()
             fitter_meta.log_idx = self.log_number
             fitter_meta.checkpoint_idx = len(self._checkpoints) - 1
             fitter_meta.valid = True
 
-            assert(np.all(fitter.poles.fullplane.real < 0))
-            assert(np.all(fitter_meta.fitter.poles.fullplane.real < 0))
+            # These should possibly be run only if ensure_stable is in play
+            # shouldn't be so necessary after previous debugging
+            # assert(np.all(fitter.poles.fullplane.real < 0))
+            # assert(np.all(fitter_meta.fitter.poles.fullplane.real < 0))
             self._fitters.append(fitter_meta)
 
             new_res = fitter_use.residuals_average
             self.log_progress(
-                3,
+                6,
                 "New representative, Res: {:.2f}, from: {:.2f}".format(new_res, self.fitter.residuals_average),
             )
             new_res_max = fitter_use.residuals_max
@@ -515,7 +517,7 @@ class FitAid(object):
                 self._fitter_lowres_med = copy1()
 
         self.fitter_special = Bunch()
-        return fitter_use
+        return None
 
     def factorization_push(
         self,
@@ -583,12 +585,30 @@ class FitAid(object):
 
         fcf = self._fitter_current_factorized.pop()
         if fcf is not None:
+            # print("FCF Resids", fcf.residuals_average)
             self._fitter_current_factorized[-1] = fcf.regenerate(
                 ZPKrep=factorization.ZPKrep,
                 zeros=fcf.zeros * factorization.zeros,
                 poles=fcf.poles * factorization.poles,
                 gain=fcf.gain,
             )
+            # print("FCF Resids2", self._fitter_current_factorized[-1].residuals_average)
+            # print(fcf.poles, fcf.poles_overlay, fcf.gain)
+            # fcf2 = self._fitter_current_factorized[-1]
+            # print(fcf2.poles, fcf2.poles_overlay, fcf2.gain)
+            # print("Zeros")
+            # print(fcf.zeros, fcf.zeros_overlay, fcf.gain)
+            # print(fcf2.zeros, fcf2.zeros_overlay, fcf2.gain)
+            # print("done")
+
+            # from wavestate.utilities.mpl import mplfigB
+            # axB = mplfigB(Nrows=2)
+
+            # h = fcf.xfer_fit / fcf2.xfer_fit
+            # axB.ax0.loglog(fcf.F_Hz, abs(h), marker='.', ls='')
+            # axB.ax1.semilogx(fcf.F_Hz, np.angle(h, deg=True), marker='.', ls='')
+            # axB.save("fcf_tests_{}.pdf".format(len(self._fitter_current_factorized)))
+            # print("FCF TEST {}".format(len(self._fitter_current_factorized)))
 
         # print("resids2?", self.fitter.residuals_average)
         # print("resids2C", self._fitter_current.residuals_average)
