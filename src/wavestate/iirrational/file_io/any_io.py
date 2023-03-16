@@ -106,7 +106,8 @@ def normalize_ndarray(obj):
         return obj
     elif isinstance(obj, np.generic):
         # captures scalars given the previous if
-        return np.asscalar(obj)
+        #return np.asscalar(obj)
+        return np.item(obj)
     elif isinstance(obj, (list, tuple)):
         return np.asarray(obj)
     return obj
@@ -163,7 +164,8 @@ def fix_ndarray(obj):
             obj = obj.tolist()
             return obj
     elif isinstance(obj, np.generic):
-        return np.asscalar(obj)
+        #return np.asscalar(obj)
+        return np.item(obj)
     elif isinstance(obj, list):
         for idx, v in enumerate(obj):
             obj[idx] = fix_ndarray(v)
