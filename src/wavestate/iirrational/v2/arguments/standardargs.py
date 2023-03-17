@@ -51,7 +51,7 @@ def normalize_roots(val):
             val = None
         else:
             val = cplx_iIjJ_list(val)
-    elif isinstance(val, collections.Mapping):
+    elif isinstance(val, collections.abc.Mapping):
         r = val["real"]
         i = val["imag"]
         val = np.asarray(r) + 1j * np.asarray(i)
