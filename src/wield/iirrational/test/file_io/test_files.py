@@ -6,13 +6,13 @@ import pytest
 import numpy as np
 import os.path as path
 
-from wavestate.iirrational.testing import IIRrational_data
-from wavestate.iirrational import file_io
-from wavestate.iirrational.file_io import (
+from wield.iirrational.testing import IIRrational_data
+from wield.iirrational import file_io
+from wield.iirrational.file_io import (
     matlab_io,
 )
 
-from wavestate.iirrational.utilities.print import pprint
+from wield.iirrational.utilities.print import pprint
 
 try:
     from IIRrational_test_data import matlab as matlab_test_data

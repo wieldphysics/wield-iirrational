@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate.bunch.depbunch import (
+from wield.bunch.depbunch import (
     DepBunch,
     depB_property,
     NOARG,

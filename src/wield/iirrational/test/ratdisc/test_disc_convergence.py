@@ -4,10 +4,10 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-# from wavestate.iirrational import fitters
-from wavestate.iirrational import fitters_rational
-from wavestate.iirrational import plots
-from wavestate.iirrational.utilities import relpy
+# from wield.iirrational import fitters
+from wield.iirrational import fitters_rational
+from wield.iirrational import plots
+from wield.iirrational.utilities import relpy
 import numpy as np
 
 try:

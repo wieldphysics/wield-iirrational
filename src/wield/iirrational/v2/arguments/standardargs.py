@@ -10,7 +10,7 @@
 
 import numpy as np
 import collections
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from .base import (
     ArgumentError,

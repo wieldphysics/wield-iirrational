@@ -9,7 +9,7 @@
 """
 
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 
 def BWz(r, F_nyquist_Hz):

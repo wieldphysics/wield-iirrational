@@ -10,7 +10,7 @@
 
 import sys
 
-from wavestate.bunch.depbunch import (
+from wield.bunch.depbunch import (
     depB_property,
     DepBunch,
 )

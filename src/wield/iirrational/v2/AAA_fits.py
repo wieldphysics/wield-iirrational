@@ -84,7 +84,7 @@ def fit_AAA_base(
     else:
         diff_reldeg = 0
 
-    from wavestate.control.AAA import tfAAA
+    from wield.control.AAA import tfAAA
     if order is None:
         order = 20
 
@@ -126,7 +126,7 @@ def fit_AAA_base(
     )
 
 
-    from wavestate.control import SISO
+    from wield.control import SISO
 
     #order = aaa.order
     #order_orig = order
@@ -161,7 +161,7 @@ def fit_AAA_base(
     )
 
 
-    #from wavestate.utilities.mpl import mplfigB
+    #from wield.utilities.mpl import mplfigB
     #axB = mplfigB(Nrows=2)
     #
     #h = fitter_bad.data_no_overlay

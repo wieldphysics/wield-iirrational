@@ -266,8 +266,8 @@ class ResultsAid(object):
         self,
     ):
         """
-        Returns the filter as an wavestate.iirrational ZPKwData object, for use with other
-        fitters in the wavestate.iirrational package.
+        Returns the filter as an wield.iirrational ZPKwData object, for use with other
+        fitters in the wield.iirrational package.
         """
         return self.fitter.ZPKrep
 
@@ -277,7 +277,7 @@ class ResultsAid(object):
 
     def as_ZPKTF(self, delay2ZPK_args):
         """
-        Returns the filter as an wavestate.iirrational ZPKTF object, for use
+        Returns the filter as an wield.iirrational ZPKTF object, for use
         with mathematical analysis. Note, if the delay is nonzero,
         some conversion of the delay into ZPK is required. If the delay is
         positive (as is usual), the some order of RHP-zero/LHP-pole pairs must

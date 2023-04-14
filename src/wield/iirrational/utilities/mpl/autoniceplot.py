@@ -14,12 +14,12 @@ import os
 import contextlib
 from os import path
 
-from wavestate import declarative
+from wield import declarative
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import numpy as np
-from wavestate.bunch import Bunch, DeepBunch
+from wield.bunch import Bunch, DeepBunch
 
 from .colors import color_array
 

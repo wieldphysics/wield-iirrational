@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import warnings
 import numpy as np
 import numpy as numpy
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 try:
     from scipy.optimize import OptimizeWarning

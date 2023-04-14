@@ -8,7 +8,7 @@
 """
 """
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from ... import TFmath
 from ... import representations

@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from ..utilities import ensure_aid
 from .. import TFmath

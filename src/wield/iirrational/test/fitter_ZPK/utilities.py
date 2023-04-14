@@ -5,8 +5,8 @@ from __future__ import division, print_function, unicode_literals
 
 import numpy as np
 
-from wavestate.iirrational.fitters_ZPK.MRF import check_jac
-from wavestate.iirrational import testing
+from wield.iirrational.fitters_ZPK.MRF import check_jac
+from wield.iirrational import testing
 
 
 def check_residuals(fitterMRF):

@@ -13,15 +13,15 @@ import os
 import os.path as path
 import contextlib
 
-from wavestate.iirrational import (
+from wield.iirrational import (
     fitters_rational,
     fitters_ZPK,
     representations,
 )
 
 # import matplotlib.pyplot as plt
-from wavestate.iirrational import plots
-from wavestate.iirrational.annotate.exporters import npm_markdown_pdf
+from wield.iirrational import plots
+from wield.iirrational.annotate.exporters import npm_markdown_pdf
 
 
 @contextlib.contextmanager

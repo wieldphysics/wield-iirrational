@@ -5,7 +5,7 @@
 # SPDX-FileCopyrightText: © 2021 Lee McCuller <mcculler@mit.edu>
 # NOTICE: authors should document their contributions in concisely in NOTICE
 # with details inline in source files, comments, and docstrings.
-""" Setup and build the wavestate.collection package, which acts as the metapackage
+""" Setup and build the wield.collection package, which acts as the metapackage
 
 Packaging guidance may be found at https://packaging.python.org/tutorials/packaging-projects/
 """

@@ -41,7 +41,7 @@ optional arguments:
                         chosen and alternative fits, the configurations, and versioning information.
                         Possible output extensions are .h5, .hdf, .mat, .pkl, .json, .yaml. Binary
                         formats .mat, .h5, .pkl will include the original data, for full reconstruction
-                        of the fit. wavestate.iirrational may be called on the output file to rerun the fit.
+                        of the fit. wield.iirrational may be called on the output file to rerun the fit.
   -c CONFIG, --config CONFIG
                         Specify configuration file. This file may be .json, .yaml, .ini, .h5, .mat.
                         These will be interpreted as a dictionary or structure full of keyword

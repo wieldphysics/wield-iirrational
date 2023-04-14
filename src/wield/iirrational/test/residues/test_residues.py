@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from wavestate.iirrational.TFmath.residues import (
+from wield.iirrational.TFmath.residues import (
     ZPK2residues,
     ZPK2residues_scipy,
     residues2ZPK,

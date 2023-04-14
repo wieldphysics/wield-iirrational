@@ -10,7 +10,7 @@
 
 # import warnings
 import contextlib
-from wavestate import declarative
+from wield import declarative
 
 from .. import fitters_ZPK
 from .. import annotate

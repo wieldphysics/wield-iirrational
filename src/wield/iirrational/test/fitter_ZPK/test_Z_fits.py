@@ -4,15 +4,15 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from wavestate.iirrational.testing import IIRrational_data
-from wavestate.iirrational import plots
+from wield.iirrational.testing import IIRrational_data
+from wield.iirrational import plots
 
-# from wavestate.iirrational.utilities.mpl import mplfigB
+# from wield.iirrational.utilities.mpl import mplfigB
 import os.path as path
 
-from wavestate.iirrational.fitters_ZPK import ZPKrep2MRF
-from wavestate.iirrational.fitters_ZPK import codings_z
-from wavestate.iirrational import testing
+from wield.iirrational.fitters_ZPK import ZPKrep2MRF
+from wield.iirrational.fitters_ZPK import codings_z
+from wield.iirrational import testing
 
 from utilities import check_residuals
 

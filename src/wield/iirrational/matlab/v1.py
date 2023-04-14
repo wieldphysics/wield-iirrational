@@ -9,12 +9,12 @@
 """
 
 
-from wavestate.iirrational.v1 import (
+from wield.iirrational.v1 import (
     data2filter,
     FitAid,
 )
 
-from wavestate.iirrational.testing import IIRrational_data
+from wield.iirrational.testing import IIRrational_data
 
 # monkeypatch in the msurrogate annotations
 FitAid._msurrogate_MT = False

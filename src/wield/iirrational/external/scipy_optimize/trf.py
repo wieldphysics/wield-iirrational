@@ -130,7 +130,7 @@ References
 
 import numpy as np
 import numpy as numpy
-from wavestate import declarative
+from wield import declarative
 
 from numpy.linalg import norm
 from scipy.linalg import svd

@@ -12,7 +12,7 @@ import scipy
 import scipy.linalg
 import scipy.special
 
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from .data_filtfit_split import DataFiltFitSplitBase
 from ..svd import SVD_SV

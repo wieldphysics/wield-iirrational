@@ -3,11 +3,11 @@
 """
 import pytest
 
-from wavestate.iirrational.testing import IIRrational_data
-from wavestate.iirrational import testing
+from wield.iirrational.testing import IIRrational_data
+from wield.iirrational import testing
 
-from wavestate.iirrational.fitters_ZPK import ZPKrep2MRF
-from wavestate.iirrational.fitters_ZPK import codings_s
+from wield.iirrational.fitters_ZPK import ZPKrep2MRF
+from wield.iirrational.fitters_ZPK import codings_s
 
 from utilities import check_residuals
 

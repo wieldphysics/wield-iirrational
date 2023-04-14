@@ -7,10 +7,10 @@ import numpy as np
 from os import path
 
 import IIRrational
-from wavestate.iirrational import v2
-from wavestate.iirrational.testing.plots import plot_on_assert
+from wield.iirrational import v2
+from wield.iirrational.testing.plots import plot_on_assert
 
-from wavestate.iirrational.testing.utilities import (
+from wield.iirrational.testing.utilities import (
     sign_validate_and_plot_hint,
     stability_validate_and_plot_hint,
 )
@@ -41,7 +41,7 @@ def test_alphas1(request, browser, plotsections, plot_verbosity):
 
     idx = np.where(np.logical_and(fr > 30, fr < 300))[0]
 
-    fit = wavestate.iirrational.v2.data2filter(
+    fit = wield.iirrational.v2.data2filter(
         data=a[idx, 0],
         F_Hz=fr[idx],
         SNR=100,
@@ -73,7 +73,7 @@ def test_alphas1_v1good(request, browser, plotsections, plot_verbosity):
 
     idx = np.where(np.logical_and(fr > 30, fr < 300))[0]
 
-    fit = wavestate.iirrational.v1.data2filter(
+    fit = wield.iirrational.v1.data2filter(
         data=a[idx, 0],
         F_Hz=fr[idx],
         SNR=100,

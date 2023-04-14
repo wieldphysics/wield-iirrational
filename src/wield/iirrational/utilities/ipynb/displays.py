@@ -58,13 +58,13 @@ from IPython.display import (
 )
 
 # for more options in mpl
-import wavestate.iirrational.utilities.mpl
+import wield.iirrational.utilities.mpl
 
-from wavestate.iirrational.utilities.mpl.utils import (
+from wield.iirrational.utilities.mpl.utils import (
     indexed_cmap,
 )
 
-from wavestate.iirrational.utilities.mpl import (
+from wield.iirrational.utilities.mpl import (
     AutoPlotSaver,
     mplfigB,
     asavefig,

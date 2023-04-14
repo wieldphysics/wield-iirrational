@@ -7,9 +7,9 @@ import os
 import numpy as np
 import os.path as path
 
-from wavestate.iirrational.testing import IIRrational_data
-from wavestate.iirrational.utilities.print import pprint
-from wavestate.iirrational.v2.__main__ import main as v2_main
+from wield.iirrational.testing import IIRrational_data
+from wield.iirrational.utilities.print import pprint
+from wield.iirrational.v2.__main__ import main as v2_main
 
 try:
     from IIRrational_test_data import matlab as matlab_test_data
@@ -129,7 +129,7 @@ def test_mat_fit():
 @skipdeco
 def test_csv_fit():
     fname = matlab_test_data.matfiles["iir_test_struct.mat"]
-    from wavestate.iirrational.file_io import load_any
+    from wield.iirrational.file_io import load_any
 
     fdict = load_any(fname=fname, ftype="mat")
     data = fdict["data"]

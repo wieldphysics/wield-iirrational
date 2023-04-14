@@ -11,7 +11,7 @@
 import matplotlib as mpl
 from matplotlib import gridspec
 import matplotlib.pyplot as plt
-from wavestate import bunch
+from wield import bunch
 
 from .autoniceplot import (
     asavefig,

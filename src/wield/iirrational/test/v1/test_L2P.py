@@ -4,13 +4,13 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from wavestate.iirrational import v1
-from wavestate.iirrational.testing.utilities import (
+from wield.iirrational import v1
+from wield.iirrational.testing.utilities import (
     sign_validate_hint,
     sign_validate_and_plot_hint,
 )
-from wavestate.iirrational import fitters_rational, fitters_ZPK
-from wavestate.iirrational.testing.plots import plot_on_assert
+from wield.iirrational import fitters_rational, fitters_ZPK
+from wield.iirrational.testing.plots import plot_on_assert
 
 try:
     from IIRrational_test_data import IIRrational_data_dev

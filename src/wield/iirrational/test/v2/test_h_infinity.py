@@ -7,10 +7,10 @@ import numpy as np
 
 import os.path as path
 
-from wavestate.iirrational import v2
-from wavestate.iirrational.v2 import testing
+from wield.iirrational import v2
+from wield.iirrational.v2 import testing
 
-from wavestate.iirrational.testing.utilities import (
+from wield.iirrational.testing.utilities import (
     sign_validate_and_plot_hint,
 )
 

@@ -7,7 +7,7 @@
 # with details inline in source files, comments, and docstrings.
 """
 """
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 from . import codings_s
 from . import codings_z
 

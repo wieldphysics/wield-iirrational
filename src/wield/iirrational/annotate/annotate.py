@@ -8,7 +8,7 @@
 """
 """
 
-from wavestate.bunch import DeepBunch
+from wield.bunch import DeepBunch
 import os
 import re
 import errno

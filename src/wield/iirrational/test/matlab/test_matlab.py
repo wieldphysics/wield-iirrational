@@ -6,8 +6,8 @@ import pytest
 
 import os.path as path
 
-from wavestate.iirrational.testing import IIRrational_data
-from wavestate.iirrational import v1
+from wield.iirrational.testing import IIRrational_data
+from wield.iirrational import v1
 
 try:
     import matlab.engine
@@ -32,7 +32,7 @@ def test_simple1(browser, plotsections, plot_verbosity):
     )
 
     import matplotlib.pyplot as plt
-    from wavestate.iirrational import plots
+    from wield.iirrational import plots
 
     axB = plots.plot_fitter_flag(
         out.fitter,

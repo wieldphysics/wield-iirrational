@@ -8,7 +8,7 @@
 """
 """
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from ..utilities import ensure_aid
 
@@ -224,7 +224,7 @@ def phase_patch(aid):
         Boy does this plot need documentation.
         """
         # TODO, put into a function for the annotater
-        from wavestate.iirrational.utilities.mpl import mplfigB
+        from wield.iirrational.utilities.mpl import mplfigB
 
         axB = mplfigB(Ncols=2, Nrows=2)
         for shift in shift_saves:

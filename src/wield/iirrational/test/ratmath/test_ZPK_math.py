@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 import pytest
 
-from wavestate.iirrational.TFmath import ZPKCalc, ratmath
+from wield.iirrational.TFmath import ZPKCalc, ratmath
 import numpy as np
 
 test_pairs = [

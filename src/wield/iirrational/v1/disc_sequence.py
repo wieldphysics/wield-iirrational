@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate import declarative
+from wield import declarative
 
 from ..fitters_rational import RationalDiscFilter, ChebychevFilter
 from .. import annotate

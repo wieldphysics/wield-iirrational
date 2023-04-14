@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate import declarative
+from wield import declarative
 
 from .. import fitters_rational
 from .. import annotate

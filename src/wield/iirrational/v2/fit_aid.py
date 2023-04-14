@@ -14,8 +14,8 @@ import logging
 import numpy as np
 
 import contextlib
-from wavestate import declarative
-from wavestate.bunch import Bunch
+from wield import declarative
+from wield.bunch import Bunch
 
 from .. import fitters_ZPK
 from .. import representations
@@ -601,7 +601,7 @@ class FitAid(object):
             # print(fcf2.zeros, fcf2.zeros_overlay, fcf2.gain)
             # print("done")
 
-            # from wavestate.utilities.mpl import mplfigB
+            # from wield.utilities.mpl import mplfigB
             # axB = mplfigB(Nrows=2)
 
             # h = fcf.xfer_fit / fcf2.xfer_fit

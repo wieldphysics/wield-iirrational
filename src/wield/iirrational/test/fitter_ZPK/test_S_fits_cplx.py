@@ -3,12 +3,12 @@
 """
 import numpy as np
 from IIRrational_test_data import IIRrational_data_dev
-from wavestate.iirrational.utilities.mpl import mplfigB
-from wavestate.iirrational import testing
+from wield.iirrational.utilities.mpl import mplfigB
+from wield.iirrational import testing
 
-from wavestate.iirrational.fitters_ZPK import ZPKrep2MRF
-from wavestate.iirrational.fitters_ZPK import codings_s
-from wavestate.iirrational.fitters_ZPK.MRF import check_jac
+from wield.iirrational.fitters_ZPK import ZPKrep2MRF
+from wield.iirrational.fitters_ZPK import codings_s
+from wield.iirrational.fitters_ZPK.MRF import check_jac
 
 from utilities import check_residuals
 
@@ -16,7 +16,7 @@ from utilities import check_residuals
 def prep_fitter():
     data = IIRrational_data_dev("quad_M0_P2V_10Hz")
 
-    from wavestate.iirrational import fitters_rational
+    from wield.iirrational import fitters_rational
 
     SNR = np.minimum(data.SNR, 100)
     fitter = fitters_rational.ChebychevFilter(

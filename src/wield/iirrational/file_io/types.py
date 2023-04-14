@@ -10,7 +10,7 @@
 import os
 import re
 
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 
 ext2type = {

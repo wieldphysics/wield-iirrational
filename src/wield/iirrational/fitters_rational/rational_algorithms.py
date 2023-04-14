@@ -12,7 +12,7 @@
 import numpy as np
 import scipy
 
-# from wavestate import declarative
+# from wield import declarative
 import scipy.linalg
 import scipy.special
 

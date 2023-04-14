@@ -10,9 +10,9 @@
 
 
 import numpy as np
-from wavestate.bunch.depbunch import DepBunch, depB_property
-from wavestate import declarative
-from wavestate.bunch import Bunch
+from wield.bunch.depbunch import DepBunch, depB_property
+from wield import declarative
+from wield.bunch import Bunch
 
 
 from .. import representations

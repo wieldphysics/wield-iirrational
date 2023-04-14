@@ -9,7 +9,7 @@
 """
 
 import collections
-from wavestate import declarative
+from wield import declarative
 import numpy as np
 
 from ... import fitters_ZPK

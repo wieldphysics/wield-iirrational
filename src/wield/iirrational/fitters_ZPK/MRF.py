@@ -12,8 +12,8 @@
 import numpy as np
 import itertools
 import contextlib
-from wavestate.bunch import Bunch
-from wavestate.bunch.depbunch import (
+from wield.bunch import Bunch
+from wield.bunch.depbunch import (
     NOARG,
     depB_property,
 )

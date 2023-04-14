@@ -9,7 +9,7 @@
 """
 import sys
 
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 # import numpy as np
 # import scipy.linalg

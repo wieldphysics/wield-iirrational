@@ -9,7 +9,7 @@
 """
 
 import h5py
-from wavestate.bunch.hdf_deep_bunch import HDFDeepBunch
+from wield.bunch.hdf_deep_bunch import HDFDeepBunch
 
 
 def load_hdf5(fname):

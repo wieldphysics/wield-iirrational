@@ -12,8 +12,8 @@ import os
 import sys
 import numpy as np
 import collections
-from wavestate import declarative
-from wavestate.bunch import Bunch, DeepBunch
+from wield import declarative
+from wield.bunch import Bunch, DeepBunch
 
 from .. import file_io
 
@@ -730,10 +730,10 @@ def choice_shell(**kw):
     banner = padding_remove(
         """
     ------------------------------------------
-    wavestate.iirrational fit choose investigation shell
+    wield.iirrational fit choose investigation shell
     ------------------------------------------
     defined variables:
-        results: result object of the wavestate.iirrational data2filter fit
+        results: result object of the wield.iirrational data2filter fit
         data:    loaded data dictionary
         config:  loaded config dictionary
         dfile:   original data file, normalized to dictionary form

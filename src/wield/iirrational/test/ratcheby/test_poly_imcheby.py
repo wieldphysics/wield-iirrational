@@ -6,8 +6,8 @@ import pytest
 
 import os.path as path
 
-# from wavestate.iirrational import fitters
-from wavestate.iirrational.fitters_rational.polynomials import imchebychev
+# from wield.iirrational import fitters
+from wield.iirrational.fitters_rational.polynomials import imchebychev
 import numpy as np
 
 try:
@@ -90,7 +90,7 @@ def test_imcheby_4roots():
     V, VlnG = imchebychev.vander_lnG(X, len(c) - 1, X_scale=X_scale, lnG=lnG)
     y_vander = np.dot(V, c) * np.exp(VlnG)
 
-    # from wavestate.iirrational.utilities.mpl import mplfigB
+    # from wield.iirrational.utilities.mpl import mplfigB
     # axB = mplfigB()
     # axB.ax0.plot(F, abs(y_main))
     # axB.ax0.plot(F, abs(y_poly))
@@ -124,7 +124,7 @@ def test_imcheby_3roots():
     V, VlnG = imchebychev.vander_lnG(X, len(c) - 1, X_scale=X_scale, lnG=lnG)
     y_vander = np.dot(V, c) * np.exp(VlnG)
 
-    # from wavestate.iirrational.utilities.mpl import mplfigB
+    # from wield.iirrational.utilities.mpl import mplfigB
     # axB = mplfigB()
     # axB.ax0.plot(F, abs(y_main))
     # axB.ax0.plot(F, abs(y_poly))

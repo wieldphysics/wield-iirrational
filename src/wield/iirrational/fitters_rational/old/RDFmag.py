@@ -11,7 +11,7 @@ import numpy as np
 import scipy
 import scipy.linalg
 
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from .data_filtfit_base import DataFiltFitBase
 from .roots_bin import roots_bin_palindromicz, roots_re_pair

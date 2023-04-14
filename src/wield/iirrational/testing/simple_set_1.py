@@ -9,7 +9,7 @@
 Contains setup functions for test data, these are returned in a QuickBunch dictionary, with some annotation about the number of data sets
 """
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from ..utilities.np import logspaced
 from . import utilities

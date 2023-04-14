@@ -10,7 +10,7 @@
 
 
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 from .. import fitters_ZPK
 from .. import annotate
@@ -144,7 +144,7 @@ def data2filter(argB=args.UNSPEC, mag_only=args.UNSPEC, alt_res=args.UNSPEC, **k
         method="v1.fit_sequence",
         about=(
             """
-            Version 1 smart fitter in wavestate.iirrational library.
+            Version 1 smart fitter in wield.iirrational library.
             Uses SVD method with high order over-fitting,
             then switches to nonlinear fits with heuristics
             to remove poles and zeros down to a reasonable system order.

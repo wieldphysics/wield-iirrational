@@ -12,7 +12,7 @@
 import os
 from os import path
 
-from wavestate import declarative
+from wield import declarative
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np

@@ -9,8 +9,8 @@
 """
 import numpy as np
 import warnings
-from wavestate.bunch.depbunch import depB_property, NOARG
-from wavestate.bunch import Bunch
+from wield.bunch.depbunch import depB_property, NOARG
+from wield.bunch import Bunch
 import collections
 
 from .. import TFmath

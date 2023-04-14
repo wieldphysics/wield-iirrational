@@ -10,7 +10,7 @@ Utilities to manipulate ZPK roots S to/from Z, and make transfer functions
 """
 
 import numpy as np
-from wavestate.bunch import Bunch
+from wield.bunch import Bunch
 
 
 def analytic_translation(

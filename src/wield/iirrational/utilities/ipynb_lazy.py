@@ -14,9 +14,9 @@ import scipy
 import scipy.linalg
 import scipy.signal
 
-from wavestate import declarative
-from wavestate.bunch import DeepBunch
-from wavestate.bunch.hdf_deep_bunch import HDFDeepBunch
+from wield import declarative
+from wield.bunch import DeepBunch
+from wield.bunch.hdf_deep_bunch import HDFDeepBunch
 
 from ..plots import (
     plot_fit,
@@ -46,7 +46,7 @@ def print_version():
     from .. import version
 
     print(
-        "wavestate.iirrational version: {} (git:{})".format(
+        "wield.iirrational version: {} (git:{})".format(
             version, auto_version.git_shorthash
         )
     )

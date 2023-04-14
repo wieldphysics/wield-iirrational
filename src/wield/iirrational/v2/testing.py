@@ -9,7 +9,7 @@
 """
 
 
-from wavestate.iirrational.testing.utilities import (
+from wield.iirrational.testing.utilities import (
     sign_validate_and_plot_hint,
     sign_validate_and_digest_hint,
 )
