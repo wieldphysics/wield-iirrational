@@ -1,9 +1,9 @@
 % Author : Lee McCuller
 clear classes
-addpath(char(py.wavestate.iirrational.matlabpath()));
+addpath(char(py.wield.iirrational.matlabpath()));
 
-%wavestate.iirrational = msurrogate.PySurrogate();
-%wavestate.iirrational.connect_subprocess('wavestate.iirrational.matlab')
+%wield.iirrational = msurrogate.PySurrogate();
+%wield.iirrational.connect_subprocess('wield.iirrational.matlab')
 
-iir = wavestate.iirrational.surrogate();
+iir = wield.iirrational.surrogate();
 dat = iir.testing.IIRrational_data({'simple1'})

@@ -22,7 +22,7 @@ function iirsur = surrogate(optional_cookie)
     kw = struct();
     kw.env.LD_LIBRARY_PATH = '';
     if ~iirsur.attached()
-      iirsur.connect_subprocess('wavestate.iirrational.matlab', kw);
+      iirsur.connect_subprocess('wield.iirrational.matlab', kw);
     end
   end
 end
