@@ -22,6 +22,11 @@ import collections
 import numpy as np
 import copy
 
+try:
+    from collections.abc import Mapping as MappingABC
+except ImportError:
+    from collections import Mapping as MappingABC
+
 from . import types
 
 
@@ -67,7 +72,7 @@ def load_any(
 
 
 def cull_None(obj):
-    if isinstance(obj, collections.Mapping):
+    if isinstance(obj, MappingABC):
         dels = []
         for k, v in obj.items():
             v2 = cull_None(v)
@@ -98,7 +103,7 @@ def cull_None(obj):
 
 
 def normalize_ndarray(obj):
-    if isinstance(obj, collections.Mapping):
+    if isinstance(obj, MappingABC):
         for k, v in obj.items():
             obj[k] = normalize_ndarray(v)
         return obj
@@ -114,7 +119,7 @@ def normalize_ndarray(obj):
 
 def fix_complex(obj):
     normalize_ndarray(obj)
-    if isinstance(obj, collections.Mapping):
+    if isinstance(obj, MappingABC):
         for k, v in obj.items():
             obj[k] = fix_complex(v)
         return obj
@@ -151,7 +156,7 @@ def fix_complex(obj):
 
 
 def fix_ndarray(obj):
-    if isinstance(obj, collections.Mapping):
+    if isinstance(obj, MappingABC):
         for k, v in obj.items():
             obj[k] = fix_ndarray(v)
         return obj
