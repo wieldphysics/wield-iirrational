@@ -12,6 +12,11 @@ import numpy as np
 import collections
 from wield.bunch import Bunch
 
+try:
+    from collections.abc import Mapping as MappingABC
+except ImportError:
+    from collections import Mapping as MappingABC
+
 from .base import (
     ArgumentError,
     mapcheck_bool,
@@ -51,7 +56,7 @@ def normalize_roots(val):
             val = None
         else:
             val = cplx_iIjJ_list(val)
-    elif isinstance(val, collections.Mapping):
+    elif isinstance(val, MappingABC):
         r = val["real"]
         i = val["imag"]
         val = np.asarray(r) + 1j * np.asarray(i)

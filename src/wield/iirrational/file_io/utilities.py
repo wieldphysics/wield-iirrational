@@ -11,6 +11,11 @@
 from wield import declarative
 import collections
 
+try:
+    from collections.abc import Mapping as MappingABC
+except ImportError:
+    from collections import Mapping as MappingABC
+
 NOARG = declarative.unique_generator
 
 
@@ -21,7 +26,7 @@ def subkey_search(fdict, subkey, default=NOARG):
     skeys = subkey.split(".")
 
     while skeys:
-        if not isinstance(subdict, collections.Mapping):
+        if not isinstance(subdict, MappingABC):
             raise TypeError("Intermediate type not a dictionary")
 
         try:
