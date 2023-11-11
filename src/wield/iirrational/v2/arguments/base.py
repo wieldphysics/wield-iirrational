@@ -8,13 +8,17 @@
 """
 """
 
-import collections
 from wield import declarative
 import numpy as np
 
 from ... import fitters_ZPK
 from ...utilities import args
 from ... import representations
+
+try:
+    from collections.abc import Mapping as MappingABC
+except ImportError:
+    from collections import Mapping as MappingABC
 
 
 class ArgumentError(ValueError):
@@ -149,7 +153,7 @@ def kw_ZPKrep_build(args, kwargs):
     kw = dict()
     ZPKrep = None
     for arg in args:
-        if isinstance(arg, collections.Mapping):
+        if isinstance(arg, MappingABC):
             kw.update(arg)
         elif isinstance(
             arg,

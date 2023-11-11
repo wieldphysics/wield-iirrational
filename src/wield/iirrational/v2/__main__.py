@@ -15,6 +15,11 @@ import collections
 from wield import declarative
 from wield.bunch import Bunch, DeepBunch
 
+try:
+    from collections.abc import Mapping as MappingABC
+except ImportError:
+    from collections import Mapping as MappingABC
+
 from .. import file_io
 
 from .. import version as IIRversion
@@ -76,7 +81,7 @@ def dump_obj(d):
 
 def dump_fdict_keys(d, k=None, depth=-1, file=sys.stdout):
     subprint = False
-    if isinstance(d, collections.Mapping):
+    if isinstance(d, MappingABC):
         if k is not None:
             print("{}{}:".format("  " * depth, k), file=file)
         for subk, v in sorted(d.items()):
@@ -108,7 +113,7 @@ def find_elements(fdict, groups, allow_dicts):
         except KeyError:
             continue
 
-        if not allow_dicts and isinstance(val, collections.Mapping):
+        if not allow_dicts and isinstance(val, MappingABC):
             continue
 
         used_keys.append(used_keys)

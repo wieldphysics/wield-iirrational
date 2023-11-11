@@ -39,5 +39,6 @@ __all__ = [
     "v2",
     "save,"
     "load",
-    "matlabpath,"
+    "matlabpath,",
+    "fitters_ZPK"
 ]
