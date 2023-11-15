@@ -5,6 +5,7 @@
 # NOTICE: Contributors should add their name to copyright and document their contributions in NOTICE
 
 tresults/
+test_results/
 
 textmat*.*
 timer.update
