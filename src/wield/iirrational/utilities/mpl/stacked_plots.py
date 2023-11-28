@@ -132,8 +132,8 @@ def generate_stacked_plot_ax(
         for idx, name in enumerate(view_names):
             ax_local = fig.add_subplot(gs_DC[idx, col_idx], sharex=ax_top)
             # patch_axes(ax_local)
-            ax_local.grid(b=True)
-            ax_local.grid(b=True, which="minor", color=(0.9, 0.9, 0.9), lw=0.5)
+            ax_local.grid(visible=True)
+            ax_local.grid(visible=True, which="minor", color=(0.9, 0.9, 0.9), lw=0.5)
             axB["ax{0}_{1}".format(idx, col_idx)] = ax_local
             if col_idx == 0:
                 axB["ax{0}".format(idx)] = ax_local

@@ -194,9 +194,9 @@ def plot_ZP(
     # ax.add_artist(c)
     axB.ax_poles.legend(loc="lower right", fontsize=8)
     axB.ax_zeros.legend(loc="lower right", fontsize=8)
-    axB.ax_poles.grid(b=True)
-    axB.ax_dual.grid(b=True)
-    axB.ax_zeros.grid(b=True)
+    axB.ax_poles.grid(visible=True)
+    axB.ax_dual.grid(visible=True)
+    axB.ax_zeros.grid(visible=True)
 
     axB.finalize()
     return axB
@@ -340,9 +340,9 @@ def plot_ZP_S(
 
     axB.ax_poles.legend(loc="lower left", fontsize=8)
     axB.ax_zeros.legend(loc="lower left", fontsize=8)
-    axB.ax_poles.grid(b=True)
-    axB.ax_dual.grid(b=True)
-    axB.ax_zeros.grid(b=True)
+    axB.ax_poles.grid(visible=True)
+    axB.ax_dual.grid(visible=True)
+    axB.ax_zeros.grid(visible=True)
 
     axB.finalize()
     return axB
