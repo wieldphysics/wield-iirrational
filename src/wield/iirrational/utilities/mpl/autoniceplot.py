@@ -250,7 +250,6 @@ class AutoPlotSaver(declarative.OverridableObject):
                     # tight_layout=True,
                     pad_inches=0.05,
                     transparent=True,
-                    quality=50,
                     **kwargs
                 )
             else:
@@ -267,7 +266,6 @@ class AutoPlotSaver(declarative.OverridableObject):
                             bbox_inches="tight",
                             pad_inches=0.05,
                             transparent=True,
-                            quality=50,
                             # tight_layout =True,
                             **kwargs
                         ),

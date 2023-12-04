@@ -265,6 +265,7 @@ def data_load(aid, args, kwfull, mode, confB):
             dgroup_use = cmdline.mapcheck_cslist(fB_data.subkey)
 
         if len(dgroup_use) == 0:
+            print("USING: ", dgroup_use)
             data_dict = fdict_data
             used_dgroups = [None]
         else:
