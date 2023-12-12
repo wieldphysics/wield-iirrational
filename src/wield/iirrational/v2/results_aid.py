@@ -40,6 +40,14 @@ class ResultsAid(object):
         return self._fitter
 
     @property
+    def siso(self):
+        # TODO
+        from wield.control import SISO
+        return SISO.zpk(
+            *self._fitter.zpk,
+        )
+
+    @property
     def _fitter_extra(self):
         extra = self._extra_data_by_order.setdefault(self._current_order, {})
         return extra
@@ -274,17 +282,6 @@ class ResultsAid(object):
     @property
     def ZPKrep(self):
         return self.as_ZPKrep()
-
-    def as_ZPKTF(self, delay2ZPK_args):
-        """
-        Returns the filter as an wield.iirrational ZPKTF object, for use
-        with mathematical analysis. Note, if the delay is nonzero,
-        some conversion of the delay into ZPK is required. If the delay is
-        positive (as is usual), the some order of RHP-zero/LHP-pole pairs must
-        be added to approximate the delay.
-        """
-        # TODO
-        raise NotImplementedError()
 
     def as_matlab_str_ZPKsw(
         self,

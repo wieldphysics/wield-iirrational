@@ -529,7 +529,8 @@ def _fit_rational(aid, emphasis, _phase_patch=True, order_hint=None):
 
                 aid.log_progress(4, "mag fitting and phase patching")
                 aid.invalidate_fitters()
-                phase_patch.phase_patch(aid)
+                if np.any(aid.fitter.residuals_log_im_scale != 0):
+                    phase_patch.phase_patch(aid)
                 aid.fitter_update(representative=True)
 
     else:
