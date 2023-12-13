@@ -40,11 +40,13 @@ class ResultsAid(object):
         return self._fitter
 
     @property
-    def siso(self):
-        # TODO
+    def asSISOzpk(self):
         from wield.control import SISO
         return SISO.zpk(
-            *self._fitter.zpk,
+            self.fitter.zeros.fullplane,
+            self.fitter.poles.fullplane,
+            self.fitter.gain,
+            convention='IIRrational',
         )
 
     @property
