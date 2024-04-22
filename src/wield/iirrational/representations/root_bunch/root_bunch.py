@@ -544,7 +544,7 @@ class RootBunch(DepBunch):
             for idx in range((mlen - 1) // group_len + 1):
                 r = roots[idx * group_len : (idx + 1) * group_len]
                 h = h * np.polynomial.polynomial.polyvalfromroots(X, r)
-                abs_max = np.max(abs_sq(h)) ** 0.5
+                abs_max = abs_sq(h)**0.5
                 h /= abs_max
                 lnG += np.log(abs_max)
             return h, lnG

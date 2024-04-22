@@ -463,7 +463,7 @@ class FitAid(object):
         # print("ZPK", fitter_use.ZPKsf)
         if representative:
             if fitter_use is not None:
-                fitter_use.optimize(aid=self)
+                #fitter_use.optimize(aid=self)
                 fitter_copy = [fitter_use]
             else:
                 fitter_use = fitter

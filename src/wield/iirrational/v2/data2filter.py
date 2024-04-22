@@ -382,6 +382,7 @@ def data2filter(*args, **kw):
             )
             ZPKrep = aid.fitter.ZPKrep
 
+    print("A", ZPKrep.poles.fullplane)
     aid.fitter_update(
         fitters_ZPK.ZPKrep2MRF(
             ZPKrep,
@@ -398,6 +399,7 @@ def data2filter(*args, **kw):
         ),
         validate=False,
     )
+    print("B", aid.fitter.poles.fullplane)
 
     if kw:
         arguments.check_remaining_arguments(kw, arguments.kw_hints)
@@ -458,6 +460,7 @@ def data2filter(*args, **kw):
         baseline_order = fit_only(aid, emphasis)
     elif mode == "copy":
         baseline_order = fit_copy(aid, emphasis)
+        print("C", aid.fitter.poles.fullplane)
     elif mode == "gain":
         baseline_order = fit_copy(aid, emphasis)
         with aid.fitter.with_codings_only([aid.fitter.gain_coding]):
